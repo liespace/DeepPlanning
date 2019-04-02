@@ -5,6 +5,19 @@ import numpy as np
 import csv
 import os
 
+
+def read_csv(file_name, delimiter=','):
+    products = csv.reader(open(file_name, newline=''), delimiter=delimiter, quotechar='|')
+    my_list = []
+    for row in products:
+        dozen = []
+        for item in row:
+            if item is not '':
+                dozen.append(float(item))
+        my_list.append(dozen)
+    return my_list
+
+
 def where(benchmark, your_list):
     my_list = []
     for index, item in enumerate(your_list):
@@ -13,18 +26,19 @@ def where(benchmark, your_list):
     return my_list
 
 
-def main():
+def show(number=0):
     fig = plt.gcf()
     ax = fig.add_subplot(1, 1, 1)
     plt.axis("equal")
     fig.show()
     fig.canvas.draw()
 
-    no = 530
+    no = number
     parent_folder = os.path.dirname(os.getcwd())
-    sproducts_file_name = '{}/{}sproducts.csv'.format(parent_folder, no)
-    image_file_name = '{}/{}gridmap.png'.format(parent_folder, no)
-    condition_file_name = '{}/{}condition.csv'.format(parent_folder, no)
+    sproducts_file_name = '{}/dataset/{}sproducts.csv'.format(parent_folder, no)
+    image_file_name = '{}/dataset/{}gridmap.png'.format(parent_folder, no)
+    condition_file_name = '{}/dataset/{}condition.csv'.format(parent_folder, no)
+    label_file_name = '{}/dataset/{}label.csv'.format(parent_folder, no)
 
     # Show Conditions ##########################################################
 
@@ -34,12 +48,11 @@ def main():
     theta = -conditions[0][2]
     rotation_matrix = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
 
-    rect = plt.Rectangle((-5 / 2, -3 / 2), 5, 3, fill=True, edgecolor='red', linewidth=1)
+    rect = plt.Rectangle((-5 / 2, -3 / 2), 5, 3, fill=False, edgecolor='red', linewidth=1)
     ax.add_patch(rect)
 
     path = conditions[1:, 0:2]
     headings = conditions[1:, 2]
-    print(headings.shape)
     origins = repmat(np.r_[origin], path.shape[0], 1)
     path -= origins
     path = np.dot(rotation_matrix, path.transpose())
@@ -80,18 +93,46 @@ def main():
     plt.scatter(coords[0, :], coords[1, :], s=1, marker="s")
 
     # Show Products ############################################################
-
     my_list = read_csv(sproducts_file_name)
+    if not my_list[0]:
+        plt.clf()
+        return
 
     for i in range(int(len(my_list) / 3)):
         coord = np.array([my_list[i * 3], my_list[i * 3 + 1]])
         origins = repmat(np.c_[origin], 1, coord.shape[1])
         coord = np.dot(rotation_matrix, coord - origins)
-        plt.plot(coord[0, :], coord[1, :])
-        fig.canvas.draw()
-        input("next {}/{}?".format(i, int(len(my_list) / 3)))
-    
-    input("finish it?")
+        # plt.plot(coord[0, :], coord[1, :])
+        plt.scatter(coord[0, :], coord[1, :], s=1, marker="x")
+        # input("next {}/{}?".format(i, int(len(my_list) / 3)))
+
+    # Show Label ###############################################################
+    label = np.asarray(read_csv(label_file_name))
+    path = label[:, 0:2]
+    headings = label[:, 2]
+    origins = repmat(np.r_[origin], path.shape[0], 1)
+    path -= origins
+    path = np.dot(rotation_matrix, path.transpose())
+
+    for i in range(path.shape[1]):
+        color = 'r'
+        if i == 0:
+            color = 'g'
+        circle = plt.Circle((path[0, i], path[1, i]), radius=1, fill=False, color=color)
+        ax.add_patch(circle)
+        ax.arrow(path[0, i], path[1, i], np.cos(headings[i] + theta), np.sin(headings[i] + theta),
+                 head_width=0.5, head_length=1.5, linewidth=0, color='r')
+
+    fig.canvas.draw()
+    input("finish it {}?".format(no))
+    plt.clf()
+
+
+def main():
+    no = 0
+    while no <= 633:
+        show(no)
+        no += 1
 
 
 if __name__ == '__main__':
