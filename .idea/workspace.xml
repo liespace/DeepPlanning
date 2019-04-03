@@ -2,16 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="302066e6-8402-4212-9d64-970056a26802" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/245condition.csv" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/245condition.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/64condition.csv" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/64condition.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/74condition.csv" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/74condition.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/75condition.csv" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/75condition.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/76condition.csv" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/76condition.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cluster.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/cluster.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/show_products.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/show_products.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/toolbox.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/toolbox.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/147label.csv" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/147label.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/286label.csv" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/286label.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/288label.csv" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/288label.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/80label.csv" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/80label.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/81label.csv" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/81label.csv" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -21,7 +17,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/cluster.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="182">
@@ -33,11 +29,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/show_products.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="338">
-              <caret line="132" column="20" lean-forward="true" selection-start-line="132" selection-start-column="20" selection-end-line="132" selection-end-column="20" />
+            <state relative-caret-position="356">
+              <caret line="132" column="19" selection-start-line="132" selection-start-column="19" selection-end-line="132" selection-end-column="19" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
@@ -74,8 +70,8 @@
         <option value="$PROJECT_DIR$/dataset/75condition.csv" />
         <option value="$PROJECT_DIR$/dataset/76condition.csv" />
         <option value="$PROJECT_DIR$/dataset/245condition.csv" />
-        <option value="$PROJECT_DIR$/src/show_products.py" />
         <option value="$PROJECT_DIR$/src/cluster.py" />
+        <option value="$PROJECT_DIR$/src/show_products.py" />
       </list>
     </option>
   </component>
@@ -90,6 +86,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -111,7 +108,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -248,7 +244,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="22526000" />
+    <option name="totallyTimeSpent" value="22997000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -263,12 +259,12 @@
     <frame x="64" y="-4" width="1857" height="1085" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2111664" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.21337755" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.2579001" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.25688073" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -277,7 +273,7 @@
       <window_info anchor="bottom" id="Version Control" order="8" weight="0.32925585" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
-      <window_info anchor="bottom" id="Terminal" order="11" weight="0.23955148" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="11" visible="true" weight="0.23955148" />
       <window_info anchor="bottom" id="Python Console" order="12" weight="0.35779816" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -291,7 +287,7 @@
     <option name="version" value="1" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/ml_rrt$cluster.coverage" NAME="cluster Coverage Results" MODIFIED="1554215251740" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/ml_rrt$cluster.coverage" NAME="cluster Coverage Results" MODIFIED="1554287499034" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/docker.sh">
@@ -326,13 +322,13 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dataset/34label.csv">
-      <provider editor-type-id="csv-table-editor">
-        <state showInfoPanel="true" fixedHeaders="false" rowLines="3" />
-      </provider>
       <provider editor-type-id="text-editor">
         <state relative-caret-position="78">
           <caret line="3" column="29" lean-forward="true" selection-start-line="3" selection-start-column="29" selection-end-line="3" selection-end-column="29" />
         </state>
+      </provider>
+      <provider editor-type-id="csv-table-editor">
+        <state showInfoPanel="true" fixedHeaders="false" rowLines="3" />
       </provider>
       <provider selected="true" editor-type-id="csv-text-editor">
         <state relative-caret-position="104">
@@ -403,7 +399,11 @@
       <provider editor-type-id="csv-table-editor">
         <state showInfoPanel="true" fixedHeaders="false" rowLines="3" />
       </provider>
-      <provider selected="true" editor-type-id="csv-text-editor" />
+      <provider selected="true" editor-type-id="csv-text-editor">
+        <state relative-caret-position="624">
+          <caret line="30" selection-start-line="30" selection-end-line="30" />
+        </state>
+      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dataset/64label.csv">
       <provider editor-type-id="csv-table-editor">
@@ -545,16 +545,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dataset/80label.csv">
-      <provider editor-type-id="csv-table-editor">
-        <state showInfoPanel="true" fixedHeaders="false" rowLines="3" />
-      </provider>
-      <provider selected="true" editor-type-id="csv-text-editor">
-        <state relative-caret-position="104">
-          <caret line="4" column="11" lean-forward="true" selection-start-line="4" selection-start-column="11" selection-end-line="4" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/dataset/80sproducts.csv">
       <provider editor-type-id="csv-table-editor">
         <state showInfoPanel="true" fixedHeaders="false" rowLines="3" />
@@ -689,13 +679,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/show_products.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="338">
-          <caret line="132" column="20" lean-forward="true" selection-start-line="132" selection-start-column="20" selection-end-line="132" selection-end-column="20" />
-          <folding>
-            <element signature="e#0#31#0" expanded="true" />
-          </folding>
+    <entry file="file://$PROJECT_DIR$/dataset/80label.csv">
+      <provider editor-type-id="csv-table-editor">
+        <state showInfoPanel="true" fixedHeaders="false" rowLines="3" />
+      </provider>
+      <provider selected="true" editor-type-id="csv-text-editor">
+        <state relative-caret-position="104">
+          <caret line="4" column="11" lean-forward="true" selection-start-line="4" selection-start-column="11" selection-end-line="4" selection-end-column="11" />
         </state>
       </provider>
     </entry>
@@ -705,6 +695,16 @@
           <caret line="7" column="16" lean-forward="true" selection-start-line="7" selection-start-column="16" selection-end-line="7" selection-end-column="16" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/show_products.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="356">
+          <caret line="132" column="19" selection-start-line="132" selection-start-column="19" selection-end-line="132" selection-end-column="19" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
           </folding>
         </state>
       </provider>
