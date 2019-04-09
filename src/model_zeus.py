@@ -3,27 +3,48 @@ import toolbox
 import os
 import random
 
-parent_folder = os.path.dirname(os.getcwd())
-data_path = '{}/dataset'.format(parent_folder)
-image_paths = toolbox.get_all_images_path(data_path)
-label_paths = toolbox.get_all_labels_path(data_path)
-cdts_paths = toolbox.get_all_cdts_path(data_path)
+dics = {'data': tf.FixedLenFeature(shape=(), dtype=tf.string),
+        'label': tf.FixedLenFeature(shape=(), dtype=tf.string)}
 
-labels = tf.data.experimental.CsvDataset(label_paths, [tf.float32] * 3)
-cdts = tf.data.experimental.CsvDataset(cdts_paths, [tf.float32] * 3, header=True)
 
-labels = labels - cdts
-print(labels)
+def parse_example(example):
+    parsed_example = tf.parse_single_example(example, dics)
+    parsed_example['data'] = tf.decode_raw(parsed_example['data'], tf.float32)
+    parsed_example['data'] = tf.reshape(parsed_example['data'], (500, 500, 3))
+    parsed_example['label'] = tf.decode_raw(parsed_example['label'], tf.float32)
+    parsed_example['label'] = tf.reshape(parsed_example['label'], (5, 3))
+    return parsed_example
 
-images = tf.data.Dataset.from_tensor_slices(image_paths)
 
-ds = tf.data.Dataset.zip((images, labels))
-image_label_ds = ds.map(toolbox.map_dataset)
-print(image_label_ds)
+dir_parent = os.path.dirname(os.getcwd())
+name_food_cd = '{}/food/cd.tfrecords'.format(dir_parent)
+name_food_pd = '{}/food/pd.tfrecords'.format(dir_parent)
 
-ds = image_label_ds.cache(filename='./cache.tf-data')
-ds = ds.apply(tf.data.experimental.shuffle_and_repeat(buffer_size=len(image_paths)))
-ds = ds.batch(32).prefetch(1)
+food = tf.data.TFRecordDataset(name_food_cd)
+new_dataset = food.map(parse_example)
+print(new_dataset.output_types)
+print(new_dataset.output_shapes)
+print(new_dataset.output_classes)
+# iterator = new_dataset.make_one_shot_iterator()
+# sess = tf.InteractiveSession()
+# next_element = iterator.get_next()
+# i = 0
+# while True:
+#     try:
+#         data, label = sess.run([next_element['data'],
+#                                 next_element['label']])
+#     except tf.errors.OutOfRangeError:
+#         print("End of dataset")
+#         break
+#     else:
+#         print(i)
+#         print(data.shape)
+#         print(label.shape)
+#     i += 1
+
+# ds = food.cache(filename='./cache.tf-data')
+# ds = ds.apply(tf.data.experimental.shuffle_and_repeat(buffer_size=len(600)))
+# ds = ds.batch(32).prefetch(1)
 
 # network overall params
 shape_input = (500, 500, 3)
