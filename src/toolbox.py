@@ -2,6 +2,33 @@ import csv
 import tensorflow as tf
 import glob
 import numpy as np
+from datetime import datetime
+
+
+def get_now_str():
+    return str(datetime.now()).replace(' ', '-').replace(':', '-').replace('.', '-')
+
+
+def gcs_to_lcs(condition, label):
+    state = condition[0, 0:2]
+    angle = condition[0, 2]
+    rotate = np.array([[np.cos(-angle), -np.sin(-angle)], [np.sin(-angle), np.cos(-angle)]])
+
+    condition_location = condition[:, 0:2]
+    condition_yaw = condition[:, 2]
+    label_location = label[:, 0:2]
+    label_yaw = label[:, 2]
+
+    condition_location = np.dot((condition_location - state), rotate.transpose())
+    condition_yaw = condition_yaw.transpose() - angle
+    label_location = np.dot((label_location - state), rotate.transpose())
+    label_yaw = label_yaw - angle
+
+    lcs_condition = np.c_[condition_location, condition_yaw]
+    lcs_label = np.c_[label_location, label_yaw]
+    lcs_label[0, :] = lcs_condition[0, :]
+
+    return lcs_condition, lcs_label
 
 
 def read_csv(file_name, delimiter=','):
@@ -67,3 +94,31 @@ def cook_labels(paths):
 
 def map_dataset(image_path, label):
     return load_and_preprocess_image(image_path), label
+
+
+def show_dataset(dataset):
+    print(dataset.output_types)
+    print(dataset.output_shapes)
+    print(dataset.output_classes)
+
+    iterator = dataset.make_one_shot_iterator()
+    sess = tf.InteractiveSession()
+    next_element = iterator.get_next()
+    i = 0
+    while True:
+        try:
+            gridmap, condition, delta = sess.run([next_element[0],
+                                                  next_element[1],
+                                                  next_element[2]])
+        except tf.errors.OutOfRangeError:
+            print("End of dataset")
+            break
+        else:
+            print(i)
+            print(gridmap.shape)
+            print(condition.shape)
+            print(delta.shape)
+        if i is 0:
+            print(condition)
+            print(delta)
+        i += 1

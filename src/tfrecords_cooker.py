@@ -23,8 +23,8 @@ deltas5 = []
 deltas4 = []
 wastes = []
 originals = []
-name_food_cd = '{}/food/cd.tfrecords'.format(dir_parent)
-name_food_pd = '{}/food/pd.tfrecords'.format(dir_parent)
+name_food_cd = '{}/food/gcld.tfrecords'.format(dir_parent)
+name_food_pd = '{}/food/gpld.tfrecords'.format(dir_parent)
 
 writer_cd = tf.python_io.TFRecordWriter(name_food_cd)
 writer_pd = tf.python_io.TFRecordWriter(name_food_pd)
@@ -42,7 +42,7 @@ while here <= end:
         # print(name_label + ' is not exist')
         continue
 
-    gridmap = np.array(Image.open(name_gridmap).convert(mode='RGB'), dtype=np.float32) / 255
+    gridmap = np.array(Image.open(name_gridmap).convert(mode='RGB'), dtype=np.float32)
     label = np.array(toolbox.read_csv(name_label), dtype=np.float32)
     cdt = np.array(toolbox.read_csv(name_cdt, delimiter=' '), dtype=np.float32)
     if cdt.shape[0] > 5:
@@ -54,18 +54,27 @@ while here <= end:
             label = np.append(label, [label[-1, :]], 0)
     if cdt.shape[0] < 5:
         print('is not enough')
+
+    cdt, label = toolbox.gcs_to_lcs(cdt, label)
+
     delta5 = label - cdt
     delta4 = delta5[1:, :]
+    label4 = label[1:, :]
+    path = cdt[1:, :]
 
     example_cd = tf.train.Example(features=tf.train.Features(feature={
-        'data': _bytes_feature(gridmap.tostring()),
-        'label': _bytes_feature(delta5.tostring())}))
+        'gridmap': _bytes_feature(gridmap.tostring()),
+        'condition': _bytes_feature(cdt.tostring()),
+        'label': _bytes_feature(label.tostring()),
+        'delta': _bytes_feature(delta5.tostring())}))
 
     writer_cd.write(example_cd.SerializeToString())
 
     example_pd = tf.train.Example(features=tf.train.Features(feature={
-        'data': _bytes_feature(gridmap.tostring()),
-        'label': _bytes_feature(delta4.tostring())}))
+        'gridmap': _bytes_feature(gridmap.tostring()),
+        'condition': _bytes_feature(path.tostring()),
+        'label': _bytes_feature(label4.tostring()),
+        'delta': _bytes_feature(delta4.tostring())}))
 
     writer_pd.write(example_pd.SerializeToString())
 

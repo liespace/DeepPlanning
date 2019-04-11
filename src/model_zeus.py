@@ -1,78 +1,62 @@
 import tensorflow as tf
-import toolbox
 import os
-import random
-
-dics = {'data': tf.FixedLenFeature(shape=(), dtype=tf.string),
-        'label': tf.FixedLenFeature(shape=(), dtype=tf.string)}
-
-
-def parse_example(example):
-    parsed_example = tf.parse_single_example(example, dics)
-    parsed_example['data'] = tf.decode_raw(parsed_example['data'], tf.float32)
-    parsed_example['data'] = tf.reshape(parsed_example['data'], (500, 500, 3))
-    parsed_example['label'] = tf.decode_raw(parsed_example['label'], tf.float32)
-    parsed_example['label'] = tf.reshape(parsed_example['label'], (5, 3))
-    return parsed_example
-
+import dataset_zeus
+import toolbox
 
 dir_parent = os.path.dirname(os.getcwd())
-name_food_cd = '{}/food/cd.tfrecords'.format(dir_parent)
-name_food_pd = '{}/food/pd.tfrecords'.format(dir_parent)
+name_food_gcld = '{}/food/gcld.tfrecords'.format(dir_parent)
+name_food_gpld = '{}/food/gpld.tfrecords'.format(dir_parent)
+name_model = '{}/food/model_zeus.h5'.format(dir_parent)
 
-food = tf.data.TFRecordDataset(name_food_cd)
-new_dataset = food.map(parse_example)
-print(new_dataset.output_types)
-print(new_dataset.output_shapes)
-print(new_dataset.output_classes)
-# iterator = new_dataset.make_one_shot_iterator()
-# sess = tf.InteractiveSession()
-# next_element = iterator.get_next()
-# i = 0
-# while True:
-#     try:
-#         data, label = sess.run([next_element['data'],
-#                                 next_element['label']])
-#     except tf.errors.OutOfRangeError:
-#         print("End of dataset")
-#         break
-#     else:
-#         print(i)
-#         print(data.shape)
-#         print(label.shape)
-#     i += 1
+# cook model
+image_processor = tf.keras.applications.ResNet50(weights=None, include_top=False,
+                                                 input_shape=dataset_zeus.GRIDMAP_SHAPE)
+image_processor.load_weights(dir_parent + '/resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5')
 
-# ds = food.cache(filename='./cache.tf-data')
-# ds = ds.apply(tf.data.experimental.shuffle_and_repeat(buffer_size=len(600)))
-# ds = ds.batch(32).prefetch(1)
+reshape = tf.keras.Sequential()
+reshape.add(tf.keras.layers.Reshape(dataset_zeus.CONDITION_SHAPE,
+                                    input_shape=(dataset_zeus.CONDITION_SUM,)))
 
-# network overall params
-shape_input = (500, 500, 3)
-dim_output = 3
-num_output = 4
+model_input = tf.keras.layers.Input(shape=dataset_zeus.GRIDMAP_SHAPE, dtype=tf.float32, name='main_input')
+x = image_processor(model_input)
 
-# training related params
-batch_size = 1000
-epochs = 10
-verbose = 1
+x = tf.keras.layers.DepthwiseConv2D(kernel_size=16, strides=(1, 1),
+                                    activation='relu',
+                                    kernel_initializer='he_normal',
+                                    bias_initializer='he_normal')(x)
 
-# cook dataset
-data = []
-labels = []
+x = tf.keras.layers.Flatten()(x)
 
-# # cook model
-# base_model = tf.keras.applications.ResNet50(weights=None, include_top=False, input_shape=shape_input)
-# base_model.load_weights('resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5')
-# layer = tf.keras.layers.Flatten()(base_model.output)
-# layer = tf.keras.layers.Dense(4096, activation='relu')(layer)
-# layer = tf.keras.layers.Dropout(0.5)(layer)
-# layer = tf.keras.layers.BatchNormalization()(layer)
-# prediction = tf.keras.layers.Dense(num_output * dim_output, activation='relu')(layer)
-#
-# head_model = tf.keras.Model(base_model.input, prediction)
-# head_model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
-#
-# head_model.summary()
+x = tf.keras.layers.BatchNormalization()(x)
+
+x = tf.keras.layers.Dense(150, activation='relu',
+                          kernel_initializer='he_normal',
+                          bias_initializer='he_normal')(x)
+
+x = tf.keras.layers.Dropout(0.5)(x)
+
+x = tf.keras.layers.Dense(dataset_zeus.CONDITION_SUM, activation='linear',
+                          kernel_initializer='glorot_normal',
+                          bias_initializer='glorot_normal')(x)
+
+model_output = reshape(x)
+
+head_model = tf.keras.Model(model_input, model_output)
+head_model.compile(optimizer=tf.keras.optimizers.Adam(),
+                   loss='mean_squared_error',
+                   metrics=[tf.keras.metrics.mean_absolute_error,
+                            tf.keras.metrics.mean_absolute_percentage_error,
+                            dataset_zeus.my_accuracy])
+
+head_model.summary()
+
+callbacks = [
+    # Write TensorBoard logs to `./logs` directory
+    tf.keras.callbacks.TensorBoard(log_dir=dir_parent + '/logs/' + toolbox.get_now_str(), update_freq='epoch'),
+    tf.keras.callbacks.ModelCheckpoint(filepath=dir_parent + '/temp_weights.h5', save_weights_only=True)
+]
 
 # train your model on data
-# head_model.fit(x=data, y=labels, epochs=epochs, batch_size=batch_size, verbose=verbose)
+dataset = dataset_zeus.create_dataset(name_food_gpld)
+head_model.fit(dataset, epochs=100, verbose=1, steps_per_epoch=10, callbacks=callbacks)
+# head_model.save(name_model)
