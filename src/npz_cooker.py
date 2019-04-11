@@ -10,7 +10,6 @@ if not os.path.exists(dir_food):
     print('dir food is not exist, made it')
 
 gridmaps = []
-states = []
 paths = []
 conditions = []
 labels5 = []
@@ -19,7 +18,7 @@ deltas5 = []
 deltas4 = []
 wastes = []
 name_food_gcld = '{}/food/gcld.npz'.format(dir_parent)
-name_food_gspld = '{}/food/gspld.npz'.format(dir_parent)
+name_food_gspld = '{}/food/gpld.npz'.format(dir_parent)
 
 here = 0
 end = 633
@@ -54,7 +53,6 @@ while here <= end:
 
     gridmaps.append(gridmap)
     conditions.append(cdt)
-    states.append(cdt[0, :])
     paths.append(cdt[1:, :])
 
     labels5.append(label)
@@ -64,7 +62,7 @@ while here <= end:
     deltas4.append(delta[1:, :])
 
 np.savez(name_food_gcld, gridmaps=gridmaps, conditions=conditions, labels=labels5, deltas=deltas5)
-np.savez(name_food_gspld, gridmaps=gridmaps, states=states, paths=paths, labels=labels4, deltas=deltas4)
+np.savez(name_food_gspld, gridmaps=gridmaps, conditions=paths, labels=labels4, deltas=deltas4)
 
 # with np.load(name_food_gcld) as data:
 #     feature = data['gridmaps']
