@@ -18,10 +18,11 @@ deltas5 = []
 deltas4 = []
 wastes = []
 name_food_gcld = '{}/food/gcld.npz'.format(dir_parent)
-name_food_gspld = '{}/food/gpld.npz'.format(dir_parent)
+name_food_gpld = '{}/food/gpld.npz'.format(dir_parent)
 
 here = 0
 end = 633
+num = 0
 while here <= end:
     name_gridmap = '{}/dataset/{}gridmap.png'.format(dir_parent, here)
     name_cdt = '{}/dataset/{}condition.csv'.format(dir_parent, here)
@@ -32,6 +33,10 @@ while here <= end:
         wastes.append(name_label)
         print(name_label + ' is not exist')
         continue
+
+    # if num == 392:
+    #     print("it is you: {}".format(here))
+    num += 1
 
     gridmap = np.array(Image.open(name_gridmap).convert(mode='RGB'), dtype=np.float32)
     label = np.asarray(toolbox.read_csv(name_label), dtype=np.float32)
@@ -50,7 +55,6 @@ while here <= end:
     cdt, label = toolbox.gcs_to_lcs(cdt, label)
 
     delta = label - cdt
-
     gridmaps.append(gridmap)
     conditions.append(cdt)
     paths.append(cdt[1:, :])
@@ -61,8 +65,10 @@ while here <= end:
     deltas5.append(delta)
     deltas4.append(delta[1:, :])
 
+print('cooking...')
 np.savez(name_food_gcld, gridmaps=gridmaps, conditions=conditions, labels=labels5, deltas=deltas5)
-np.savez(name_food_gspld, gridmaps=gridmaps, conditions=paths, labels=labels4, deltas=deltas4)
+np.savez(name_food_gpld, gridmaps=gridmaps, conditions=paths, labels=labels4, deltas=deltas4)
+print('cook {} examples'.format(num))
 
 # with np.load(name_food_gcld) as data:
 #     feature = data['gridmaps']

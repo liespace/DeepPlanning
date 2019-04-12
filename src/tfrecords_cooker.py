@@ -31,6 +31,7 @@ writer_pd = tf.python_io.TFRecordWriter(name_food_pd)
 
 here = 0
 end = 633
+num = 0
 while here <= end:
     name_gridmap = '{}/dataset/{}gridmap.png'.format(dir_parent, here)
     name_cdt = '{}/dataset/{}condition.csv'.format(dir_parent, here)
@@ -41,6 +42,8 @@ while here <= end:
         wastes.append(name_label)
         # print(name_label + ' is not exist')
         continue
+
+    num += 1
 
     gridmap = np.array(Image.open(name_gridmap).convert(mode='RGB'), dtype=np.float32)
     label = np.array(toolbox.read_csv(name_label), dtype=np.float32)
@@ -80,7 +83,7 @@ while here <= end:
 
 writer_cd.close()
 writer_pd.close()
-
+print('cook {} examples'.format(num))
 # reconstructed_images = []
 # record_iterator = tf.python_io.tf_record_iterator(path=name_food_cld)
 # for string_record in record_iterator:
