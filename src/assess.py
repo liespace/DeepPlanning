@@ -14,4 +14,4 @@ with np.load(name_food_gcld) as data:
     b = np.max(a, axis=-1)
     c = np.max(b, axis=-1)
     print(c)
-    print(np.where(a > 0.5))
+    print(np.where(a > 5))

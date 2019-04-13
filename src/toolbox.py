@@ -5,6 +5,14 @@ import numpy as np
 from datetime import datetime
 
 
+def step_decay(epoch):
+    initial_lrate = 0.1
+    drop = 0.5
+    epochs_drop = 10.0
+    lrate = initial_lrate * np.power(drop, np.floor((1 + epoch) / epochs_drop))
+    return lrate
+
+
 def get_now_str():
     return str(datetime.now()).replace(' ', '-').replace(':', '-').replace('.', '-')
 
@@ -20,9 +28,9 @@ def gcs_to_lcs(condition, label):
     label_yaw = label[:, 2]
 
     condition_location = np.dot((condition_location - state), rotate.transpose())
-    condition_yaw = condition_yaw.transpose() - angle
+    condition_yaw = (condition_yaw.transpose() - angle) * 10
     label_location = np.dot((label_location - state), rotate.transpose())
-    label_yaw = label_yaw - angle
+    label_yaw = (label_yaw - angle) * 10
 
     lcs_condition = np.c_[condition_location, condition_yaw]
     lcs_label = np.c_[label_location, label_yaw]

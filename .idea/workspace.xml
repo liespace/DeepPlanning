@@ -2,11 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="302066e6-8402-4212-9d64-970056a26802" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/logs/2019-04-12-08-04-23-146615/events.out.tfevents.1555027477.trouble-rude" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/logs/2019-04-12-08-15-18-210175/events.out.tfevents.1555028132.trouble-rude" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/logs/2019-04-12-08-19-27-247265/events.out.tfevents.1555028380.trouble-rude" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/logs/2019-04-13-22-58-19-741495/events.out.tfevents.1555167513.trouble-rude" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/logs/2019-04-13-23-18-43-101872/events.out.tfevents.1555168736.trouble-rude" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/logs/2019-04-13-23-40-48-985295/events.out.tfevents.1555170062.trouble-rude" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/temp_weights.h5" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/536label.csv" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/assess.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/assess.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/npz_cooker.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/npz_cooker.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tfrecords_cooker.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/tfrecords_cooker.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/model_zeus.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/model_zeus.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/toolbox.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/toolbox.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -17,34 +23,10 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/tfrecords_cooker.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="513">
-              <caret line="85" column="37" lean-forward="true" selection-start-line="85" selection-end-line="85" selection-end-column="37" />
-              <folding>
-                <element signature="e#0#9#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/npz_cooker.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="516">
-              <caret line="70" column="37" lean-forward="true" selection-start-line="70" selection-start-column="37" selection-end-line="70" selection-end-column="37" />
-              <folding>
-                <element signature="e#0#9#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/assess.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="432">
-              <caret line="16" column="26" selection-start-line="16" selection-start-column="26" selection-end-line="16" selection-end-column="26" />
+            <state relative-caret-position="274">
+              <caret line="13" column="26" selection-start-line="13" selection-start-column="26" selection-end-line="13" selection-end-column="26" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
               </folding>
@@ -52,13 +34,37 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/model_zeus.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-162">
-              <caret line="3" column="14" selection-start-line="3" selection-start-column="14" selection-end-line="3" selection-end-column="14" />
+            <state relative-caret-position="223">
+              <caret line="39" column="34" selection-start-line="39" selection-start-column="34" selection-end-line="39" selection-end-column="34" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/tfrecords_cooker.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="814">
+              <caret line="60" column="47" selection-start-line="60" selection-start-column="47" selection-end-line="60" selection-end-column="47" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/toolbox.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="295">
+              <caret line="11" column="79" selection-start-line="11" selection-start-column="79" selection-end-line="11" selection-end-column="79" />
+              <folding>
+                <element signature="e#0#10#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -98,7 +104,6 @@
       <list>
         <option value="$PROJECT_DIR$/src/__init__.py" />
         <option value="$PROJECT_DIR$/docker.sh" />
-        <option value="$PROJECT_DIR$/src/toolbox.py" />
         <option value="$PROJECT_DIR$/dataset/64condition.csv" />
         <option value="$PROJECT_DIR$/dataset/74condition.csv" />
         <option value="$PROJECT_DIR$/dataset/75condition.csv" />
@@ -110,9 +115,11 @@
         <option value="$PROJECT_DIR$/src/model_alpha.py" />
         <option value="$PROJECT_DIR$/src/model.py" />
         <option value="$PROJECT_DIR$/src/modela.py" />
-        <option value="$PROJECT_DIR$/src/assess.py" />
         <option value="$PROJECT_DIR$/src/tfrecords_cooker.py" />
         <option value="$PROJECT_DIR$/src/npz_cooker.py" />
+        <option value="$PROJECT_DIR$/src/assess.py" />
+        <option value="$PROJECT_DIR$/src/toolbox.py" />
+        <option value="$PROJECT_DIR$/src/model_zeus.py" />
       </list>
     </option>
   </component>
@@ -127,7 +134,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -143,12 +149,18 @@
             <path>
               <item name="ml-rrt" type="b2602c69:ProjectViewProjectNode" />
               <item name="ml-rrt" type="462c0819:PsiDirectoryNode" />
+              <item name="logs" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ml-rrt" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ml-rrt" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -180,7 +192,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.tfrecords_cooker">
+  <component name="RunManager" selected="Python.model_zeus">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="ml-rrt" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -225,6 +237,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="model_zeus" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="ml-rrt" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/model_zeus.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="npz_cooker" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="ml-rrt" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -251,6 +285,9 @@
       <module name="ml-rrt" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -270,12 +307,14 @@
       <item itemvalue="Python.tfrecords_cooker" />
       <item itemvalue="Python.npz_cooker" />
       <item itemvalue="Python.assess" />
+      <item itemvalue="Python.model_zeus" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.model_zeus" />
         <item itemvalue="Python.tfrecords_cooker" />
-        <item itemvalue="Python.npz_cooker" />
         <item itemvalue="Python.assess" />
+        <item itemvalue="Python.npz_cooker" />
       </list>
     </recent_temporary>
   </component>
@@ -302,12 +341,14 @@
       <workItem from="1554201491006" duration="688000" />
       <workItem from="1554202191979" duration="13318000" />
       <workItem from="1554354874710" duration="10153000" />
-      <workItem from="1555022247943" duration="4890000" />
+      <workItem from="1555022247943" duration="5998000" />
+      <workItem from="1555056208747" duration="142000" />
+      <workItem from="1555160690449" duration="9023000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="37963000" />
+    <option name="totallyTimeSpent" value="48236000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -320,14 +361,13 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="64" y="-4" width="1857" height="1085" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.21779989" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2233278" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32925585" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.17329256" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.39245668" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -336,8 +376,8 @@
       <window_info anchor="bottom" id="Version Control" order="8" weight="0.32925585" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
-      <window_info anchor="bottom" id="Terminal" order="11" weight="0.2640163" />
-      <window_info anchor="bottom" id="Python Console" order="12" weight="0.35779816" />
+      <window_info anchor="bottom" id="Terminal" order="11" visible="true" weight="0.2640163" />
+      <window_info anchor="bottom" id="Python Console" order="12" weight="0.24159022" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -350,10 +390,11 @@
     <option name="version" value="1" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/ml_rrt$npz_cooker.coverage" NAME="npz_cooker Coverage Results" MODIFIED="1555026686376" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/ml_rrt$model_zeus.coverage" NAME="model_zeus Coverage Results" MODIFIED="1555170041914" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/ml_rrt$npz_cooker.coverage" NAME="npz_cooker Coverage Results" MODIFIED="1555027679674" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/ml_rrt$cluster.coverage" NAME="cluster Coverage Results" MODIFIED="1554355908218" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
-    <SUITE FILE_PATH="coverage/ml_rrt$tfrecords_cooker.coverage" NAME="tfrecords_cooker Coverage Results" MODIFIED="1555026965977" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
-    <SUITE FILE_PATH="coverage/ml_rrt$assess.coverage" NAME="assess Coverage Results" MODIFIED="1555026266233" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/ml_rrt$tfrecords_cooker.coverage" NAME="tfrecords_cooker Coverage Results" MODIFIED="1555028040210" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/ml_rrt$assess.coverage" NAME="assess Coverage Results" MODIFIED="1555028022110" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/ml_rrt$model_alpha.coverage" NAME="model_alpha Coverage Results" MODIFIED="1554360305193" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
   </component>
   <component name="editorHistoryManager">
@@ -557,13 +598,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/toolbox.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="442">
-          <caret line="17" column="103" selection-start-line="17" selection-start-column="103" selection-end-line="17" selection-end-column="103" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/modela.py" />
     <entry file="file://$PROJECT_DIR$/src/cluster.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -624,16 +658,7 @@
     <entry file="file://$PROJECT_DIR$/dataset/536gridmap.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/dataset/536label.csv">
-      <provider editor-type-id="csv-table-editor">
-        <state showInfoPanel="true" fixedHeaders="false" rowLines="3" />
-      </provider>
-      <provider selected="true" editor-type-id="csv-text-editor">
-        <state relative-caret-position="108">
-          <caret line="4" column="11" lean-forward="true" selection-start-line="4" selection-start-column="11" selection-end-line="4" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/dataset/536label.csv" />
     <entry file="file://$PROJECT_DIR$/dataset/537label.csv">
       <provider editor-type-id="csv-table-editor">
         <state showInfoPanel="true" fixedHeaders="false" rowLines="3" />
@@ -669,36 +694,6 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/dataset/557gridmap.png">
       <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/dataset_zeus.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="486">
-          <caret line="18" column="14" selection-start-line="18" selection-start-column="14" selection-end-line="18" selection-end-column="14" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/model_zeus.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-162">
-          <caret line="3" column="14" selection-start-line="3" selection-start-column="14" selection-end-line="3" selection-end-column="14" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/assess.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="16" column="26" selection-start-line="16" selection-start-column="26" selection-end-line="16" selection-end-column="26" />
-          <folding>
-            <element signature="e#0#14#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dataset/397condition.csv">
       <provider editor-type-id="csv-table-editor">
@@ -747,22 +742,62 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/tfrecords_cooker.py">
+    <entry file="file://$PROJECT_DIR$/src/npz_cooker.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="513">
-          <caret line="85" column="37" lean-forward="true" selection-start-line="85" selection-end-line="85" selection-end-column="37" />
+        <state relative-caret-position="400">
+          <caret line="71" lean-forward="true" selection-start-line="71" selection-end-line="71" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/npz_cooker.py">
+    <entry file="file://$PROJECT_DIR$/src/assess.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="516">
-          <caret line="70" column="37" lean-forward="true" selection-start-line="70" selection-start-column="37" selection-end-line="70" selection-end-column="37" />
+        <state relative-caret-position="274">
+          <caret line="13" column="26" selection-start-line="13" selection-start-column="26" selection-end-line="13" selection-end-column="26" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tfrecords_cooker.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="814">
+          <caret line="60" column="47" selection-start-line="60" selection-start-column="47" selection-end-line="60" selection-end-column="47" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/toolbox.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="295">
+          <caret line="11" column="79" selection-start-line="11" selection-start-column="79" selection-end-line="11" selection-end-column="79" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/dataset_zeus.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="486">
+          <caret line="18" column="14" selection-start-line="18" selection-start-column="14" selection-end-line="18" selection-end-column="14" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/model_zeus.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="223">
+          <caret line="39" column="34" selection-start-line="39" selection-start-column="34" selection-end-line="39" selection-end-column="34" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
           </folding>
         </state>
       </provider>
