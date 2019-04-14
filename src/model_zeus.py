@@ -6,6 +6,7 @@ import toolbox
 dir_parent = os.path.dirname(os.getcwd())
 name_food_gcld = '{}/food/gcld.tfrecords'.format(dir_parent)
 name_food_gpld = '{}/food/gpld.tfrecords'.format(dir_parent)
+name_food_gpld_vd = '{}/food/vd_gpld.tfrecords'.format(dir_parent)
 name_model = '{}/food/model_zeus.h5'.format(dir_parent)
 
 # cook model
@@ -48,12 +49,17 @@ head_model.summary()
 callbacks = [
     # Write TensorBoard logs to `./logs` directory
     tf.keras.callbacks.TensorBoard(log_dir=dir_parent + '/logs/' + toolbox.get_now_str(),
-                                   update_freq='epoch'),
-    tf.keras.callbacks.ModelCheckpoint(filepath=dir_parent + '/temp_weights.h5', save_weights_only=True),
+                                   update_freq='epoch',
+                                   write_graph=False,
+                                   write_grads=True,
+                                   histogram_freq=2),
+    tf.keras.callbacks.ModelCheckpoint(filepath=dir_parent + '/logs/temp_weights.h5', save_weights_only=True),
     # tf.keras.callbacks.LearningRateScheduler(schedule=toolbox.step_decay)
 ]
 
 # train your model on data
-dataset = dataset_zeus.create_dataset(name_food_gpld)
-head_model.fit(dataset, epochs=100, verbose=1, steps_per_epoch=10, callbacks=callbacks)
+test_set = dataset_zeus.create_dataset(name_food_gpld, shuffle_buffer=550)
+vail_set = dataset_zeus.create_dataset(name_food_gpld_vd, shuffle_buffer=60)
+head_model.fit(test_set, epochs=4, verbose=1, steps_per_epoch=100, callbacks=callbacks,
+               batch_size=None, validation_data=vail_set, validation_steps=60)
 # head_model.save(name_model)

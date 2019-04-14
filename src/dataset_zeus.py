@@ -15,11 +15,16 @@ DICT_DATASET = dict_gpld
 CONDITION_SHAPE = (4, 3)
 CONDITION_SUM = CONDITION_SHAPE[0] * CONDITION_SHAPE[1]
 GRIDMAP_SHAPE = (500, 500, 3)
-SHUFFLE_BUFFER = 610
-BATCH_SIZE = 1
 
 
-def create_dataset(filepath):
+def create_np_dataset(filepath):
+    with np.load(filepath) as data:
+        inputs = data['gridmaps']
+        labels = data['deltas']
+    return inputs, labels
+
+
+def create_dataset(filepath, batch_size=1, shuffle_buffer=100):
     # This works with arrays as well
     dataset = tf.data.TFRecordDataset(filepath)
 
@@ -30,10 +35,10 @@ def create_dataset(filepath):
     dataset = dataset.repeat()
 
     # Set the number of datapoints you want to load and shuffle
-    dataset = dataset.shuffle(SHUFFLE_BUFFER)
+    dataset = dataset.shuffle(shuffle_buffer)
 
     # Set the batchsize
-    dataset = dataset.batch(BATCH_SIZE)
+    dataset = dataset.batch(batch_size)
 
     # Create an iterator
     iterator = dataset.make_one_shot_iterator()

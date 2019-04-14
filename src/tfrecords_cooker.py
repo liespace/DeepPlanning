@@ -25,13 +25,22 @@ wastes = []
 originals = []
 name_food_cd = '{}/food/gcld.tfrecords'.format(dir_parent)
 name_food_pd = '{}/food/gpld.tfrecords'.format(dir_parent)
+name_food_vd_cd = '{}/food/vd_gcld.tfrecords'.format(dir_parent)
+name_food_vd_pd = '{}/food/vd_gpld.tfrecords'.format(dir_parent)
 
 writer_cd = tf.python_io.TFRecordWriter(name_food_cd)
 writer_pd = tf.python_io.TFRecordWriter(name_food_pd)
+writer_vd_cd = tf.python_io.TFRecordWriter(name_food_vd_cd)
+writer_vd_pd = tf.python_io.TFRecordWriter(name_food_vd_pd)
 
+step = 10
 here = 0
 end = 633
 num = 0
+cd_td_num = 0
+cd_vd_num = 0
+pd_td_num = 0
+pd_vd_num = 0
 while here <= end:
     name_gridmap = '{}/dataset/{}gridmap.png'.format(dir_parent, here)
     name_cdt = '{}/dataset/{}condition.csv'.format(dir_parent, here)
@@ -71,7 +80,12 @@ while here <= end:
         'label': _bytes_feature(label.tostring()),
         'delta': _bytes_feature(delta5.tostring())}))
 
-    writer_cd.write(example_cd.SerializeToString())
+    if num % step == 0:
+        writer_vd_cd.write(example_cd.SerializeToString())
+        cd_vd_num += 1
+    else:
+        writer_cd.write(example_cd.SerializeToString())
+        cd_td_num += 1
 
     example_pd = tf.train.Example(features=tf.train.Features(feature={
         'gridmap': _bytes_feature(gridmap.tostring()),
@@ -79,11 +93,20 @@ while here <= end:
         'label': _bytes_feature(label4.tostring()),
         'delta': _bytes_feature(delta4.tostring())}))
 
-    writer_pd.write(example_pd.SerializeToString())
+    if num % step == 0:
+        writer_vd_pd.write(example_pd.SerializeToString())
+        pd_vd_num += 1
+    else:
+        writer_pd.write(example_pd.SerializeToString())
+        pd_td_num += 1
 
 writer_cd.close()
 writer_pd.close()
+writer_vd_cd.close()
+writer_vd_pd.close()
 print('cook {} examples'.format(num))
+print('td {}/{} examples'.format(cd_td_num, pd_td_num))
+print('vd {}/{} examples'.format(cd_vd_num, pd_vd_num))
 # reconstructed_images = []
 # record_iterator = tf.python_io.tf_record_iterator(path=name_food_cld)
 # for string_record in record_iterator:
