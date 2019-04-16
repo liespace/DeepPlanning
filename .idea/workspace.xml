@@ -1,22 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="302066e6-8402-4212-9d64-970056a26802" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/dataset.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/trouble.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/trouble.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/ml-rrt.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ml-rrt.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run.sh" beforeDir="false" afterPath="$PROJECT_DIR$/run.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/assess.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/assess.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dataset_cooker.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dataset_zeus.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/model_hades.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/model_poseidon.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/model_zeus.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tfrecords_cooker.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/tfrecords_cooker.py" afterDir="false" />
-    </list>
+    <list default="true" id="302066e6-8402-4212-9d64-970056a26802" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,7 +14,7 @@
         <entry file="file://$PROJECT_DIR$/src/model.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="1458">
-              <caret line="54" column="98" lean-forward="true" selection-start-line="54" selection-start-column="98" selection-end-line="54" selection-end-column="98" />
+              <caret line="54" column="98" selection-start-line="54" selection-start-column="98" selection-end-line="54" selection-end-column="98" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
               </folding>
@@ -41,7 +26,7 @@
         <entry file="file://$PROJECT_DIR$/src/main.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="189">
-              <caret line="10" column="56" lean-forward="true" selection-start-line="10" selection-start-column="56" selection-end-line="10" selection-end-column="56" />
+              <caret line="10" column="56" selection-start-line="10" selection-start-column="56" selection-end-line="10" selection-end-column="56" />
               <folding>
                 <element signature="e#0#33#0" expanded="true" />
               </folding>
@@ -52,7 +37,7 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/cores.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="337">
+            <state relative-caret-position="297">
               <caret line="14" column="7" lean-forward="true" selection-start-line="14" selection-start-column="7" selection-end-line="14" selection-end-column="7" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
@@ -145,7 +130,7 @@
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.Python" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.Language Defaults" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
@@ -348,12 +333,12 @@
       <workItem from="1555253919157" duration="492000" />
       <workItem from="1555425032515" duration="6300000" />
       <workItem from="1555433820771" duration="9771000" />
-      <workItem from="1555444132437" duration="5008000" />
+      <workItem from="1555444132437" duration="5634000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="76358000" />
+    <option name="totallyTimeSpent" value="76984000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -373,7 +358,7 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32878152" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.080882356" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.30567226" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -519,13 +504,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/run.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="108">
-          <caret line="4" column="115" lean-forward="true" selection-start-line="4" selection-start-column="115" selection-end-line="4" selection-end-column="115" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/toolbox.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2538">
@@ -559,7 +537,7 @@
     <entry file="file://$PROJECT_DIR$/src/model.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1458">
-          <caret line="54" column="98" lean-forward="true" selection-start-line="54" selection-start-column="98" selection-end-line="54" selection-end-column="98" />
+          <caret line="54" column="98" selection-start-line="54" selection-start-column="98" selection-end-line="54" selection-end-column="98" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
           </folding>
@@ -569,16 +547,23 @@
     <entry file="file://$PROJECT_DIR$/src/main.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="189">
-          <caret line="10" column="56" lean-forward="true" selection-start-line="10" selection-start-column="56" selection-end-line="10" selection-end-column="56" />
+          <caret line="10" column="56" selection-start-line="10" selection-start-column="56" selection-end-line="10" selection-end-column="56" />
           <folding>
             <element signature="e#0#33#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/run.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="108">
+          <caret line="4" column="115" lean-forward="true" selection-start-line="4" selection-start-column="115" selection-end-line="4" selection-end-column="115" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/cores.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="337">
+        <state relative-caret-position="297">
           <caret line="14" column="7" lean-forward="true" selection-start-line="14" selection-start-column="7" selection-end-line="14" selection-end-column="7" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
