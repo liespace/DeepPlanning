@@ -1,7 +1,10 @@
 <component name="ProjectDictionaryState">
   <dictionary name="trouble">
     <words>
+      <w>gridmap</w>
       <w>imagenet</w>
+      <w>tensorboard</w>
+      <w>tfrecords</w>
     </words>
   </dictionary>
 </component>

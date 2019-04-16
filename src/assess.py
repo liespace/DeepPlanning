@@ -16,4 +16,6 @@ name_food_gpld = '{}/food/gpld.npz'.format(dir_parent)
 #     print(c)
 #     print(np.where(a > 5))
 
-print(2 % 10)
+b = 542
+c = 3
+print(np.ceil(b/c))

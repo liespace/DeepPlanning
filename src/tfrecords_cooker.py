@@ -23,10 +23,10 @@ deltas5 = []
 deltas4 = []
 wastes = []
 originals = []
-name_food_cd = '{}/food/gcld.tfrecords'.format(dir_parent)
-name_food_pd = '{}/food/gpld.tfrecords'.format(dir_parent)
-name_food_vd_cd = '{}/food/vd_gcld.tfrecords'.format(dir_parent)
-name_food_vd_pd = '{}/food/vd_gpld.tfrecords'.format(dir_parent)
+name_food_cd = '{}/food/gcld_train.tfrecords'.format(dir_parent)
+name_food_pd = '{}/food/gpld_train.tfrecords'.format(dir_parent)
+name_food_vd_cd = '{}/food/gcld_validation.tfrecords'.format(dir_parent)
+name_food_vd_pd = '{}/food/gpld_validation.tfrecords'.format(dir_parent)
 
 writer_cd = tf.python_io.TFRecordWriter(name_food_cd)
 writer_pd = tf.python_io.TFRecordWriter(name_food_pd)
