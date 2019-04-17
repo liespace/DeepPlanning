@@ -1,6 +1,41 @@
 import tensorflow as tf
 import numpy as np
 
+"""
+D:
+> In[0]
+    |-Resnet50
+        |-Filter(:, :, 0:256)
+                |-Flatten
+                    |
+> In[1]             |
+    |-Dense(128)    |
+        |-----------|
+> In[2]             |
+    |-Dense(128)    |
+        |-----------|-Merge
+                        |-Dense(256)
+                            |-Dropout(0.5)
+                                |-Reshape
+                                    |-Out >>>>>>>>
+G:
+> In[0]
+    |-Resnet50
+        |-Filter(:, :, 0:256)
+                |-Flatten
+                    |
+> In[1]             |
+    |-Dense(128)    |
+        |-----------|
+> In[2]             |
+    |---------------|
+                    |-Merge
+                        |-Dense(256)
+                            |-Dropout(0.5)
+                                |-Reshape
+                                    |-Out  >>>>>>>
+"""
+
 
 def beta(input_shape, output_shape, ipu, oru):
     """
@@ -12,8 +47,8 @@ def beta(input_shape, output_shape, ipu, oru):
                         |-Dense(128)
     > In_Aux                |
         |-Flatten           |
-            |-Dense(128)----|
-                            |-Merge
+            |-Dense(128)    |
+                |-----------|-Merge
                                 |-BN
                                     |-Dense(256)
                                         |-Dropout(0.5)
