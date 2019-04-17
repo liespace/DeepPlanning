@@ -24,15 +24,23 @@ class DatasetHolder:
     def _parse_features(self, proto):
         header = self.header
         parsed_features = tf.parse_single_example(proto, header)
-        features = []
-        for key in self.menu:
+        ins = []
+        for key in self.menu['in']:
             x = tf.decode_raw(parsed_features[key], tf.float32)
             if key == 'gridmap':
                 x = tf.reshape(x, self.gridmap_shape) / 255
             else:
                 x = tf.reshape(x, self.label_shape)
-            features.append(x)
-        return tuple(features)
+            ins.append(x)
+        outs = []
+        for key in self.menu['out']:
+            x = tf.decode_raw(parsed_features[key], tf.float32)
+            if key == 'gridmap':
+                x = tf.reshape(x, self.gridmap_shape) / 255
+            else:
+                x = tf.reshape(x, self.label_shape)
+            outs.append(x)
+        return tuple(ins), tuple(outs)
 
     def create_dataset(self, use_for='train', batch_size=1, shuffle_buffer=100, num_parallel_calls=4):
         dir_raw = '{}/food/{}_{}.{}'.format(self.dir_parent, self.food_type, use_for, self.file_type)
