@@ -4,7 +4,7 @@ import tensorflow as tf
 import cores
 import numpy as np
 
-TRAIN_MODE = 'GAN'
+TRAIN_MODE = 'CNN'
 
 if TRAIN_MODE == 'GAN':
     batch_size = 2
@@ -40,17 +40,17 @@ if TRAIN_MODE == 'GAN':
 
 if TRAIN_MODE == 'CNN':
     train_size = 10  # 542
-    validation_size = 60
+    validation_size = 10
     batch_size = 1
     train_steps = int(np.ceil(train_size / batch_size))
     validation_steps = int(np.ceil(validation_size / batch_size))
 
-    keeper = DatasetHolder(food_type='gpld', menu={'in': ['gridmap', 'condition'], 'out': ['delta']})  # ['gridmap']
+    keeper = DatasetHolder(food_type='gpld', menu={'in': ['gridmap'], 'out': ['delta']})  # ['condition']
     train_set = keeper.create_dataset(use_for='train', shuffle_buffer=550, batch_size=batch_size)
     validation_set = keeper.create_dataset(use_for='validation', shuffle_buffer=60, batch_size=batch_size)
 
     ipu_weight = keeper.dir_parent + '/resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5'
-    model = Model(build_core=cores.beta, name='beta',  # build_core=cores.alpha, name='alpha'
+    model = Model(build_core=cores.alpha, name='alpha',
                   train_set=train_set, validation_set=validation_set,
                   input_shape=keeper.gridmap_shape, output_shape=keeper.label_shape,
                   ipu_weight=ipu_weight, verbose=1,
@@ -61,7 +61,8 @@ if TRAIN_MODE == 'CNN':
                   checkpoint=True, check_period=100,
                   tensorboard=True,
 
-                  epochs=6000,
+                  epochs=10,
+                  initial_epoch=0,
                   steps_per_epoch=train_steps,
                   batch_size=None,
                   validation_steps=validation_steps,
@@ -73,3 +74,8 @@ if TRAIN_MODE == 'CNN':
 
     model.compile()
     model.train()
+    # model.core = tf.keras.models.load_model(model.dir_model, custom_objects={'my_accuracy': keeper.my_accuracy})
+    # model.core.summary()
+    # model.initial_epoch = 20
+    # model.epochs = 30
+    # model.train()

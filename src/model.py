@@ -6,12 +6,23 @@ from functools import partial
 
 
 class Model:
-    def __init__(self, name='main', build_core=None, train_set=None, validation_set=None,
+    def __init__(self, name='main', build_core=None,
+                 train_set=None, validation_set=None,
                  input_shape=None, output_shape=None, ipu_weight=None,
                  check_period=100, checkpoint=True, tensorboard=True,
-                 optimizer=tf.keras.optimizers.Adam(), loss='logcosh', metrics=None,
-                 epochs=4, verbose=1, steps_per_epoch=100, batch_size=None, validation_steps=10,
-                 init_lr=0.001, lr_drop=0.5, lr_drop_freq=1000.0, lr_step_drop=False):
+                 optimizer=tf.keras.optimizers.Adam(),
+                 loss='logcosh',
+                 metrics=None,
+                 epochs=4,
+                 initial_epoch=0,
+                 verbose=1,
+                 steps_per_epoch=100,
+                 batch_size=None,
+                 validation_steps=10,
+                 init_lr=0.001,
+                 lr_drop=0.5,
+                 lr_drop_freq=1000.0,
+                 lr_step_drop=False):
         self.name = name
         self.build_core = build_core
         self.train_set = train_set
@@ -19,6 +30,7 @@ class Model:
         self.ipu_weight = ipu_weight
 
         self.epochs = epochs
+        self.initial_epoch = initial_epoch
         self.steps_per_epoch = steps_per_epoch
         self.batch_size = batch_size
         self.validation_steps = validation_steps
@@ -64,6 +76,7 @@ class Model:
     def train(self):
         self.core.fit(self.train_set,
                       epochs=self.epochs,
+                      initial_epoch=self.initial_epoch,
                       verbose=self.verbose,
                       steps_per_epoch=self.steps_per_epoch,
                       callbacks=self.callbacks,
