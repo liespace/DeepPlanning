@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import os
+import random
 
 
 class DatasetHolder:
@@ -62,6 +63,56 @@ class DatasetHolder:
         # gridmap, delta = iterator.get_next()
 
         return dataset
+
+    def generator(self, use_for='train', batch_size=2):
+        inputs = []
+        outputs = []
+        with np.load('{}/food/{}_{}.{}'.format(self.dir_parent, self.food_type, use_for, self.file_type)) as repo:
+            for key in self.menu['in']:
+                inputs.append(repo[key])
+            for key in self.menu['out']:
+                outputs.append(repo[key])
+        indexes = list(range(0, inputs[0].shape[0]))
+
+        while True:
+            index = random.sample(indexes, k=batch_size)
+            ins = []
+            for i, key in enumerate(self.menu['in']):
+                value = []
+                for j in index:
+                    if key == 'yes':
+                        x = -1
+                    elif key == 'no':
+                        x = 1
+                    elif key == 'en':
+                        x = 0
+                    elif key == 'noise':
+                        x = np.random.normal(0, 1, 100)
+                    elif key == 'gridmap':
+                        x = outputs[i][j] / 255
+                    else:
+                        x = outputs[i][j]
+                    value.append(x)
+                ins.append((key, np.array(value)))
+            outs = []
+            for i, key in enumerate(self.menu['out']):
+                value = []
+                for j in index[0:batch_size]:
+                    if key == 'yes':
+                        x = -1
+                    elif key == 'no':
+                        x = 1
+                    elif key == 'en':
+                        x = 0
+                    elif key == 'noise':
+                        x = np.random.normal(0, 1, 100)
+                    elif key == 'gridmap':
+                        x = outputs[i][j] / 255
+                    else:
+                        x = outputs[i][j]
+                    value.append(x)
+                outs.append((key, np.array(value)))
+            yield (dict(ins), dict(outs))
 
     def my_accuracy(self, y_true, y_pred, **kwargs):
         threshold = [0.5, 0.5, np.radians(3)]

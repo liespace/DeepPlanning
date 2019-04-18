@@ -37,6 +37,14 @@ G:
 """
 
 
+def gcore(input_shape, output_shape, ipu, oru):
+    return None
+
+
+def dcore(input_shape, output_shape, ipu, oru):
+    return None
+
+
 def beta(input_shape, output_shape, ipu, oru):
     """
     > In_Main

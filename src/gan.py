@@ -5,25 +5,30 @@ from functools import partial
 
 
 class GAN(Model):
-    def __init__(self, gcore=None, dcore=None, dsteps=5, zdim=100,
-                 name='gan', train_set=None, validation_set=None,
+    def __init__(self, name='gan', gcore=None, dcore=None, dsteps=5, zdim=100,
+                 gtrain_set=None, dtrain_set=None,
                  input_shape=None, output_shape=None, ipu_weight=None,
                  check_period=100, checkpoint=True, tensorboard=True,
                  optimizer=tf.keras.optimizers.RMSprop(lr=0.00005), loss='logcosh', metrics=None,
-                 epochs=4, verbose=1, steps_per_epoch=100, batch_size=None, validation_steps=10,
+                 epochs=4, verbose=1, batch_size=None, validation_steps=10,
                  init_lr=0.001, lr_drop=0.5, lr_drop_freq=1000.0, lr_step_drop=False):
-        super().__init__(name=name, train_set=train_set, validation_set=validation_set,
+        super().__init__(name=name,
                          input_shape=input_shape, output_shape=output_shape, ipu_weight=ipu_weight,
                          check_period=check_period, checkpoint=checkpoint, tensorboard=tensorboard,
                          optimizer=optimizer, loss=loss, metrics=metrics,
-                         epochs=epochs, verbose=verbose, steps_per_epoch=steps_per_epoch, batch_size=batch_size,
+                         epochs=epochs, verbose=verbose, batch_size=batch_size,
                          validation_steps=validation_steps,
                          init_lr=init_lr, lr_drop=lr_drop, lr_drop_freq=lr_drop_freq, lr_step_drop=lr_step_drop)
         # Build the generator and critic
+        self.dtrain_set = dtrain_set
+        self.gtrain_set = gtrain_set
         self.gcore = gcore
         self.dcore = dcore
         self.sample_interval = 4
         self.zdim = zdim
+
+        self.dir_dmodel = '{}/logs/{}/'.format(self.dir_parent, self.name) + '{}.h5'.format(self.name)
+        self.dir_gmodel = '{}/logs/{}/'.format(self.dir_parent, self.name) + '{}.h5'.format(self.name)
 
         self.img_rows = 28
         self.img_cols = 28
@@ -32,7 +37,7 @@ class GAN(Model):
         self.latent_dim = 100
 
         # Following parameter and optimizer set as recommended in paper
-        self.dsteps = 5
+        self.dsteps = dsteps
         self.dmodel = None
         self.gmodel = None
         self.pack_discriminator()
@@ -107,17 +112,24 @@ class GAN(Model):
     def train(self):
         # TODO Rescale -1 to 1
         for epoch in range(self.epochs):
-
-            for _ in range(self.dsteps):
-                # ---------------------
-                #  Train Discriminator
-                # ---------------------
-                d_loss = self.dmodel.fit_generator()
+            # ---------------------
+            #  Train Discriminator
+            # ---------------------
+            d_loss = self.dmodel.fit_generator(self.train_set, epochs=1, initial_epoch=epoch,
+                                               verbose=self.verbose,
+                                               steps_per_epoch=self.dsteps,
+                                               callbacks=self.callbacks)
 
             # ---------------------
             #  Train Generator
             # ---------------------
-            g_loss = self.gmodel.fit_generator()
+            g_loss = self.gmodel.fit_generator(self.train_set, epochs=1, initial_epoch=epoch,
+                                               verbose=self.verbose,
+                                               steps_per_epoch=1,
+                                               callbacks=self.callbacks)
 
             # Plot the progress
             print("%d [D loss: %f] [G loss: %f]" % (epoch, d_loss[0], g_loss))
+
+        self.dmodel.save(self.dir_dmodel)
+        self.gmodel.save(self.dir_gmodel)
