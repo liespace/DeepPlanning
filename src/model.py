@@ -9,7 +9,8 @@ class Model:
     def __init__(self, name='main', build_core=None,
                  train_set=None, validation_set=None,
                  input_shape=None, output_shape=None, ipu_weight=None,
-                 check_period=100, checkpoint=True, tensorboard=True,
+                 checkpoint=True, check_period=100, save_weights_only=True, tensorboard=True,
+                 earlystop=False, monitor='loss', min_delta=0.001, patience=100, mode='auto', baseline=None,
                  optimizer=tf.keras.optimizers.Adam(),
                  loss='logcosh',
                  metrics=None,
@@ -53,7 +54,7 @@ class Model:
 
         self.dir_parent = os.path.dirname(os.getcwd())
         self.dir_log = '{}/logs/{}/'.format(self.dir_parent, self.name) + self.get_now_str()
-        self.dir_checkpoint = '{}/logs/{}/'.format(self.dir_parent, self.name) + 'weights_checkpoint.h5'
+        self.dir_checkpoint = '{}/logs/{}/'.format(self.dir_parent, self.name) + 'checkpoint.h5'
         self.dir_model = '{}/logs/{}/'.format(self.dir_parent, self.name) + '{}.h5'.format(self.name)
         self.check_period = check_period
         self.lr_step_drop = lr_step_drop
@@ -66,7 +67,12 @@ class Model:
             self.callbacks.append(tf.keras.callbacks.LearningRateScheduler(schedule=self.step_decay))
         if checkpoint:
             self.callbacks.append(tf.keras.callbacks.ModelCheckpoint(filepath=self.dir_checkpoint, monitor='loss',
-                                                                     save_weights_only=True, period=self.check_period))
+                                                                     save_weights_only=save_weights_only,
+                                                                     period=self.check_period))
+        if earlystop:
+            self.callbacks.append(tf.keras.callbacks.EarlyStopping(monitor=monitor, min_delta=min_delta,
+                                                                   patience=patience, verbose=verbose, mode=mode,
+                                                                   baseline=baseline, restore_best_weights=False))
 
     def compile(self):
         self.core = self.build_core(self.input_shape, self.output_shape, self.ipu, self.oru)

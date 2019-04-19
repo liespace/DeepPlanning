@@ -52,7 +52,7 @@ def beta(input_shape, output_shape, ipu, oru):
             |-Filter(:, :, 0:256)
                 |-Flatten
                     |-BN
-                        |-Dense(128)
+                        |-Dense(256)
     > In_Aux                |
         |-Flatten           |
             |-Dense(128)    |
@@ -68,7 +68,7 @@ def beta(input_shape, output_shape, ipu, oru):
     x0 = tf.keras.layers.Lambda(lambda y: y[:, :, :, 0:256])(x0)
     x0 = tf.keras.layers.Flatten()(x0)
     x0 = tf.keras.layers.BatchNormalization()(x0)
-    x0 = tf.keras.layers.Dense(128, activation='elu', kernel_initializer='he_normal', bias_initializer='he_normal')(x0)
+    x0 = tf.keras.layers.Dense(256, activation='elu', kernel_initializer='he_normal', bias_initializer='he_normal')(x0)
 
     in_aux = tf.keras.layers.Input(shape=output_shape, dtype=tf.float32, name='in_aux')
     x1 = tf.keras.layers.Flatten()(in_aux)
