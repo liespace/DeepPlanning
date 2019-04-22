@@ -41,9 +41,9 @@ if TRAIN_MODE == 'GAN':
     model.train()
 
 if TRAIN_MODE == 'CNN':
-    train_size = 10  # 542
-    validation_size = 10
-    batch_size = 1
+    train_size = 542  # 542
+    validation_size = 60
+    batch_size = 8
     train_steps = int(np.ceil(train_size / batch_size))
     validation_steps = int(np.ceil(validation_size / batch_size))
 
@@ -62,7 +62,7 @@ if TRAIN_MODE == 'CNN':
                   metrics=[tf.keras.metrics.mean_absolute_error, keeper.my_accuracy],
                   checkpoint=True, check_period=500, save_weights_only=False,
                   tensorboard=True,
-                  earlystop=True,
+                  earlystop=False,
 
                   epochs=60000,
                   initial_epoch=0,
