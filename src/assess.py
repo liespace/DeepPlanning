@@ -9,12 +9,8 @@ dir_food = dir_parent + '/food'
 name_food_gcld = '{}/food/gcld.npz'.format(dir_parent)
 name_food_gpld = '{}/food/gpld.npz'.format(dir_parent)
 
-x = np.random.normal(0, 1, 1)
-y = []
-y.append(x)
-y.append(x)
-y = np.array(y)
-print(y.shape)
+in2 = tf.keras.layers.Input(shape=(0,), dtype=tf.float32, name='in2')
+print(in2.shape)
 
 # with np.load(name_food_gcld) as data:
 #     feature = data['deltas']

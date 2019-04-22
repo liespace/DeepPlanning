@@ -64,14 +64,16 @@ class DatasetHolder:
 
         return dataset
 
-    def generator(self, use_for='train', batch_size=2):
+    def generator(self, use_for='train', batch_size=2, zdim=100):
         inputs = []
         outputs = []
         with np.load('{}/food/{}_{}.{}'.format(self.dir_parent, self.food_type, use_for, self.file_type)) as repo:
             for key in self.menu['in']:
-                inputs.append(repo[key])
+                if key in self.header.keys():
+                    inputs.append(repo[key])
             for key in self.menu['out']:
-                outputs.append(repo[key])
+                if key in self.header.keys():
+                    outputs.append(repo[key])
         indexes = list(range(0, inputs[0].shape[0]))
 
         while True:
@@ -87,17 +89,17 @@ class DatasetHolder:
                     elif key == 'en':
                         x = 0
                     elif key == 'noise':
-                        x = np.random.normal(0, 1, 100)
+                        x = np.random.normal(0, 1, zdim)
                     elif key == 'gridmap':
-                        x = outputs[i][j] / 255
+                        x = inputs[i][j] / 255
                     else:
-                        x = outputs[i][j]
+                        x = inputs[i][j]
                     value.append(x)
-                ins.append((key, np.array(value)))
+                ins.append(np.array(value))
             outs = []
             for i, key in enumerate(self.menu['out']):
                 value = []
-                for j in index[0:batch_size]:
+                for j in index:
                     if key == 'yes':
                         x = -1
                     elif key == 'no':
@@ -105,14 +107,14 @@ class DatasetHolder:
                     elif key == 'en':
                         x = 0
                     elif key == 'noise':
-                        x = np.random.normal(0, 1, 100)
+                        x = np.random.normal(0, 1, zdim)
                     elif key == 'gridmap':
                         x = outputs[i][j] / 255
                     else:
                         x = outputs[i][j]
                     value.append(x)
-                outs.append((key, np.array(value)))
-            yield (dict(ins), dict(outs))
+                outs.append(np.array(value))
+            yield tuple(ins), tuple(outs)
 
     def my_accuracy(self, y_true, y_pred, **kwargs):
         threshold = [0.5, 0.5, np.radians(3)]

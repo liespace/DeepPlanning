@@ -60,19 +60,30 @@ class Model:
         self.lr_step_drop = lr_step_drop
         self.checkpoint = checkpoint
         self.tensorboard = tensorboard
+        self.checkpoint = checkpoint
+        self.earlystop = earlystop
         self.callbacks = []
-        if tensorboard:
+
+        self.save_weights_only = save_weights_only
+
+        self.monitor = monitor
+        self.min_delta = min_delta
+        self.patience = patience
+        self.mode = mode
+        self.baseline = baseline
+        if self.tensorboard:
             self.callbacks.append(tf.keras.callbacks.TensorBoard(log_dir=self.dir_log, write_graph=False))
         if self.lr_step_drop:
             self.callbacks.append(tf.keras.callbacks.LearningRateScheduler(schedule=self.step_decay))
-        if checkpoint:
+        if self.checkpoint:
             self.callbacks.append(tf.keras.callbacks.ModelCheckpoint(filepath=self.dir_checkpoint, monitor='loss',
-                                                                     save_weights_only=save_weights_only,
+                                                                     save_weights_only=self.save_weights_only,
                                                                      period=self.check_period))
-        if earlystop:
-            self.callbacks.append(tf.keras.callbacks.EarlyStopping(monitor=monitor, min_delta=min_delta,
-                                                                   patience=patience, verbose=verbose, mode=mode,
-                                                                   baseline=baseline, restore_best_weights=False))
+        if self.earlystop:
+            self.callbacks.append(tf.keras.callbacks.EarlyStopping(monitor=self.monitor, min_delta=self.min_delta,
+                                                                   patience=self.patience, verbose=self.verbose,
+                                                                   mode=self.mode, baseline=self.baseline,
+                                                                   restore_best_weights=False))
 
     def compile(self):
         self.core = self.build_core(self.input_shape, self.output_shape, self.ipu, self.oru)
@@ -109,6 +120,7 @@ class GAN(Model):
                  dsteps=5,
                  zdim=100,
                  epochs=4,
+                 batch_size=2,
                  verbose=1,
                  optimizer=tf.keras.optimizers.RMSprop(lr=0.00005),
                  loss='logcosh',
@@ -118,32 +130,52 @@ class GAN(Model):
                  lr_drop_freq=1000.0,
                  lr_step_drop=False):
         super().__init__(name=name, input_shape=input_shape, output_shape=output_shape, ipu_weight=ipu_weight,
-                         check_period=check_period, checkpoint=checkpoint, tensorboard=tensorboard,
-                         optimizer=optimizer, loss=loss, metrics=metrics, epochs=epochs, verbose=verbose,
+                         check_period=check_period, checkpoint=checkpoint, tensorboard=tensorboard, verbose=verbose,
+                         optimizer=optimizer, loss=loss, metrics=metrics, epochs=epochs, batch_size=batch_size,
                          init_lr=init_lr, lr_drop=lr_drop, lr_drop_freq=lr_drop_freq, lr_step_drop=lr_step_drop)
         # Build the generator and critic
         self.dtrain_set = dtrain_set
         self.gtrain_set = gtrain_set
-        self.gcore = gcore
-        self.dcore = dcore
-        self.sample_interval = 4
+        self.gcore = gcore(input_shape, output_shape, zdim, self.ipu, self.oru)
+        self.dcore = dcore(input_shape, output_shape, self.ipu)
         self.zdim = zdim
 
         self.dir_dmodel = '{}/logs/{}/'.format(self.dir_parent, self.name) + '{}.h5'.format(self.name)
         self.dir_gmodel = '{}/logs/{}/'.format(self.dir_parent, self.name) + '{}.h5'.format(self.name)
 
-        self.img_rows = 28
-        self.img_cols = 28
-        self.channels = 1
-        self.img_shape = (self.img_rows, self.img_cols, self.channels)
-        self.latent_dim = 100
-
-        # Following parameter and optimizer set as recommended in paper
         self.dsteps = dsteps
         self.dmodel = None
         self.gmodel = None
         self.pack_discriminator()
         self.pack_generator()
+
+        timestamp = self.get_now_str()
+        self.dir_dlog = '{}/logs/{}/'.format(self.dir_parent, self.name) + timestamp + '/d/'
+        self.dir_glog = '{}/logs/{}/'.format(self.dir_parent, self.name) + timestamp + '/g/'
+        self.dcallbacks = []
+        self.gcallbacks = []
+        if self.tensorboard:
+            self.dcallbacks.append(tf.keras.callbacks.TensorBoard(log_dir=self.dir_dlog, write_graph=False))
+            self.gcallbacks.append(tf.keras.callbacks.TensorBoard(log_dir=self.dir_glog, write_graph=False))
+        if self.lr_step_drop:
+            self.dcallbacks.append(tf.keras.callbacks.LearningRateScheduler(schedule=self.step_decay))
+            self.gcallbacks.append(tf.keras.callbacks.LearningRateScheduler(schedule=self.step_decay))
+        if self.checkpoint:
+            self.dcallbacks.append(tf.keras.callbacks.ModelCheckpoint(filepath=self.dir_checkpoint, monitor='loss',
+                                                                      save_weights_only=self.save_weights_only,
+                                                                      period=self.check_period))
+            self.gcallbacks.append(tf.keras.callbacks.ModelCheckpoint(filepath=self.dir_checkpoint, monitor='loss',
+                                                                      save_weights_only=self.save_weights_only,
+                                                                      period=self.check_period))
+        if self.earlystop:
+            self.dcallbacks.append(tf.keras.callbacks.EarlyStopping(monitor=self.monitor, min_delta=self.min_delta,
+                                                                    patience=self.patience, verbose=self.verbose,
+                                                                    mode=self.mode, baseline=self.baseline,
+                                                                    restore_best_weights=False))
+            self.gcallbacks.append(tf.keras.callbacks.EarlyStopping(monitor=self.monitor, min_delta=self.min_delta,
+                                                                    patience=self.patience, verbose=self.verbose,
+                                                                    mode=self.mode, baseline=self.baseline,
+                                                                    restore_best_weights=False))
 
     def pack_discriminator(self):
         # Freeze generator's layers while training critic
@@ -160,10 +192,9 @@ class GAN(Model):
         no = self.dcore([gridmap, cdt, fake])
 
         # Construct weighted average between real and fake images
-        mid = tf.keras.layers.Lambda(
-            lambda i: tf.random.uniform((self.batch_size, 1, 1)) * (i[0] - i[1]) + i[1])([real, fake])
+        mid = tf.keras.layers.Lambda(self.random_weighted_average)([real, fake])
         # Determine validity of weighted sample
-        en = self.dcore(mid)  # validity_interpolated
+        en = self.dcore([gridmap, cdt, mid])  # validity_interpolated
 
         # Use Python partial to provide loss function with additional
         # 'averaged_samples' argument
@@ -174,6 +205,11 @@ class GAN(Model):
         self.dmodel.compile(loss=[self.wasserstein_loss, self.wasserstein_loss, partial_gp_loss],
                             optimizer=self.optimizer,
                             loss_weights=[1, 1, 10])
+        self.dmodel.summary()
+
+    def random_weighted_average(self, inputs):
+        alpha = tf.keras.backend.random_uniform((self.batch_size, 1, 1))
+        return (alpha * inputs[0]) + ((1 - alpha) * inputs[1])
 
     def pack_generator(self):
         # For the generator we freeze the critic's layers
@@ -189,9 +225,10 @@ class GAN(Model):
 
         self.gmodel = tf.keras.Model([gridmap, cdt, z_gen], judgement)
         self.gmodel.compile(loss=self.wasserstein_loss, optimizer=self.optimizer)
+        self.gmodel.summary()
 
     @staticmethod
-    def gradient_penalty_loss(y_pred, averaged_samples):
+    def gradient_penalty_loss(y_true, y_pred, averaged_samples):
         """
         Computes gradient penalty based on prediction and weighted real / fake samples
         """
@@ -217,21 +254,18 @@ class GAN(Model):
             # ---------------------
             #  Train Discriminator
             # ---------------------
-            d_loss = self.dmodel.fit_generator(self.train_set, epochs=1, initial_epoch=epoch,
+            d_loss = self.dmodel.fit_generator(self.dtrain_set, epochs=epoch + 1, initial_epoch=epoch,
                                                verbose=self.verbose,
                                                steps_per_epoch=self.dsteps,
-                                               callbacks=self.callbacks)
+                                               callbacks=self.dcallbacks)
 
             # ---------------------
             #  Train Generator
             # ---------------------
-            g_loss = self.gmodel.fit_generator(self.train_set, epochs=1, initial_epoch=epoch,
+            g_loss = self.gmodel.fit_generator(self.gtrain_set, epochs=epoch + 1, initial_epoch=epoch,
                                                verbose=self.verbose,
                                                steps_per_epoch=1,
-                                               callbacks=self.callbacks)
-
-            # Plot the progress
-            print("%d [D loss: %f] [G loss: %f]" % (epoch, d_loss[0], g_loss))
+                                               callbacks=self.gcallbacks)
 
         self.dmodel.save(self.dir_dmodel)
         self.gmodel.save(self.dir_gmodel)

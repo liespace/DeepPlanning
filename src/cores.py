@@ -1,48 +1,106 @@
 import tensorflow as tf
 import numpy as np
 
-"""
-D:
-> In[0]
-    |-Resnet50
-        |-Filter(:, :, 0:256)
-                |-Flatten
-                    |
-> In[1]             |
-    |-Dense(128)    |
-        |-----------|
-> In[2]             |
-    |-Dense(128)    |
-        |-----------|-Merge
-                        |-Dense(256)
-                            |-Dropout(0.5)
-                                |-Reshape
-                                    |-Out >>>>>>>>
-G:
-> In[0]
-    |-Resnet50
-        |-Filter(:, :, 0:256)
-                |-Flatten
-                    |
-> In[1]             |
-    |-Dense(128)    |
-        |-----------|
-> In[2]             |
-    |---------------|
-                    |-Merge
-                        |-Dense(256)
-                            |-Dropout(0.5)
-                                |-Reshape
-                                    |-Out  >>>>>>>
-"""
+
+def gcore(input_shape, output_shape, zdim, ipu, oru):
+    """
+    > In[0]
+        |-Resnet50
+            |-Filter(:, :, 0:256)
+                    |-Flatten
+                        |-BN
+                            |-Dense(256)
+                                |
+                                |
+    > In[1]                     |
+        |-Flatten               |
+            |-BN                |
+                |-Dense(128)    |
+                    |-----------|
+    > In[2]                     |
+        |-----------------------|
+                                |-Merge
+                                    |-Dense(256)
+                                        |-Dropout(0.5)
+                                            |-Reshape
+                                                |-Out  >>>>>>>
+    """
+    in0 = tf.keras.layers.Input(shape=input_shape, dtype=tf.float32, name='in0')
+    x0 = ipu(in0)
+    x0 = tf.keras.layers.Lambda(lambda y: y[:, :, :, 0:256])(x0)
+    x0 = tf.keras.layers.Flatten()(x0)
+    x0 = tf.keras.layers.BatchNormalization()(x0)
+    x0 = tf.keras.layers.Dense(256, activation='elu', kernel_initializer='he_normal', bias_initializer='he_normal')(x0)
+
+    in1 = tf.keras.layers.Input(shape=output_shape, dtype=tf.float32, name='in1')
+    x1 = tf.keras.layers.Flatten()(in1)
+    x1 = tf.keras.layers.BatchNormalization()(x1)
+    x1 = tf.keras.layers.Dense(128, activation='elu', kernel_initializer='he_normal', bias_initializer='he_normal')(x1)
+
+    in2 = tf.keras.layers.Input(shape=(zdim,), dtype=tf.float32, name='in2')
+
+    x = tf.keras.layers.concatenate([x0, x1, in2])
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.Dense(256, activation='elu', kernel_initializer='he_normal', bias_initializer='he_normal')(x)
+    x = tf.keras.layers.Dropout(0.5)(x)
+    x = tf.keras.layers.Dense(np.prod(output_shape), activation='linear')(x)
+    out = oru(x)
+
+    core = tf.keras.Model(inputs=[in0, in1, in2], outputs=out)
+    return core
 
 
-def gcore(input_shape, output_shape, ipu, oru):
-    return None
+def dcore(input_shape, output_shape, ipu):
+    """
+    > In[0]
+        |-Resnet50
+            |-Filter(:, :, 0:256)
+                    |-Flatten
+                        |-BN
+                            |-Dense(256)
+                                |
+                                |
+    > In[1]                     |
+        |-Flatten               |
+            |-BN                |
+                |-Dense(128)    |
+                    |-----------|
+    > In[2]                     |
+        |-Flatten               |
+            |-BN                |
+                |-Dense(128)    |
+                    |-----------|
+                                |-Merge
+                                    |-Dense(256)
+                                        |-Dropout(0.5)
+                                            |-Reshape
+                                                |-Out  >>>>>>>
+    """
+    in0 = tf.keras.layers.Input(shape=input_shape, dtype=tf.float32, name='in0')
+    x0 = ipu(in0)
+    x0 = tf.keras.layers.Lambda(lambda y: y[:, :, :, 0:256])(x0)
+    x0 = tf.keras.layers.Flatten()(x0)
+    x0 = tf.keras.layers.BatchNormalization()(x0)
+    x0 = tf.keras.layers.Dense(256, activation='elu', kernel_initializer='he_normal', bias_initializer='he_normal')(x0)
 
+    in1 = tf.keras.layers.Input(shape=output_shape, dtype=tf.float32, name='in1')
+    x1 = tf.keras.layers.Flatten()(in1)
+    x1 = tf.keras.layers.BatchNormalization()(x1)
+    x1 = tf.keras.layers.Dense(128, activation='elu', kernel_initializer='he_normal', bias_initializer='he_normal')(x1)
 
-def dcore(input_shape, output_shape, ipu, oru):
-    return None
+    in2 = tf.keras.layers.Input(shape=output_shape, dtype=tf.float32, name='in2')
+    x2 = tf.keras.layers.Flatten()(in2)
+    x2 = tf.keras.layers.BatchNormalization()(x2)
+    x2 = tf.keras.layers.Dense(128, activation='elu', kernel_initializer='he_normal', bias_initializer='he_normal')(x2)
+
+    x = tf.keras.layers.concatenate([x0, x1, x2])
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.Dense(256, activation='elu', kernel_initializer='he_normal', bias_initializer='he_normal')(x)
+    x = tf.keras.layers.Dropout(0.5)(x)
+    x = tf.keras.layers.Dense(1, activation='linear')(x)
+
+    core = tf.keras.Model(inputs=[in0, in1, in2], outputs=x)
+    return core
 
 
 def beta(input_shape, output_shape, ipu, oru):

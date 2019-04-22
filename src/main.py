@@ -7,24 +7,26 @@ import numpy as np
 TRAIN_MODE = 'CNN'
 
 if TRAIN_MODE == 'GAN':
+    epochs = 100
     batch_size = 2
+    zdim = 0
     dkeeper = DatasetHolder(food_type='gpld', file_type='npz',
                             menu={'in': ['gridmap', 'condition', 'label', 'noise'], 'out': ['yes', 'no', 'en']})
     gkeeper = DatasetHolder(food_type='gpld', file_type='npz',
                             menu={'in': ['gridmap', 'condition', 'noise'], 'out': ['yes']})
-    dtrain_set = dkeeper.generator(use_for='train', batch_size=batch_size)
-    gtrain_set = gkeeper.generator(use_for='train', batch_size=batch_size)
+    dtrain_set = dkeeper.generator(use_for='train', batch_size=batch_size, zdim=zdim)
+    gtrain_set = gkeeper.generator(use_for='train', batch_size=batch_size, zdim=zdim)
 
     ipu_weight = gkeeper.dir_parent + '/resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5'
     model = GAN(name='gan',
                 gcore=cores.gcore, dcore=cores.dcore,
                 gtrain_set=gtrain_set, dtrain_set=dtrain_set,
                 input_shape=gkeeper.gridmap_shape, output_shape=gkeeper.label_shape, ipu_weight=ipu_weight,
-                check_period=100, checkpoint=True, tensorboard=True,
+                check_period=2, checkpoint=False, tensorboard=True,
 
                 dsteps=5,
-                zdim=100,
-                epochs=4,
+                zdim=zdim,
+                epochs=epochs,
                 verbose=1,
 
                 optimizer=tf.keras.optimizers.RMSprop(lr=0.00005),
