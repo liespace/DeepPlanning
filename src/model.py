@@ -140,8 +140,8 @@ class GAN(Model):
         self.dcore = dcore(input_shape, output_shape, self.ipu)
         self.zdim = zdim
 
-        self.dir_dmodel = '{}/logs/{}/'.format(self.dir_parent, self.name) + '{}.h5'.format(self.name)
-        self.dir_gmodel = '{}/logs/{}/'.format(self.dir_parent, self.name) + '{}.h5'.format(self.name)
+        self.dir_dmodel = '{}/logs/{}/'.format(self.dir_parent, self.name) + '{}.h5'.format('dmodel')
+        self.dir_gmodel = '{}/logs/{}/'.format(self.dir_parent, self.name) + '{}.h5'.format('gmodel')
 
         self.dsteps = dsteps
         self.dmodel = None
@@ -266,6 +266,6 @@ class GAN(Model):
                                                verbose=self.verbose,
                                                steps_per_epoch=1,
                                                callbacks=self.gcallbacks)
-
-        self.dmodel.save(self.dir_dmodel)
-        self.gmodel.save(self.dir_gmodel)
+            if epoch % self.check_period == 0:
+                self.dmodel.save(self.dir_dmodel)
+                self.gmodel.save(self.dir_gmodel)
