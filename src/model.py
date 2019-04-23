@@ -82,8 +82,7 @@ class Model:
         if self.earlystop:
             self.callbacks.append(tf.keras.callbacks.EarlyStopping(monitor=self.monitor, min_delta=self.min_delta,
                                                                    patience=self.patience, verbose=self.verbose,
-                                                                   mode=self.mode, baseline=self.baseline,
-                                                                   restore_best_weights=False))
+                                                                   mode=self.mode, baseline=self.baseline))
 
     def compile(self):
         self.core = self.build_core(self.input_shape, self.output_shape, self.ipu, self.oru)
@@ -170,12 +169,10 @@ class GAN(Model):
         if self.earlystop:
             self.dcallbacks.append(tf.keras.callbacks.EarlyStopping(monitor=self.monitor, min_delta=self.min_delta,
                                                                     patience=self.patience, verbose=self.verbose,
-                                                                    mode=self.mode, baseline=self.baseline,
-                                                                    restore_best_weights=False))
+                                                                    mode=self.mode, baseline=self.baseline))
             self.gcallbacks.append(tf.keras.callbacks.EarlyStopping(monitor=self.monitor, min_delta=self.min_delta,
                                                                     patience=self.patience, verbose=self.verbose,
-                                                                    mode=self.mode, baseline=self.baseline,
-                                                                    restore_best_weights=False))
+                                                                    mode=self.mode, baseline=self.baseline))
 
     def pack_discriminator(self):
         # Freeze generator's layers while training critic

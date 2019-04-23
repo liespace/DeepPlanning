@@ -114,7 +114,7 @@ class DatasetHolder:
                         x = outputs[i][j]
                     value.append(x)
                 outs.append(np.array(value))
-            yield tuple(ins), tuple(outs)
+            yield ins, outs
 
     def my_accuracy(self, y_true, y_pred, **kwargs):
         threshold = [0.5, 0.5, np.radians(3)]
