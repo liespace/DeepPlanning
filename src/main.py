@@ -8,7 +8,7 @@ TRAIN_MODE = 'GAN'
 
 if TRAIN_MODE == 'GAN':
     epochs = 60000
-    batch_size = 4
+    batch_size = 3
     zdim = 0
     dkeeper = DatasetHolder(food_type='gpld', file_type='npz',
                             menu={'in': ['gridmap', 'condition', 'label', 'noise'], 'out': ['yes', 'no', 'en']})
