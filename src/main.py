@@ -4,11 +4,11 @@ import tensorflow as tf
 import cores
 import numpy as np
 
-TRAIN_MODE = 'CNN'
+TRAIN_MODE = 'GAN'
 
 if TRAIN_MODE == 'GAN':
-    epochs = 100
-    batch_size = 2
+    epochs = 60000
+    batch_size = 4
     zdim = 0
     dkeeper = DatasetHolder(food_type='gpld', file_type='npz',
                             menu={'in': ['gridmap', 'condition', 'label', 'noise'], 'out': ['yes', 'no', 'en']})
@@ -22,14 +22,15 @@ if TRAIN_MODE == 'GAN':
                 gcore=cores.gcore, dcore=cores.dcore,
                 gtrain_set=gtrain_set, dtrain_set=dtrain_set,
                 input_shape=gkeeper.gridmap_shape, output_shape=gkeeper.label_shape, ipu_weight=ipu_weight,
-                check_period=2, checkpoint=False, tensorboard=True,
+                check_period=500, checkpoint=False, tensorboard=True,
 
                 dsteps=5,
                 zdim=zdim,
                 epochs=epochs,
+                batch_size=batch_size,
                 verbose=1,
 
-                optimizer=tf.keras.optimizers.RMSprop(lr=0.00005),
+                optimizer=tf.keras.optimizers.RMSprop(),
                 loss='logcosh',
                 metrics=None,
 
