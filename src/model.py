@@ -3,6 +3,7 @@ import numpy as np
 import os
 from datetime import datetime
 from functools import partial
+from callback import Callback
 
 
 class Model:
@@ -83,6 +84,7 @@ class Model:
             self.callbacks.append(tf.keras.callbacks.EarlyStopping(monitor=self.monitor, min_delta=self.min_delta,
                                                                    patience=self.patience, verbose=self.verbose,
                                                                    mode=self.mode, baseline=self.baseline))
+        self.callbacks.append(Callback())
 
     def compile(self):
         self.core = self.build_core(self.input_shape, self.output_shape, self.ipu, self.oru)

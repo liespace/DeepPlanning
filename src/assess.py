@@ -3,14 +3,16 @@ import numpy as np
 import tensorflow as tf
 import os
 import random
+from monitor import DataMonitor
 
 dir_parent = os.path.dirname(os.getcwd())
 dir_food = dir_parent + '/food'
 name_food_gcld = '{}/food/gcld.npz'.format(dir_parent)
 name_food_gpld = '{}/food/gpld.npz'.format(dir_parent)
 
-in2 = tf.keras.layers.Input(shape=(0,), dtype=tf.float32, name='in2')
-print(in2.shape)
+monitor = DataMonitor(dir_parent=dir_parent + '/dataset', menu={'gridmap', 'condition', 'label'})
+monitor.show(mode='one', which=[1, 2, 3, 10], layout=221, name=0)
+monitor.show(mode='one', which=[1, 2, 6, 10], layout=221, name=1)
 
 # with np.load(name_food_gcld) as data:
 #     feature = data['deltas']
