@@ -4,6 +4,7 @@ from numpy.matlib import repmat
 import numpy as np
 import csv
 import os
+from PIL import Image
 
 
 class DataMonitor:
@@ -11,9 +12,13 @@ class DataMonitor:
         self.menu = menu
         self.dir_parent = dir_parent
         self.fig = plt.figure()
-        self.xlim = (-10, 50)
-        self.ylim = (-5, 10)
+        self.xlim = (-50, 50)
+        self.ylim = (-50, 50)
         self.fontsize = 5
+
+    def write_prediction(self, number=None, data=None):
+        filepath = '{}/{}prediction.csv'.format(self.dir_parent, number)
+        np.savetxt(filepath, data, delimiter=",")
 
     @staticmethod
     def read_csv(file_name, delimiter=','):
@@ -34,6 +39,21 @@ class DataMonitor:
             if item > benchmark:
                 my_list.append(index)
         return my_list
+
+    def read_input(self, number):
+        name_gridmap = '{}/{}gridmap.png'.format(self.dir_parent, number)
+        name_cdt = '{}/{}condition.csv'.format(self.dir_parent, number)
+
+        gridmaps = []
+        cdts = []
+        gridmap = np.array(Image.open(name_gridmap).convert(mode='RGB'), dtype=np.float32)
+        cdt = np.asarray(self.read_csv(name_cdt, delimiter=' '), dtype=np.float32)[1:, :]
+        if cdt.shape[0] < 4:
+            while cdt.shape[0] < 4:
+                cdt = np.append(cdt, [cdt[-1, :]], 0)
+        gridmaps.append(gridmap)
+        cdts.append(cdt)
+        return np.array(gridmaps), np.array(cdts)
 
     def show_gridmap(self, number):
         filepath = '{}/{}gridmap.png'.format(self.dir_parent, number)
@@ -69,7 +89,7 @@ class DataMonitor:
         theta = -conditions[0][2]
         rotation_matrix = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
 
-        rect = plt.Rectangle((-5 / 2, -3 / 2), 5, 3, fill=False, edgecolor='red', linewidth=0.2)
+        rect = plt.Rectangle((-5 / 2, -3 / 2), 5, 3, fill=False, edgecolor='green', linewidth=0.2)
         plt.gca().add_patch(rect)
 
         path = conditions[1:, 0:2]
@@ -116,15 +136,32 @@ class DataMonitor:
         path = np.dot(rotation_matrix, path.transpose())
 
         for i in range(path.shape[1]):
-            color = 'r'
+            color = 'g'
             if i == 0:
-                color = 'g'
+                color = 'k'
+            circle = plt.Circle((path[0, i], path[1, i]), radius=1, fill=False, color=color, linewidth=0.2)
+            plt.gca().add_patch(circle)
+            plt.gca().arrow(path[0, i], path[1, i], np.cos(headings[i] + theta), np.sin(headings[i] + theta),
+                            head_width=0.5, head_length=1.5, linewidth=0, color='g')
+
+    def show_prediction(self, number=0):
+        filepath = '{}/{}prediction.csv'.format(self.dir_parent, number)
+        origin, rotation_matrix, theta = self.read_transform(number)
+        prediction = np.asarray(self.read_csv(filepath))
+        path = prediction[:, 0:2]
+        headings = prediction[:, 2]
+        origins = repmat(np.r_[origin], path.shape[0], 1)
+        path -= origins
+        path = np.dot(rotation_matrix, path.transpose())
+
+        for i in range(path.shape[1]):
+            color = 'r'
             circle = plt.Circle((path[0, i], path[1, i]), radius=1, fill=False, color=color, linewidth=0.2)
             plt.gca().add_patch(circle)
             plt.gca().arrow(path[0, i], path[1, i], np.cos(headings[i] + theta), np.sin(headings[i] + theta),
                             head_width=0.5, head_length=1.5, linewidth=0, color='r')
 
-    def show(self, mode=None, segment=None, which=None, layout=None, name=None):
+    def show(self, mode=None, segment=None, which=None, layout=None, name=None, gui=False):
         plt.clf()
         if mode == 'range':
             plt.gca().set_aspect(1)
@@ -143,8 +180,7 @@ class DataMonitor:
                 plt.clf()
         if mode == 'list':
             plt.gca().set_aspect(1)
-            plt.xlim(self.xlim[0], self.xlim[1])
-            plt.ylim(self.ylim[0], self.ylim[1])
+            plt.axis([self.xlim[0], self.xlim[1], self.ylim[0], self.ylim[1]])
             for item in which:
                 if 'gridmap' in self.menu:
                     self.show_gridmap(item)
@@ -159,12 +195,12 @@ class DataMonitor:
                 plt.clf()
         if mode == 'one':
             for i, item in enumerate(which):
-                plt.subplot(layout+i)
+                plt.subplot(layout + i)
                 plt.xticks(fontsize=self.fontsize)
                 plt.yticks(fontsize=self.fontsize)
                 plt.gca().set_aspect(1)
                 plt.axis([self.xlim[0], self.xlim[1], self.ylim[0], self.ylim[1]])
-                plt.subplots_adjust(left=0.1, bottom=0.3, top=0.7, right=0.9)
+                plt.subplots_adjust(left=0.1, bottom=0.1, top=0.9, right=0.9)
                 if 'gridmap' in self.menu:
                     self.show_gridmap(item)
                 if 'condition' in self.menu:
@@ -173,5 +209,8 @@ class DataMonitor:
                     self.show_sproducts(item)
                 if 'label' in self.menu:
                     self.show_label(item)
+                if 'prediction' in self.menu:
+                    self.show_prediction(item)
             plt.savefig(self.dir_parent + str(name) + '.svg')
-            plt.show()
+            if gui:
+                plt.show()

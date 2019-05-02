@@ -3,14 +3,14 @@ import numpy as np
 import os
 from datetime import datetime
 from functools import partial
-from callback import Callback
+from callback import PredictionCheckPoint
 
 
 class Model:
     def __init__(self, name='main', build_core=None,
                  train_set=None, validation_set=None,
                  input_shape=None, output_shape=None, ipu_weight=None,
-                 checkpoint=True, check_period=100, save_weights_only=True, tensorboard=True,
+                 checkpoint=True, check_period=100, save_weights_only=True, tensorboard=True, prediction_check=False,
                  earlystop=False, monitor='loss', min_delta=0.001, patience=100, mode='auto', baseline=None,
                  optimizer=tf.keras.optimizers.Adam(),
                  loss='logcosh',
@@ -55,7 +55,7 @@ class Model:
 
         self.dir_parent = os.path.dirname(os.getcwd())
         self.dir_log = '{}/logs/{}/'.format(self.dir_parent, self.name) + self.get_now_str()
-        self.dir_checkpoint = '{}/logs/{}/'.format(self.dir_parent, self.name) + 'checkpoint.h5'
+        self.dir_checkpoint = '{}/logs/{}/'.format(self.dir_parent, self.name) + 'checkpoint-{epoch}.h5'
         self.dir_model = '{}/logs/{}/'.format(self.dir_parent, self.name) + '{}.h5'.format(self.name)
         self.check_period = check_period
         self.lr_step_drop = lr_step_drop
@@ -63,6 +63,7 @@ class Model:
         self.tensorboard = tensorboard
         self.checkpoint = checkpoint
         self.earlystop = earlystop
+        self.prediction_check = prediction_check
         self.callbacks = []
 
         self.save_weights_only = save_weights_only
@@ -84,7 +85,8 @@ class Model:
             self.callbacks.append(tf.keras.callbacks.EarlyStopping(monitor=self.monitor, min_delta=self.min_delta,
                                                                    patience=self.patience, verbose=self.verbose,
                                                                    mode=self.mode, baseline=self.baseline))
-        self.callbacks.append(Callback())
+        if self.prediction_check:
+            self.callbacks.append(PredictionCheckPoint(dir_parent=self.dir_parent))
 
     def compile(self):
         self.core = self.build_core(self.input_shape, self.output_shape, self.ipu, self.oru)

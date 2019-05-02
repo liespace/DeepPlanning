@@ -9,9 +9,10 @@ TRAIN_MODE = 'CNN'
 if TRAIN_MODE == 'CNN':
     train_size = 542  # 542
     validation_size = 60  # 60
-    batch_size = 1  # 8
-    train_steps = 5  # int(np.ceil(train_size / batch_size))
-    validation_steps = 5  # int(np.ceil(validation_size / batch_size))
+    batch_size = 8  # 8
+    batch_size_vd = 1
+    train_steps = int(np.ceil(train_size / batch_size))
+    validation_steps = int(np.ceil(validation_size / batch_size_vd))
 
     keeper = DatasetHolder(food_type='gpld', menu={'in': ['gridmap', 'condition'], 'out': ['delta']})  # ['condition']
     train_set = keeper.create_dataset(use_for='train', shuffle_buffer=550, batch_size=batch_size)
@@ -26,9 +27,10 @@ if TRAIN_MODE == 'CNN':
                   optimizer=tf.keras.optimizers.Adam(),
                   loss='logcosh',
                   metrics=[tf.keras.metrics.mean_absolute_error, keeper.my_accuracy],
-                  checkpoint=True, check_period=500, save_weights_only=False,
+                  checkpoint=True, check_period=1, save_weights_only=False,
                   tensorboard=True,
                   earlystop=False,
+                  prediction_check=False,
 
                   epochs=60000,
                   initial_epoch=0,
@@ -44,10 +46,11 @@ if TRAIN_MODE == 'CNN':
     model.compile()
     model.train()
 
-    # model.core = tf.keras.models.load_model(model.dir_model, custom_objects={'my_accuracy': keeper.my_accuracy})
+    # checkpoint = '{}/logs/{}/'.format(model.dir_parent, model.name) + 'checkpoint-{20}.h5'
+    # model.core = tf.keras.models.load_model(checkpoint, custom_objects={'my_accuracy': keeper.my_accuracy})
     # model.core.summary()
     # model.initial_epoch = 20
-    # model.epochs = 30
+    # model.epochs = 60000
     # model.train()
 
 
