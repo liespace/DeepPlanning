@@ -19,6 +19,7 @@ class DataMonitor:
     def write_prediction(self, number=None, data=None):
         filepath = '{}/{}prediction.csv'.format(self.dir_parent, number)
         np.savetxt(filepath, data, delimiter=",")
+        print('wrote ' + filepath)
 
     @staticmethod
     def read_csv(file_name, delimiter=','):
@@ -47,13 +48,30 @@ class DataMonitor:
         gridmaps = []
         cdts = []
         gridmap = np.array(Image.open(name_gridmap).convert(mode='RGB'), dtype=np.float32)
-        cdt = np.asarray(self.read_csv(name_cdt, delimiter=' '), dtype=np.float32)[1:, :]
-        if cdt.shape[0] < 4:
-            while cdt.shape[0] < 4:
+        gridmap /= 255
+        cdt = np.asarray(self.read_csv(name_cdt, delimiter=' '), dtype=np.float32)
+        if cdt.shape[0] < 5:
+            while cdt.shape[0] < 5:
                 cdt = np.append(cdt, [cdt[-1, :]], 0)
+        cdt = self.gcs_to_lcs(cdt)[1:, :]
         gridmaps.append(gridmap)
         cdts.append(cdt)
         return np.array(gridmaps), np.array(cdts)
+
+    def gcs_to_lcs(self, condition):
+        state = condition[0, 0:2]
+        angle = condition[0, 2]
+        rotate = np.array([[np.cos(-angle), -np.sin(-angle)], [np.sin(-angle), np.cos(-angle)]])
+
+        condition_location = condition[:, 0:2]
+        condition_yaw = condition[:, 2]
+
+        condition_location = np.dot((condition_location - state), rotate.transpose())
+        condition_yaw = (condition_yaw.transpose() - angle) * 10
+
+        lcs_condition = np.c_[condition_location, condition_yaw]
+
+        return lcs_condition
 
     def show_gridmap(self, number):
         filepath = '{}/{}gridmap.png'.format(self.dir_parent, number)
@@ -146,19 +164,15 @@ class DataMonitor:
 
     def show_prediction(self, number=0):
         filepath = '{}/{}prediction.csv'.format(self.dir_parent, number)
-        origin, rotation_matrix, theta = self.read_transform(number)
         prediction = np.asarray(self.read_csv(filepath))
         path = prediction[:, 0:2]
         headings = prediction[:, 2]
-        origins = repmat(np.r_[origin], path.shape[0], 1)
-        path -= origins
-        path = np.dot(rotation_matrix, path.transpose())
 
-        for i in range(path.shape[1]):
+        for i in range(path.shape[0]):
             color = 'r'
-            circle = plt.Circle((path[0, i], path[1, i]), radius=1, fill=False, color=color, linewidth=0.2)
+            circle = plt.Circle((path[i, 0], path[i, 1]), radius=1, fill=False, color=color, linewidth=0.2)
             plt.gca().add_patch(circle)
-            plt.gca().arrow(path[0, i], path[1, i], np.cos(headings[i] + theta), np.sin(headings[i] + theta),
+            plt.gca().arrow(path[i, 0], path[i, 1], np.cos(headings[i]/10), np.sin(headings[i]/10),
                             head_width=0.5, head_length=1.5, linewidth=0, color='r')
 
     def show(self, mode=None, segment=None, which=None, layout=None, name=None, gui=False):
