@@ -2,9 +2,9 @@ import tensorflow as tf
 from monitor import DataMonitor
 
 
-class PredictionCheckPoint(tf.keras.callbacks.Callback):
+class PredictionCheckPoint(object, tf.keras.callbacks.Callback):
     def __init__(self, dir_parent=None):
-        super().__init__()
+        super(PredictionCheckPoint, self).__init__()
         self.dir_parent = dir_parent
         self.monitor = DataMonitor(dir_parent=self.dir_parent + '/dataset',
                                    menu={'gridmap', 'condition', 'label', 'prediction'})
