@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/ml-rrt.iml" filepath="$PROJECT_DIR$/.idea/ml-rrt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/deepway.iml" filepath="$PROJECT_DIR$/.idea/deepway.iml" />
     </modules>
   </component>
 </project>

@@ -1,4 +1,5 @@
 #!/bin/bash
+# export CUDA_VISIBLE_DEVICES=1
 
 docker cp ~/ml-rrt/src/. tensorflow_0112:/home/trouble/ml-rrt/src
 
