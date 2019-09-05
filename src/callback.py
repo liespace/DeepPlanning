@@ -1,20 +1,33 @@
 import tensorflow as tf
-from monitor import DataMonitor
 
 
-class PredictionCheckPoint(object, tf.keras.callbacks.Callback):
-    def __init__(self, dir_parent=None):
-        super(PredictionCheckPoint, self).__init__()
-        self.dir_parent = dir_parent
-        self.monitor = DataMonitor(dir_parent=self.dir_parent + '/dataset',
-                                   menu={'gridmap', 'condition', 'label', 'prediction'})
+class WarmUpLRSchedule(tf.keras.callbacks.Callback):
+    def __init__(self, warm_up, schedule):
+        super(WarmUpLRSchedule, self).__init__()
+        self.epoch = 0
+        self.warm_up = warm_up
+        self.schedule = schedule
 
-    def on_epoch_end(self, epoch, logs=None):
-        print('hello {}'.format(epoch))
-        these = [0, 50, 140, 220, 300, 390, 500, 610]
-        for this in these:
-            number = this
-            data = self.monitor.read_input(number)
-            prediction = self.model.predict(data, batch_size=1, steps=1)
-            self.monitor.write_prediction(number=number, data=prediction[0, :, :] + data[1][0, :, :])
-        self.monitor.show(mode='one', which=these, layout=441, name=epoch, gui=False)
+    def on_batch_begin(self, batch, logs=None):
+        if not hasattr(self.model.optimizer, 'lr'):
+            raise ValueError('Optimizer must have a "lr" attribute.')
+        if self.epoch < 1:
+            # Get the current learning rate from model's optimizer.
+            lr = float(tf.keras.backend.get_value(self.model.optimizer.lr))
+            # Call schedule function to get the scheduled learning rate.
+            lrd = self.warm_up(batch)
+            # Set the value back to the optimizer before this epoch starts
+            tf.keras.backend.set_value(self.model.optimizer.lr, lrd)
+            print('\nBatch %05d: LR is %6.4f from %6.4f.' % (batch, lrd, lr))
+
+    def on_epoch_begin(self, epoch, logs=None):
+        self.epoch = epoch
+        if not hasattr(self.model.optimizer, 'lr'):
+            raise ValueError('Optimizer must have a "lr" attribute.')
+        # Get the current learning rate from model's optimizer.
+        lr = float(tf.keras.backend.get_value(self.model.optimizer.lr))
+        # Call schedule function to get the scheduled learning rate.
+        lrd = self.schedule(epoch)
+        # Set the value back to the optimizer before this epoch starts
+        tf.keras.backend.set_value(self.model.optimizer.lr, lrd)
+        print('\nEpoch %05d: LR is %6.4f from %6.4f.' % (epoch, lrd, lr))

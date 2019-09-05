@@ -1,63 +1,31 @@
-import toolbox
+#!/usr/bin/python
 import numpy as np
-import tensorflow as tf
+import cv2
 import os
-import random
-from monitor import DataMonitor
 
-dir_parent = os.path.dirname(os.getcwd())
-dir_food = dir_parent + '/food'
-name_food_gcld = '{}/food/gcld.npz'.format(dir_parent)
-name_food_gpld = '{}/food/gpld.npz'.format(dir_parent)
+print (os.getcwd() + os.sep + 'dataset')
+root = './dataset'
+f = open(root + '/train' + '.csv')
+for line in f:
+    # create numpy arrays of input data
+    # and labels, from each line in the file
+    parts = line.rstrip().split(',')
+    print (parts[0])
+    x_path, y_path = str(parts[0]), str(parts[1])
+    print (x_path, y_path)
+    x = cv2.imread(root + x_path)
+    y = np.loadtxt(root + y_path, delimiter=',')
+    y[:, 2] = np.arctan2(np.sin(y[:, 2]), np.cos(y[:, 2]))
+    print (y)
+    print (x.shape)
+    break
+f.close()
 
-monitor = DataMonitor(dir_parent=dir_parent + '/dataset', menu={'gridmap', 'condition', 'label'})
-monitor.show(mode='one', which=[1, 2, 3, 10], layout=221, name=0)
-monitor.show(mode='one', which=[1, 2, 6, 10], layout=221, name=1)
-
-# with np.load(name_food_gcld) as data:
-#     feature = data['deltas']
-#     a = feature[:, :, 2]
-#     b = np.max(a, axis=-1)
-#     c = np.max(b, axis=-1)
-#     print(c)
-#     print(np.where(a > 5))
-
-# def g():
-#     inputs = []
-#     outputs = []
-#     batch_size = 1
-#     menu = {'in': ['gridmap', 'condition'], 'out': ['label']}
-#     with np.load('{}/food/{}_{}.{}'.format(dir_parent, 'gpld', 'train', 'npz')) as repo:
-#         for key in menu['in']:
-#             inputs.append(repo[key])
-#         for key in menu['out']:
-#             outputs.append(repo[key])
-#     indexes = list(range(0, inputs[0].shape[0]))
-#     while True:
-#         index = random.sample(indexes, k=batch_size)
-#         print(index)
-#         ins = []
-#         for i, key in enumerate(menu['in']):
-#             value = []
-#             for j in index:
-#                 x = inputs[i][j]
-#                 if key == 'gridmap':
-#                     x /= 255
-#                 value.append(x)
-#             ins.append((key, np.array(value)))
-#         outs = []
-#         for i, key in enumerate(menu['out']):
-#             value = []
-#             for j in index[0:batch_size]:
-#                 x = outputs[i][j]
-#                 if key == 'gridmap':
-#                     x /= 255
-#                 value.append(x)
-#             outs.append((key, np.array(value)))
-#         yield (dict(ins), dict(outs))
-#
-#
-# f = g()
-# while True:
-#     print(next(f))
-#     input('hello')
+# self.ipu = tf.keras.applications.ResNet50(input_shape=self.input_shape,
+#                                                   weights=None,
+#                                                   include_top=False)
+# self.ipu.load_weights(self.ipu_weight)
+# self.oru = tf.keras.Sequential()
+# self.oru.add(tf.keras.layers.Reshape(target_shape=self.output_shape,
+#                                      input_shape=(
+#                                      np.prod(self.output_shape),)))

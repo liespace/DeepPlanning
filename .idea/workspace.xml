@@ -2,23 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9147d471-6244-4115-8739-9234121dd0c5" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/dictionaries/trouble.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/trouble.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/trouble.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run.sh" beforeDir="false" afterPath="$PROJECT_DIR$/run.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/assess.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset" beforeDir="false" afterPath="$PROJECT_DIR$/dataset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/data.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/tools/cook.py" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/tools/cook.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/callback.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/callback.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cluster.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cores.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/cores.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gan.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/inception.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/deepway.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/deepway.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/deepway.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/monitor.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/npz_cooker.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/show_products.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tfrecords_cooker.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/toolbox.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/wgan_gp.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/test.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -34,6 +27,7 @@
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/dataset/tools" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -43,6 +37,11 @@
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="preferences.sourceCode" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/dataset/tools" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -67,7 +66,10 @@
       <option name="presentableId" value="Default" />
       <updated>1567578006052</updated>
       <workItem from="1567578013419" duration="778000" />
-      <workItem from="1567579103714" duration="3910000" />
+      <workItem from="1567579103714" duration="12250000" />
+      <workItem from="1567678481763" duration="1490000" />
+      <workItem from="1567680668185" duration="30000" />
+      <workItem from="1567680966205" duration="21425000" />
     </task>
     <servers />
   </component>

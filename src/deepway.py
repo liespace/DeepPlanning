@@ -1,5 +1,5 @@
-from dataset import DatasetHolder
-from model import Model, GAN
+from dataset import Pipeline
+from model import Model
 import tensorflow as tf
 import cores
 import numpy as np
@@ -11,15 +11,13 @@ batch_size_vd = 1
 train_steps = int(np.ceil(train_size / batch_size))
 validation_steps = int(np.ceil(validation_size / batch_size_vd))
 
-keeper = DatasetHolder(food_type='gpld', menu={'in': ['gridmap', 'condition'], 'out': ['delta']})  # ['condition']
-train_set = keeper.create_dataset(use_for='train', shuffle_buffer=550, batch_size=batch_size)
-validation_set = keeper.create_dataset(use_for='validation', shuffle_buffer=60, batch_size=batch_size)
+pipeline = Pipeline()
 
-ipu_weight = keeper.dir_parent + '/resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5'
+fen_ws = pipeline.root + '/resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5'
 model = Model(build_core=cores.beta, name='beta',
-              train_set=train_set, validation_set=validation_set,
+              train_set=train_set, valid_set=validation_set,
               input_shape=keeper.gridmap_shape, output_shape=keeper.label_shape,
-              ipu_weight=ipu_weight, verbose=1,
+              backbone_ws=fen_ws, verbose=1,
 
               optimizer=tf.keras.optimizers.Adam(),
               loss='logcosh',

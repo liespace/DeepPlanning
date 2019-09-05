@@ -1,0 +1,53 @@
+{
+  "Model": {
+    "name": "alpha",
+    "epoch": 130,
+    "ini_epoch": 0,
+    "verbose": 1,
+    "ts_step": 1,
+    "vs_step": 1,
+    "batch": 1,
+    "i_shape": [600, 600, 3],
+    "o_shape": [25, 25, 6]
+  },
+
+  "Loss": {
+    "type": "self",
+    "lam0": 0.1
+  },
+
+  "Optimizer": {
+    "type": "adam",
+    "lr": 0.001,
+    "beta_1": 0.9,
+    "beta_2": 0.999
+  },
+
+  "TensorBoard": {
+    "enable": true,
+    "write_graph": false
+  },
+
+  "LRSchedule": {
+    "enable": true,
+    "wp_step": 400,
+    "wp_lr": 0.0005,
+    "type": "cosine"
+  },
+
+  "CheckPoint": {
+    "enable": true,
+    "monitor": "loss",
+    "only_weights": true,
+    "period": 100
+  },
+
+  "EarlyStop": {
+    "enable": false,
+    "monitor": "loss",
+    "patient": 100,
+    "min_delta": 0.001,
+    "verbose": 1,
+    "mode": "auto"
+  }
+}

@@ -2,6 +2,8 @@
   <dictionary name="trouble">
     <words>
       <w>deepway</w>
+      <w>trainset</w>
+      <w>validset</w>
     </words>
   </dictionary>
 </component>
