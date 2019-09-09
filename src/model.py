@@ -25,7 +25,7 @@ class Model:
                 beta_2=self.config['Optimizer']['beta_2'])
 
     def loss(self, y_true, y_pred):
-        return 10
+        return tf.keras.backend.mean(y_pred)
 
     def startup(self):
         self.set_config()

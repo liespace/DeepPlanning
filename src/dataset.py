@@ -19,6 +19,7 @@ class Pipeline(object):
                 parts = line.rstrip().split(',')
                 x_path, y_path = parts[0], parts[1]
                 x = cv2.imread(self.root + x_path)
+                x = cv2.resize(x, (480, 480))
                 y = np.loadtxt(self.root + y_path, delimiter=',')
                 y[:, 2] = np.arctan2(np.sin(y[:, 2]), np.cos(y[:, 2]))
                 yield ({'input': x}, {'output': y})
