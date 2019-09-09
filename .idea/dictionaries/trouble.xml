@@ -1,9 +1,12 @@
 <component name="ProjectDictionaryState">
   <dictionary name="trouble">
     <words>
+      <w>conv</w>
+      <w>darknet</w>
       <w>deepway</w>
       <w>trainset</w>
       <w>validset</w>
+      <w>yolo</w>
     </words>
   </dictionary>
 </component>

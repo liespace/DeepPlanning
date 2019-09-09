@@ -24,9 +24,8 @@ class Model:
                 beta_1=self.config['Optimizer']['beta_1'],
                 beta_2=self.config['Optimizer']['beta_2'])
 
-    @property
-    def loss(self):
-        return self
+    def loss(self, y_true, y_pred):
+        return 10
 
     def startup(self):
         self.set_config()
