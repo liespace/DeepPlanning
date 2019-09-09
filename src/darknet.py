@@ -86,25 +86,40 @@ def DarkNet53(x):
     return x
 
 
-def FrontEnd(x, num_filters, out_filters):
+def FrontEnd(x, filters):
     """6 Conv2D_BN_Leaky layers followed by a Conv2D_linear layer"""
-    x = Compose(DarkConv2D_BN_Leaky(num_filters, (1, 1)),
-                DarkConv2D_BN_Leaky(num_filters * 2, (3, 3)),
-                DarkConv2D_BN_Leaky(num_filters, (1, 1)),
-                DarkConv2D_BN_Leaky(num_filters * 2, (3, 3)),
-                DarkConv2D_BN_Leaky(num_filters, (1, 1)))(x)
-    y = Compose(DarkConv2D_BN_Leaky(num_filters * 2, (3, 3)),
-                DarkConv2D(out_filters, (1, 1)))(x)
-    return x, y
+    x = Compose(DarkConv2D_BN_Leaky(filters, (1, 1)),
+                DarkConv2D_BN_Leaky(filters * 2, (3, 3)),
+                DarkConv2D_BN_Leaky(filters, (1, 1)),
+                DarkConv2D_BN_Leaky(filters * 2, (3, 3)),
+                DarkConv2D_BN_Leaky(filters, (1, 1)))(x)
+    return x
 
 
-def HeadEnd(x, num_filters, out_filters):
+def HeadEnd2(x, filters, o_filters):
     return Compose(
-        DarkConv2D_BN_Leaky(num_filters * 2, (3, 3)),
-        DarkConv2D(out_filters, (1, 1)))(x)
+        DarkConv2D_BN_Leaky(filters, (3, 3)),
+        DarkConv2D_BN_Leaky(filters / 2, (3, 3)),
+        DarkConv2D(o_filters, (1, 1)))(x)
 
 
-def Concat(x0, x1):
-    x0 = Compose(DarkConv2D_BN_Leaky(256, (1, 1)),
+def HeadEnd3(x, filters, o_filters):
+    return Compose(
+        DarkConv2D_BN_Leaky(filters, (3, 3)),
+        DarkConv2D_BN_Leaky(filters / 2, (3, 3)),
+        DarkConv2D_BN_Leaky(filters / 4, (3, 3)),
+        DarkConv2D(o_filters, (1, 1)))(x)
+
+
+def Concat(x0, x1, x0_filters):
+    x0 = Compose(DarkConv2D_BN_Leaky(x0_filters, (1, 1)),
                  tf.keras.layers.UpSampling2D(2))(x0)
+    return tf.keras.layers.Concatenate()([x0, x1])
+
+
+def Concat2(x0, x1, x0_filters, x1_filters):
+    x0 = Compose(
+        DarkConv2D_BN_Leaky(x0_filters, (1, 1)),
+        tf.keras.layers.UpSampling2D(2))(x0)
+    x1 = DarkConv2D_BN_Leaky(x1_filters, (1, 1))(x1)
     return tf.keras.layers.Concatenate()([x0, x1])

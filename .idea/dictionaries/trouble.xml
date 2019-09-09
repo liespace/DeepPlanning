@@ -4,6 +4,8 @@
       <w>conv</w>
       <w>darknet</w>
       <w>deepway</w>
+      <w>dwvgg</w>
+      <w>resnet</w>
       <w>trainset</w>
       <w>validset</w>
       <w>yolo</w>

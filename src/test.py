@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 import os
 import tensorflow as tf
-from cores import DWYolo
+from cores import DWDark53, DWRes50, DWVGG19, DWDark19
 
 # print (os.getcwd() + os.sep + 'dataset')
 # root = './dataset'
@@ -32,12 +32,21 @@ from cores import DWYolo
 #                                      np.prod(self.output_shape),)))
 
 
-# fen = tf.keras.applications.ResNet50(
+# fen = tf.keras.applications.VGG19(
 #     include_top=False,
 #     input_shape=(480, 480, 3),
 #     weights=None)
 # model = tf.keras.Model(inputs=fen.input, outputs=fen.output)
 # model.summary()
 
-model = DWYolo((480, 480, 3), 3, 1, 4)
+model = DWDark53((480, 480, 3), 3, 1, 4)
 model.summary()
+
+# model = DWRes50((480, 480, 3), 3, 1, 4)
+# model.summary()
+
+# model = DWVGG19((480, 480, 3), 3, 1, 4)
+# model.summary()
+
+# model = DWDark19((480, 480, 3), 3, 1, 4)
+# model.summary()
