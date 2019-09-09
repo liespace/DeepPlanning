@@ -104,7 +104,7 @@ def HeadEnd(x, num_filters, out_filters):
         DarkConv2D(out_filters, (1, 1)))(x)
 
 
-def Bridge(x0, x1):
+def Concat(x0, x1):
     x0 = Compose(DarkConv2D_BN_Leaky(256, (1, 1)),
                  tf.keras.layers.UpSampling2D(2))(x0)
     return tf.keras.layers.Concatenate()([x0, x1])

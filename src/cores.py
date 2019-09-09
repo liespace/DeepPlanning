@@ -6,13 +6,13 @@ from darknet import DarkNet19, DarkNet53, FrontEnd, DarkConv2D_BN_Leaky, Compose
 def DWYolo(i_shape, b, c, a):
     """Create YOLO_V3 model CNN body in Keras."""
     inputs = tf.keras.layers.Input(shape=i_shape, dtype=tf.float32)
-    darknet = tf.keras.Model(inputs=inputs, outputs=DarkNet19(inputs))
+    darknet = tf.keras.Model(inputs=inputs, outputs=DarkNet53(inputs))
 
     x, y1 = FrontEnd(darknet.output, 512, b * (c + a))
 
     x = Compose(DarkConv2D_BN_Leaky(256, (1, 1)),
-                tf.keras.layers.UpSampling2D(2))(x)
-    x = tf.keras.layers.Concatenate()([x, darknet.layers[-17].output])
+                tf.keras.layers.UpSampling2D(2))(y1)
+    x = tf.keras.layers.Concatenate()([x, darknet.layers[152].output])
     x, y2 = FrontEnd(x, 256, b * (c + a))
 
     return tf.keras.Model(inputs=inputs, outputs=y2)
