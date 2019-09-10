@@ -1,3 +1,4 @@
+from __future__ import print_function
 import numpy as np
 import cv2
 import os
@@ -39,8 +40,8 @@ from cores import DWDark53, DWRes50, DWVGG19, DWDark19
 # model = tf.keras.Model(inputs=fen.input, outputs=fen.output)
 # model.summary()
 
-model = DWDark53((480, 480, 3), 3, 1, 4)
-model.summary()
+# model = DWDark53((480, 480, 3), 3, 1, 4)
+# model.summary()
 
 # model = DWRes50((480, 480, 3), 3, 1, 4)
 # model.summary()
@@ -50,3 +51,11 @@ model.summary()
 
 # model = DWDark19((480, 480, 3), 3, 1, 4)
 # model.summary()
+
+uv = tf.keras.backend.variable([[1, 2, 3], [1, 2, 3]])
+uv = uv[:, 0:2]
+wh = tf.where(tf.equal(uv, 3))
+ewh = tf.keras.backend.eval(wh)
+b = tf.keras.backend.eval(uv[:, 0])
+print(b, type(b))
+print(uv[:, 0].shape)

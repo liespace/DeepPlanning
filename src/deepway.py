@@ -1,7 +1,6 @@
 from dataset import Pipeline
 from model import Model
-from cores import DWDark53
-import tensorflow as tf
+from cores import DWDark53, DWRes50, DWDark19, DWVGG19
 import json
 import os
 
@@ -15,6 +14,6 @@ core = DWDark53(
     b=config['Model']['B'],
     c=config['Model']['C'])
 
-model = Model(core=core, filepath=cfg_path, pipeline=Pipeline())
+model = Model(core=core, config=config, pipeline=Pipeline(config=config))
 model.compile()
-# model.train()
+model.train()

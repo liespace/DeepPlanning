@@ -1,18 +1,15 @@
 import tensorflow as tf
 import numpy as np
 import os
-from datetime import datetime
 from callback import WarmUpLRSchedule
-import json
 
 
 class Model:
-    def __init__(self, core, filepath, pipeline):
+    def __init__(self, core, config, pipeline):
         self.core = core
-        self.filepath = filepath
         self.pipeline = pipeline
         self.root = os.getcwd()
-        self.config = None
+        self.config = config
         self.callbacks = []
         self.startup()
 
@@ -25,10 +22,61 @@ class Model:
                 beta_2=self.config['Optimizer']['beta_2'])
 
     def loss(self, y_true, y_pred):
-        return tf.keras.backend.mean(y_pred)
+        print ('hello')
+        a_ = self.config['Model']['A']
+        b_ = self.config['Model']['B']
+        c_ = self.config['Model']['C']
+        s_ = self.config['Model']['S']
+        batch = self.config['Model']['batch']
+        lam0 = self.config['Loss']['lam0']
+
+        loss = 0
+        for i in range(batch):
+            y_t = y_true[i]
+            y_p = y_pred[i]
+
+            uv = tf.cast(y_t[:, 0:2], tf.int64)
+            crd_t = y_t[:, -a_:-c_]
+            crd_t = tf.keras.backend.repeat_elements(crd_t, b_, axis=-1)
+            crd_t = tf.keras.backend.reshape(crd_t, (-1, b_, a_-1))
+            candi = tf.gather_nd(y_p, uv)
+            candi = tf.reshape(candi, (-1, b_, c_ + a_))
+            crd_p = candi[:, :, :a_-1]
+            d_crd = tf.reduce_sum(crd_t - tf.sigmoid(crd_p), -1)
+            col = tf.argmin(d_crd, axis=-1)
+            row = tf.range(tf.shape(col)[-1])
+            row = tf.cast(row, tf.int64)
+            wh = tf.stack([row[..., tf.newaxis], col[..., tf.newaxis]], axis=-1)
+
+            crd_p = tf.gather_nd(crd_p, wh)
+            crd_t = y_t[:, -4:-1]
+            crd_t = - tf.log(1. / crd_t - 1.)
+            loss_crd = lam0 * tf.reduce_sum(crd_t - crd_p)
+
+            cls_p = candi[:, :, -1]
+            cls_p = tf.gather_nd(cls_p, wh)
+            class_t = tf.cast(y_t[:, -1], tf.float32)
+            loss_cls = tf.keras.backend.binary_crossentropy(
+                target=class_t, output=cls_p, from_logits=True)
+
+            obj_p = []
+            for b in range(b_):
+                obj_p.append(y_p[:, :, b * (a_ + c_) + (a_ - 1)])
+            obj_p = tf.stack(obj_p)
+            uvc = tf.stack(
+                [tf.keras.backend.flatten(uv[:, 0]),
+                 tf.keras.backend.flatten(uv[:, 1]), col], axis=-1)
+            obj_t = tf.SparseTensor(uvc, [1.0], [s_, s_, b_])
+            obj_t = tf.sparse_tensor_to_dense(obj_t)
+            loss_obj = tf.keras.backend.binary_crossentropy(
+                target=tf.keras.backend.flatten(obj_t),
+                output=tf.keras.backend.flatten(obj_p),
+                from_logits=True)
+
+            loss += loss_crd + loss_cls + loss_obj
+        return loss
 
     def startup(self):
-        self.set_config()
         self.set_callbacks()
 
     def compile(self):
@@ -38,12 +86,11 @@ class Model:
     def train(self):
         self.core.fit_generator(
             generator=self.pipeline.train,
+            steps_per_epoch=self.config['Model']['ts_step'],
             epochs=self.config['Model']['epoch'],
             initial_epoch=self.config['Model']['ini_epoch'],
             verbose=self.config['Model']['verbose'],
-            steps_per_epoch=self.config['Model']['ts_step'],
             callbacks=self.callbacks,
-            batch_size=self.config['Model']['batch'],
             validation_data=self.pipeline.valid,
             validation_steps=self.config['Model']['vs_step'])
 
@@ -71,10 +118,6 @@ class Model:
                 patience=self.config['EarlyStop']['min_delta'],
                 verbose=self.config['EarlyStop']['verbose'],
                 mode=self.config['EarlyStop']['mode']))
-
-    def set_config(self):
-        with open(self.filepath) as handle:
-            self.config = json.loads(handle.read())
 
     def warm_up(self, batch):
         lr = self.config['Optimizer']['lr']
