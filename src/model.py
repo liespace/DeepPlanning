@@ -1,6 +1,8 @@
+from __future__ import print_function
 import tensorflow as tf
 import numpy as np
 import os
+import sys
 from callback import WarmUpLRSchedule
 
 
@@ -29,51 +31,28 @@ class Model:
         s_ = self.config['Model']['S']
         batch = self.config['Model']['batch']
         lam0 = self.config['Loss']['lam0']
+        loss_crd, loss_cla, loss_obj = 0, 0, 0
+        for j in range(batch):
+            for i in range(b_):
+                y_p = y_pred[j, :, :, i*(c_+a_):(i+1)*(c_+a_)]
+                y_t = y_true[j, :, :, i*(c_+a_):(i+1)*(c_+a_)]
+                mask = y_t[:, :, a_-1]
+                crd_p = y_p[:, :, :a_-1] * tf.stack([mask]*(a_-1), axis=-1)
+                crd_t = y_t[:, :, :a_-1]
+                loss_crd += lam0 * tf.reduce_sum(tf.abs(crd_t - crd_p))
 
-        loss = 0
-        for i in range(batch):
-            y_t = y_true[i]
-            y_p = y_pred[i]
+                cla_p = y_p[:, :, a_] * mask
+                cla_t = y_t[:, :, a_]
+                loss_cla += tf.keras.backend.binary_crossentropy(
+                    target=tf.keras.backend.flatten(cla_t),
+                    output=tf.keras.backend.flatten(cla_p))
 
-            uv = tf.cast(y_t[:, 0:2], tf.int64)
-            crd_t = y_t[:, -a_:-c_]
-            crd_t = tf.keras.backend.repeat_elements(crd_t, b_, axis=-1)
-            crd_t = tf.keras.backend.reshape(crd_t, (-1, b_, a_-1))
-            candi = tf.gather_nd(y_p, uv)
-            candi = tf.reshape(candi, (-1, b_, c_ + a_))
-            crd_p = candi[:, :, :a_-1]
-            d_crd = tf.reduce_sum(crd_t - tf.sigmoid(crd_p), -1)
-            col = tf.argmin(d_crd, axis=-1)
-            row = tf.range(tf.shape(col)[-1])
-            row = tf.cast(row, tf.int64)
-            wh = tf.stack([row[..., tf.newaxis], col[..., tf.newaxis]], axis=-1)
-
-            crd_p = tf.gather_nd(crd_p, wh)
-            crd_t = y_t[:, -4:-1]
-            crd_t = - tf.log(1. / crd_t - 1.)
-            loss_crd = lam0 * tf.reduce_sum(crd_t - crd_p)
-
-            cls_p = candi[:, :, -1]
-            cls_p = tf.gather_nd(cls_p, wh)
-            class_t = tf.cast(y_t[:, -1], tf.float32)
-            loss_cls = tf.keras.backend.binary_crossentropy(
-                target=class_t, output=cls_p, from_logits=True)
-
-            obj_p = []
-            for b in range(b_):
-                obj_p.append(y_p[:, :, b * (a_ + c_) + (a_ - 1)])
-            obj_p = tf.stack(obj_p)
-            uvc = tf.stack(
-                [tf.keras.backend.flatten(uv[:, 0]),
-                 tf.keras.backend.flatten(uv[:, 1]), col], axis=-1)
-            obj_t = tf.SparseTensor(uvc, [1.0], [s_, s_, b_])
-            obj_t = tf.sparse_tensor_to_dense(obj_t)
-            loss_obj = tf.keras.backend.binary_crossentropy(
-                target=tf.keras.backend.flatten(obj_t),
-                output=tf.keras.backend.flatten(obj_p),
-                from_logits=True)
-
-            loss += loss_crd + loss_cls + loss_obj
+                obj_p = y_p[:, :, a_ - 1]
+                obj_t = y_t[:, :, a_ - 1]
+                loss_obj += tf.keras.backend.binary_crossentropy(
+                    target=tf.keras.backend.flatten(obj_t),
+                    output=tf.keras.backend.flatten(obj_p))
+        loss = loss_cla
         return loss
 
     def startup(self):

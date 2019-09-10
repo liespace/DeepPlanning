@@ -52,10 +52,9 @@ from cores import DWDark53, DWRes50, DWVGG19, DWDark19
 # model = DWDark19((480, 480, 3), 3, 1, 4)
 # model.summary()
 
-uv = tf.keras.backend.variable([[1, 2, 3], [1, 2, 3]])
-uv = uv[:, 0:2]
-wh = tf.where(tf.equal(uv, 3))
-ewh = tf.keras.backend.eval(wh)
-b = tf.keras.backend.eval(uv[:, 0])
-print(b, type(b))
-print(uv[:, 0].shape)
+a = tf.ones((5, 5, 3))
+d = tf.ones((5, 5)) * 0
+d = tf.stack([d] * 3, axis=-1)
+c = a * d
+b = tf.keras.backend.eval(c)
+print(b, type(b), b.shape)

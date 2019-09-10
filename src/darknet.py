@@ -100,7 +100,7 @@ def HeadEnd2(x, filters, o_filters):
     return Compose(
         DarkConv2D_BN_Leaky(filters, (3, 3)),
         DarkConv2D_BN_Leaky(filters / 2, (3, 3)),
-        DarkConv2D(o_filters, (1, 1)))(x)
+        DarkConv2D(o_filters, (1, 1), activation='sigmoid'))(x)
 
 
 def HeadEnd3(x, filters, o_filters):
