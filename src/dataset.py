@@ -25,7 +25,7 @@ class Pipeline(object):
                 y = np.loadtxt(self.root + y_path, delimiter=',')
                 y = self.preprocess_y(y)
                 y = np.array([y])
-                yield x, y
+                yield [x, y], np.zeros(batch)
             f.close()
 
     def preprocess_y(self, y):

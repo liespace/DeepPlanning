@@ -1,5 +1,5 @@
 from dataset import Pipeline
-from model import Model
+from model import DWModel
 from cores import DWDark53, DWRes50, DWDark19, DWVGG19
 import json
 import os
@@ -14,6 +14,7 @@ core = DWDark53(
     b=config['Model']['B'],
     c=config['Model']['C'])
 
-model = Model(core=core, config=config, pipeline=Pipeline(config=config))
+model = DWModel(core=core, config=config, pipeline=Pipeline(config=config))
+model.wrapper()
 model.compile()
 model.train()

@@ -6,9 +6,10 @@ import sys
 from callback import WarmUpLRSchedule
 
 
-class Model:
+class DWModel:
     def __init__(self, core, config, pipeline):
         self.core = core
+        self.model = core
         self.pipeline = pipeline
         self.root = os.getcwd()
         self.config = config
@@ -23,14 +24,17 @@ class Model:
                 beta_1=self.config['Optimizer']['beta_1'],
                 beta_2=self.config['Optimizer']['beta_2'])
 
-    def loss(self, y_true, y_pred):
+    @staticmethod
+    def dw_loss(arg, config):
+        y_pred = arg[0]
+        y_true = arg[1]
         print ('hello')
-        a_ = self.config['Model']['A']
-        b_ = self.config['Model']['B']
-        c_ = self.config['Model']['C']
-        s_ = self.config['Model']['S']
-        batch = self.config['Model']['batch']
-        lam0 = self.config['Loss']['lam0']
+        a_ = config['Model']['A']
+        b_ = config['Model']['B']
+        c_ = config['Model']['C']
+        s_ = config['Model']['S']
+        batch = config['Model']['batch']
+        lam0 = config['Loss']['lam0']
         loss_crd, loss_cla, loss_obj = 0, 0, 0
         for j in range(batch):
             for i in range(b_):
@@ -39,31 +43,51 @@ class Model:
                 mask = y_t[:, :, a_-1]
                 crd_p = y_p[:, :, :a_-1] * tf.stack([mask]*(a_-1), axis=-1)
                 crd_t = y_t[:, :, :a_-1]
-                loss_crd += lam0 * tf.reduce_sum(tf.abs(crd_t - crd_p))
+                loss_crd += tf.reduce_sum(tf.abs(crd_t - crd_p))
 
                 cla_p = y_p[:, :, a_] * mask
                 cla_t = y_t[:, :, a_]
-                loss_cla += tf.keras.backend.binary_crossentropy(
+                l_cla = tf.keras.backend.binary_crossentropy(
                     target=tf.keras.backend.flatten(cla_t),
                     output=tf.keras.backend.flatten(cla_p))
+                loss_cla += tf.keras.backend.sum(l_cla)
 
                 obj_p = y_p[:, :, a_ - 1]
                 obj_t = y_t[:, :, a_ - 1]
-                loss_obj += tf.keras.backend.binary_crossentropy(
+                l_obj = tf.keras.backend.binary_crossentropy(
                     target=tf.keras.backend.flatten(obj_t),
                     output=tf.keras.backend.flatten(obj_p))
-        loss = loss_cla
+                loss_obj += tf.keras.backend.mean(l_obj)
+
+        loss = lam0 * loss_crd + loss_cla + loss_obj
+        loss = tf.Print(loss,
+                        [loss, loss_crd, loss_cla, loss_obj],
+                        message='loss: ')
         return loss
+
+    def wrapper(self):
+        a_ = self.config['Model']['A']
+        b_ = self.config['Model']['B']
+        c_ = self.config['Model']['C']
+        s_ = self.config['Model']['S']
+        y_true = tf.keras.layers.Input(shape=(s_, s_, b_ * (a_ + c_)))
+        loss = tf.keras.layers.Lambda(
+            self.dw_loss, output_shape=(1,), name='dw_loss',
+            arguments={'config': self.config})(
+            [self.core.output, y_true])
+        self.model = tf.keras.Model([self.core.input, y_true], loss)
 
     def startup(self):
         self.set_callbacks()
 
     def compile(self):
-        self.core.compile(optimizer=self.optimizer, loss=self.loss)
-        self.core.summary()
+        self.model.compile(
+            optimizer=self.optimizer,
+            loss={'dw_loss': lambda y_true, y_pred: y_pred})
+        self.model.summary()
 
     def train(self):
-        self.core.fit_generator(
+        self.model.fit_generator(
             generator=self.pipeline.train,
             steps_per_epoch=self.config['Model']['ts_step'],
             epochs=self.config['Model']['epoch'],
