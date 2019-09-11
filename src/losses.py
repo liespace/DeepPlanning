@@ -25,7 +25,8 @@ def DeepWayLoss(config, part='all', log=False):
                     # coord loss
                     cor_p = y_p[:, :, :a_-1] * tf.stack([mask] * (a_-1), axis=-1)
                     cor_t = y_t[:, :, :a_-1]
-                    candi.append(tf.reduce_sum(tf.abs(cor_t - cor_p)))
+                    candi.append(tf.reduce_sum(
+                        tf.keras.backend.binary_crossentropy(cor_t, cor_p)))
                 # find key index
                 arg = tf.keras.backend.argmin(candi, axis=-1)
                 # store the selected candidate loss
@@ -48,7 +49,8 @@ def DeepWayLoss(config, part='all', log=False):
                     # coord loss
                     cor_p = y_p[:, :, :a_-1] * tf.stack([mask] * (a_-1), axis=-1)
                     cor_t = y_t[:, :, :a_-1]
-                    l_cor.append(tf.reduce_sum(tf.abs(cor_t - cor_p)))
+                    l_cor.append(tf.reduce_sum(
+                        tf.keras.backend.binary_crossentropy(cor_t, cor_p)))
                     # class loss
                     cla_p = y_p[:, :, a_] * mask
                     cla_t = y_t[:, :, a_]
@@ -76,7 +78,8 @@ def DeepWayLoss(config, part='all', log=False):
                     # coord loss
                     cor_p = y_p[:, :, :a_-1] * tf.stack([mask] * (a_-1), axis=-1)
                     cor_t = y_t[:, :, :a_-1]
-                    l_cor.append(tf.reduce_sum(tf.abs(cor_t - cor_p)))
+                    l_cor.append(tf.reduce_sum(
+                        tf.keras.backend.binary_crossentropy(cor_t, cor_p)))
                     # object true candidates
                     can = [tf.keras.backend.zeros((s_, s_)) for b in range(b_)]
                     can[i] = mask
