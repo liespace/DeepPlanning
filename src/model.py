@@ -28,13 +28,13 @@ class DWModel:
     def dw_loss(arg, config):
         y_pred = arg[0]
         y_true = arg[1]
-        print ('hello')
         a_ = config['Model']['A']
         b_ = config['Model']['B']
         c_ = config['Model']['C']
         s_ = config['Model']['S']
         batch = config['Model']['batch']
         lam0 = config['Loss']['lam0']
+        lam1 = config['Loss']['lam1']
         loss_crd, loss_cla, loss_obj = 0, 0, 0
         for j in range(batch):
             for i in range(b_):
@@ -57,9 +57,12 @@ class DWModel:
                 l_obj = tf.keras.backend.binary_crossentropy(
                     target=tf.keras.backend.flatten(obj_t),
                     output=tf.keras.backend.flatten(obj_p))
-                loss_obj += tf.keras.backend.mean(l_obj)
+                loss_obj += tf.keras.backend.sum(l_obj)
 
-        loss = lam0 * loss_crd + loss_cla + loss_obj
+        loss_crd *= lam0
+        loss_cla *= lam1
+        loss_obj *= (1.0 / (s_*s_*b_))
+        loss = loss_crd + loss_cla + loss_obj
         loss = tf.Print(loss,
                         [loss, loss_crd, loss_cla, loss_obj],
                         message='loss: ')

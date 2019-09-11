@@ -55,6 +55,6 @@ from cores import DWDark53, DWRes50, DWVGG19, DWDark19
 a = tf.ones((5, 5, 3))
 d = tf.ones((5, 5)) * 0
 d = tf.stack([d] * 3, axis=-1)
-c = a * d
+c = tf.keras.backend.binary_crossentropy(tf.keras.backend.variable([0., 0.]), tf.keras.backend.variable([0., 0.]))
 b = tf.keras.backend.eval(c)
 print(b, type(b), b.shape)
