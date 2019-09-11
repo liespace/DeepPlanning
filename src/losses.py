@@ -2,7 +2,7 @@ import tensorflow as tf
 from itertools import permutations, product
 
 
-def DeepWayLoss(config, simple=True):
+def DeepWayLoss(config, simple=True, log=False):
     a_ = config['Model']['A']
     b_ = config['Model']['B']
     c_ = config['Model']['C']
@@ -16,7 +16,7 @@ def DeepWayLoss(config, simple=True):
     else:
         combo = [(range(b_), range(b_))]
 
-    def work(y_true, y_pred):
+    def dw_loss(y_true, y_pred):
         loss_crd, loss_cla, loss_obj = 0., 0., 0.
         m_loss, m_crd, m_cla, m_obj = 1e10, 1e10, 1e10, 1e10
         for j in range(batch):
@@ -53,7 +53,8 @@ def DeepWayLoss(config, simple=True):
                 m_crd = tf.keras.backend.minimum(m_crd, loss_crd)
                 m_cla = tf.keras.backend.minimum(m_cla, loss_cla)
                 m_obj = tf.keras.backend.minimum(m_obj, loss_obj)
-            m_loss = tf.Print(m_loss, [m_loss, m_crd, m_cla, m_obj],
-                              message='loss: ')
+            if log:
+                m_loss = tf.Print(
+                    m_loss, [m_loss, m_crd, m_cla, m_obj],  message='loss: ')
         return m_loss
-    return work
+    return dw_loss
