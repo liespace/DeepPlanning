@@ -100,7 +100,7 @@ class DWModel:
             validation_data=self.pipeline.valid,
             validation_steps=self.config['Model']['vs_step'])
 
-        self.core.save(self.log_dir + os.sep + 'model.h5')
+        self.model.save(self.log_dir + os.sep + 'model.h5')
 
     def set_callbacks(self):
         if self.config['TensorBoard']['enable']:
