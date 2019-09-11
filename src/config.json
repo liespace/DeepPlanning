@@ -20,8 +20,9 @@
 
   "Loss": {
     "type": "self",
-    "lam0": 0.1,
-    "lam1": 0.5
+    "lam0": 1.0,
+    "lam1": 0.5,
+    "lam2": 1.0
   },
 
   "Optimizer": {
