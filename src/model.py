@@ -30,8 +30,8 @@ class DWModel:
     def compile(self):
         self.model.compile(
             optimizer=self.optimizer,
-            metrics=[DeepWayLoss(config=self.config, simple=False)],
-            loss=DeepWayLoss(config=self.config, simple=False))
+            metrics=[DeepWayLoss(config=self.config)],
+            loss=DeepWayLoss(config=self.config))
         self.model.summary()
 
     def train(self):

@@ -34,6 +34,7 @@ class Pipeline(object):
         b_ = self.config['Model']['B']
         c_ = self.config['Model']['C']
         s_ = self.config['Model']['S']
+        m_ = self.config['Model']['M']
         w, h = self.config['Model']['w'], self.config['Model']['h']
         if y.shape[0] > 2:
             w_s, h_s = w / s_, h / s_
@@ -49,14 +50,12 @@ class Pipeline(object):
         else:
             p_y = np.zeros((1, 2 + a_ + c_))
         y_t = []
-        for b in range(b_):
+        for m in range(m_):
             y_t.append(np.zeros((s_, s_, a_ + c_)))
         for i in range(p_y.shape[0]):
-            p = p_y[i]
-            for y in y_t:
-                if not y[int(p[0]), int(p[1]), a_-1]:
-                    y[int(p[0]), int(p[1]), :a_-1] = p[-a_: -c_]  # x, y, theta
-                    y[int(p[0]), int(p[1]), a_-1] = p[-c_-a_]  # obj
-                    y[int(p[0]), int(p[1]), a_:] = p[-c_:]  # class
-                    break
+            p, y = p_y[i], y_t[i]
+            y[int(p[0]), int(p[1]), :a_-1] = p[-a_: -c_]  # x, y, theta
+            y[int(p[0]), int(p[1]), a_-1] = p[-c_-a_]  # obj
+            y[int(p[0]), int(p[1]), a_:] = p[-c_:]  # class
+            break
         return np.concatenate(y_t, axis=-1)

@@ -2,59 +2,60 @@ import tensorflow as tf
 from itertools import permutations, product
 
 
-def DeepWayLoss(config, simple=True, log=False):
+def DeepWayLoss(config, log=False):
     a_ = config['Model']['A']
     b_ = config['Model']['B']
     c_ = config['Model']['C']
     s_ = config['Model']['S']
+    m_ = config['Model']['M']
     batch = config['Model']['batch']
     lam0 = config['Loss']['lam0']
     lam1 = config['Loss']['lam1']
-    if not simple:
-        pm = list(permutations(range(b_)))
-        combo = list(product(pm, pm))
-    else:
-        combo = [(range(b_), range(b_))]
 
     def dw_loss(y_true, y_pred):
-        loss_crd, loss_cla, loss_obj = 0., 0., 0.
-        m_loss, m_crd, m_cla, m_obj = 1e10, 1e10, 1e10, 1e10
         for j in range(batch):
-            for pair in combo:
-                ti, pi = pair[0], pair[1]
+            ls_cor, ls_cla, obj_ts = [], [], []
+            for m in range(m_):
+                l_cor, l_cla, obj_tc = [], [], []
+                y_t = y_true[j, :, :, m*(c_+a_):(m+1)*(c_+a_)]
+                mask = y_t[:, :, a_ - 1]
                 for i in range(b_):
-                    y_p = y_pred[j, :, :, pi[i] * (c_ + a_):(pi[i] + 1) * (c_ + a_)]
-                    y_t = y_true[j, :, :, ti[i] * (c_ + a_):(ti[i] + 1) * (c_ + a_)]
-                    mask = y_t[:, :, a_ - 1]
-                    crd_p = y_p[:, :, :a_ - 1] * tf.stack([mask] * (a_ - 1),
-                                                          axis=-1)
-                    crd_t = y_t[:, :, :a_ - 1]
-                    loss_crd += tf.reduce_sum(tf.abs(crd_t - crd_p))
-
+                    y_p = y_pred[j, :, :, i*(c_+a_):(i+1)*(c_+a_)]
+                    # coord loss
+                    cor_p = y_p[:, :, :a_-1] * tf.stack([mask] * (a_-1), axis=-1)
+                    cor_t = y_t[:, :, :a_-1]
+                    l_cor.append(tf.reduce_sum(tf.abs(cor_t - cor_p)))
+                    # class loss
                     cla_p = y_p[:, :, a_] * mask
                     cla_t = y_t[:, :, a_]
-                    l_cla = tf.keras.backend.binary_crossentropy(
+                    l_cla.append(tf.keras.backend.binary_crossentropy(
                         target=tf.keras.backend.flatten(cla_t),
-                        output=tf.keras.backend.flatten(cla_p))
-                    loss_cla += tf.keras.backend.sum(l_cla)
-
-                    obj_p = y_p[:, :, a_ - 1]
-                    obj_t = y_t[:, :, a_ - 1]
-                    l_obj = tf.keras.backend.binary_crossentropy(
-                        target=tf.keras.backend.flatten(obj_t),
-                        output=tf.keras.backend.flatten(obj_p))
-                    loss_obj += tf.keras.backend.sum(l_obj)
-
-                loss_crd *= lam0
-                loss_cla *= lam1
-                loss_obj *= (1.0 / (s_ * s_ * b_))
-                loss = loss_crd + loss_cla + loss_obj
-                m_loss = tf.keras.backend.minimum(m_loss, loss)
-                m_crd = tf.keras.backend.minimum(m_crd, loss_crd)
-                m_cla = tf.keras.backend.minimum(m_cla, loss_cla)
-                m_obj = tf.keras.backend.minimum(m_obj, loss_obj)
+                        output=tf.keras.backend.flatten(cla_p)))
+                    # object true candidates
+                    can = [tf.keras.backend.zeros((s_, s_)) for b in range(b_)]
+                    can[i] = mask
+                    obj_tc.append(tf.keras.backend.stack(can, axis=-1))
+                arg = tf.keras.backend.argmin(l_cor, axis=-1)
+                ls_cor.append(tf.gather(l_cor, arg))
+                ls_cla.append(tf.gather(l_cla, arg))
+                obj_ts.append(tf.gather(obj_tc, arg))
+            # calculate object loss
+            obj_ts = tf.stack(obj_ts, axis=-1)
+            obj_t = tf.reduce_sum(obj_ts, axis=-1)
+            obj_p = []
+            for b in range(b_):
+                y_p = y_pred[j, :, :, b * (c_ + a_):(b + 1) * (c_ + a_)]
+                obj_p.append(y_p[:, :, a_-1])
+            obj_p = tf.stack(obj_p, axis=-1)
+            ls_obj = tf.keras.backend.binary_crossentropy(obj_t, obj_p)
+            ls_obj = tf.reduce_sum(ls_obj) * (1.0 / (s_ * s_ * b_))
+            # calculate overall loss
+            ls_cor = lam0 * tf.reduce_sum(ls_cor)
+            ls_cla = lam1 * tf.reduce_sum(ls_cla)
+            loss = ls_cor + ls_cla + ls_obj
             if log:
-                m_loss = tf.Print(
-                    m_loss, [m_loss, m_crd, m_cla, m_obj],  message='loss: ')
-        return m_loss
+                loss = tf.Print(loss, [loss, ls_cor, ls_cla, ls_obj],
+                                message='loss: ')
+            return loss
+
     return dw_loss

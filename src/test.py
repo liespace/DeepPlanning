@@ -52,11 +52,8 @@ from cores import DWDark53, DWRes50, DWVGG19, DWDark19
 # model = DWDark19((480, 480, 3), 3, 1, 4)
 # model.summary()
 
-a = tf.ones((5, 5, 3))
-d = tf.ones((5, 5)) * 0
-d = tf.stack([d] * 3, axis=-1)
-c = tf.keras.backend.variable(1.0)
-d = tf.keras.backend.variable(3.0)
-c = tf.reduce_min([c, d], axis=-1)
+c = [tf.zeros((5,5,3)), tf.ones((5,5,3)), -2*tf.ones((5,5,3))]
+c = tf.stack(c, axis=-1)
+c = tf.reduce_sum(c, axis=-1)
 b = tf.keras.backend.eval(c)
 print(b, type(b), b.shape)
