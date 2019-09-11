@@ -24,17 +24,14 @@ class DWModel:
                 beta_1=self.config['Optimizer']['beta_1'],
                 beta_2=self.config['Optimizer']['beta_2'])
 
-    @staticmethod
-    def dw_loss(arg, config):
-        y_pred = arg[0]
-        y_true = arg[1]
-        a_ = config['Model']['A']
-        b_ = config['Model']['B']
-        c_ = config['Model']['C']
-        s_ = config['Model']['S']
-        batch = config['Model']['batch']
-        lam0 = config['Loss']['lam0']
-        lam1 = config['Loss']['lam1']
+    def dw_loss(self, y_true, y_pred):
+        a_ = self.config['Model']['A']
+        b_ = self.config['Model']['B']
+        c_ = self.config['Model']['C']
+        s_ = self.config['Model']['S']
+        batch = self.config['Model']['batch']
+        lam0 = self.config['Loss']['lam0']
+        lam1 = self.config['Loss']['lam1']
         loss_crd, loss_cla, loss_obj = 0, 0, 0
         for j in range(batch):
             for i in range(b_):
@@ -86,7 +83,7 @@ class DWModel:
     def compile(self):
         self.model.compile(
             optimizer=self.optimizer,
-            loss={'dw_loss': lambda y_true, y_pred: y_pred})
+            loss=self.dw_loss)
         self.model.summary()
 
     def train(self):

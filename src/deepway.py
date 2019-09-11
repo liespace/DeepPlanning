@@ -15,6 +15,5 @@ core = DWDark53(
     c=config['Model']['C'])
 
 model = DWModel(core=core, config=config, pipeline=Pipeline(config=config))
-model.wrapper()
 model.compile()
 model.train()
