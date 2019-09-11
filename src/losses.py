@@ -32,7 +32,7 @@ def DeepWayLoss(config, part='all', log=False):
                 # store the selected candidate loss
                 losses.append(tf.gather(candi, arg))
             # calculate coord loss
-            loss = lam0 * tf.reduce_sum(losses)
+            loss = (lam0 / (a_ - 1)) * tf.reduce_sum(losses)
             if log:
                 loss = tf.Print(loss, [loss], message='coord loss: ')
             return loss
