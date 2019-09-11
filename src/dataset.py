@@ -1,6 +1,6 @@
 import tensorflow as tf
 import numpy as np
-import cv2
+from PIL import Image
 import os
 
 
@@ -19,9 +19,9 @@ class Pipeline(object):
                 # and labels, from each line in the file
                 parts = line.rstrip().split(',')
                 x_path, y_path = parts[0], parts[1]
-                x = cv2.imread(self.root + x_path)
-                x = cv2.resize(x, tuple(self.config['Model']['i_shape'][:2]))
-                x = np.array([x])
+                x = Image.open(self.root + x_path)
+                x = x.resize(tuple(self.config['Model']['i_shape'][:2]))
+                x = np.array([np.array(x)])
                 y = np.loadtxt(self.root + y_path, delimiter=',')
                 y = self.preprocess_y(y)
                 y = np.array([y])

@@ -1,8 +1,6 @@
-FROM tensorflow/tensorflow:1.12.0-gpu-py3
-RUN  aptDeps='git' && pipDeps='jupyterthemes'\
+FROM tensorflow/tensorflow:1.12.0-gpu
+RUN  aptDeps0='git' && aptDeps1='vim'\
      && apt-get update \
-     && apt-get install -y $aptDeps \
-     && pip install --no-cache-dir $pipDeps \
-     && pip install --no-cache-dir --upgrade $pipDeps \
-     && jt -t oceans16 -T -N\
+     && apt-get install -y $aptDeps0 \
+     && apt-get install -y $aptDeps1 \
      && apt-get clean
