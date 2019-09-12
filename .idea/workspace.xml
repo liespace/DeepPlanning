@@ -2,14 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9147d471-6244-4115-8739-9234121dd0c5" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/deepway.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deepway.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cores.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/cores.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/darknet.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/darknet.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/dataset.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/losses.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/losses.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/deepway.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/deepway.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -75,6 +70,7 @@
       <workItem from="1568195010553" duration="1579000" />
       <workItem from="1568278977645" duration="643000" />
       <workItem from="1568279701790" duration="17076000" />
+      <workItem from="1568314880771" duration="551000" />
     </task>
     <servers />
   </component>

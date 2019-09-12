@@ -1,6 +1,6 @@
 {
   "Model": {
-    "name": "alpha",
+    "name": "res50",
     "epoch": 130,
     "ini_epoch": 0,
     "verbose": 1,
