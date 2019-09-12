@@ -1,5 +1,6 @@
 import tensorflow as tf
 from functools import wraps, reduce
+from tensorflow.layers import Conv2D
 
 
 def Compose(*funcs):
@@ -86,29 +87,48 @@ def DarkNet53(x):
     return x
 
 
-def FrontEnd(x, filters):
+def Bottleneck(x, filters):
     """6 Conv2D_BN_Leaky layers followed by a Conv2D_linear layer"""
-    x = Compose(DarkConv2D_BN_Leaky(filters, (1, 1)),
-                DarkConv2D_BN_Leaky(filters * 2, (3, 3)),
-                DarkConv2D_BN_Leaky(filters, (1, 1)),
-                DarkConv2D_BN_Leaky(filters * 2, (3, 3)),
-                DarkConv2D_BN_Leaky(filters, (1, 1)))(x)
+    x = Compose(DarkConv2D_BN_Leaky(filters / 4, (1, 1)),
+                DarkConv2D_BN_Leaky(filters / 2, (3, 3)),
+                DarkConv2D_BN_Leaky(filters / 8, (1, 1)),
+                DarkConv2D_BN_Leaky(filters / 4, (3, 3)),
+                DarkConv2D_BN_Leaky(filters / 16, (1, 1)))(x)
     return x
 
 
-def HeadEnd2(x, filters, o_filters):
-    return Compose(
-        DarkConv2D_BN_Leaky(filters, (3, 3)),
+def Bottleneck2(x, filters):
+    x = Compose(
+        tf.keras.layers.ZeroPadding2D(((1, 0), (1, 0))),
+        DarkConv2D_BN_Leaky(filters, (3, 3), strides=(2, 2)),
+        DarkConv2D_BN_Leaky(filters / 4, (1, 1)),
         DarkConv2D_BN_Leaky(filters / 2, (3, 3)),
-        DarkConv2D(o_filters, (1, 1), activation='sigmoid'))(x)
-
-
-def HeadEnd3(x, filters, o_filters):
-    return Compose(
-        DarkConv2D_BN_Leaky(filters, (3, 3)),
-        DarkConv2D_BN_Leaky(filters / 2, (3, 3)),
+        DarkConv2D_BN_Leaky(filters / 8, (1, 1)),
         DarkConv2D_BN_Leaky(filters / 4, (3, 3)),
-        DarkConv2D(o_filters, (1, 1)))(x)
+        DarkConv2D_BN_Leaky(filters / 16, (1, 1)))(x)
+    return x
+
+
+def HeadEnd(x, fs):
+    return Compose(
+        DarkConv2D(fs, (1, 1)),
+        Conv2D(fs, (3, 3), kernel_regularizer=tf.keras.regularizers.l2(5e-4)),
+        Conv2D(fs, (3, 3), kernel_regularizer=tf.keras.regularizers.l2(5e-4)),
+        Conv2D(fs, (3, 3), kernel_regularizer=tf.keras.regularizers.l2(5e-4)),
+        Conv2D(fs, (3, 3), kernel_regularizer=tf.keras.regularizers.l2(5e-4)),
+        Conv2D(fs, (3, 3), kernel_regularizer=tf.keras.regularizers.l2(5e-4)),
+        Conv2D(fs, (3, 3), kernel_regularizer=tf.keras.regularizers.l2(5e-4)),
+        Conv2D(fs, (3, 3), kernel_regularizer=tf.keras.regularizers.l2(5e-4),
+               activation='sigmoid'))(x)
+
+
+def HeadEnd2(x, fs):
+    return Compose(
+        DarkConv2D(fs, (1, 1)),
+        Conv2D(fs, (5, 5), kernel_regularizer=tf.keras.regularizers.l2(5e-4)),
+        Conv2D(fs, (5, 5), kernel_regularizer=tf.keras.regularizers.l2(5e-4)),
+        Conv2D(fs, (5, 5), kernel_regularizer=tf.keras.regularizers.l2(5e-4)),
+        DarkConv2D(fs, (3, 3), strides=(2, 2), activation='sigmoid'))(x)
 
 
 def Concat(x0, x1, x0_filters):
