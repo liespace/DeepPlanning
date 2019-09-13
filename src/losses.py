@@ -21,7 +21,7 @@ def DeepWayLoss(config, part='all', log=False):
                 # coord loss
                 loss += tf.reduce_sum(tf.keras.backend.abs(y_t - y_p)) * obj
         # calculate coord loss
-        loss = lam0 * loss / batch
+        loss = lam0 * loss / batch / (a_ - 1)
         if log:
             loss = tf.Print(loss, [loss], message='coord loss: ')
         return loss
