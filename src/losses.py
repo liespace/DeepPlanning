@@ -36,7 +36,7 @@ def DeepWayLoss(config, part='all', log=False):
                 loss += tf.reduce_sum(tf.keras.backend.binary_crossentropy(
                     target=y_p, output=y_t))
         # calculate object loss
-        loss = lam2 * tf.reduce_sum(loss)
+        loss = lam2 * tf.reduce_sum(loss) / b_
         if log:
             loss = tf.Print(loss, [loss], message='object loss: ')
         return loss

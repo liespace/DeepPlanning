@@ -1,6 +1,8 @@
 import tensorflow as tf
 from functools import wraps, reduce
-from tensorflow.layers import Conv2D
+
+
+LAM = 5e-4
 
 
 def Compose(*funcs):
@@ -17,9 +19,18 @@ def Compose(*funcs):
 @wraps(tf.keras.layers.Conv2D)
 def DarkConv2D(*args, **kwargs):
     """Wrapper to set Darknet parameters for Convolution2D."""
-    darknet_conv_kwargs = {'kernel_regularizer': tf.keras.regularizers.l2(5e-4),
+    darknet_conv_kwargs = {'kernel_regularizer': tf.keras.regularizers.l2(LAM),
                            'padding': 'valid' if kwargs.get('strides') == (
                                2, 2) else 'same'}
+    darknet_conv_kwargs.update(kwargs)
+    return tf.keras.layers.Conv2D(*args, **darknet_conv_kwargs)
+
+
+@wraps(tf.keras.layers.Conv2D)
+def DWConv2D(*args, **kwargs):
+    """Wrapper to set Darknet parameters for Convolution2D."""
+    darknet_conv_kwargs = {'kernel_regularizer': tf.keras.regularizers.l2(LAM),
+                           'padding': 'valid'}
     darknet_conv_kwargs.update(kwargs)
     return tf.keras.layers.Conv2D(*args, **darknet_conv_kwargs)
 
@@ -29,6 +40,15 @@ def DarkConv2D_BN_Leaky(*args, **kwargs):
     no_bias_kwargs = {'use_bias': False}
     no_bias_kwargs.update(kwargs)
     return Compose(DarkConv2D(*args, **no_bias_kwargs),
+                   tf.keras.layers.BatchNormalization(),
+                   tf.keras.layers.LeakyReLU(alpha=0.1))
+
+
+def DWConv2D_BN_Leaky(*args, **kwargs):
+    """Darknet Convolution2D followed by BatchNormalization and LeakyReLU."""
+    no_bias_kwargs = {'use_bias': False}
+    no_bias_kwargs.update(kwargs)
+    return Compose(DWConv2D(*args, **no_bias_kwargs),
                    tf.keras.layers.BatchNormalization(),
                    tf.keras.layers.LeakyReLU(alpha=0.1))
 
@@ -109,26 +129,16 @@ def Bottleneck2(x, filters):
     return x
 
 
-def HeadEnd(x, fs):
+def HeadEnd(x, filters):
     return Compose(
-        DarkConv2D(fs, (1, 1)),
-        Conv2D(fs, (3, 3), kernel_regularizer=tf.keras.regularizers.l2(5e-4)),
-        Conv2D(fs, (3, 3), kernel_regularizer=tf.keras.regularizers.l2(5e-4)),
-        Conv2D(fs, (3, 3), kernel_regularizer=tf.keras.regularizers.l2(5e-4)),
-        Conv2D(fs, (3, 3), kernel_regularizer=tf.keras.regularizers.l2(5e-4)),
-        Conv2D(fs, (3, 3), kernel_regularizer=tf.keras.regularizers.l2(5e-4)),
-        Conv2D(fs, (3, 3), kernel_regularizer=tf.keras.regularizers.l2(5e-4)),
-        Conv2D(fs, (3, 3), kernel_regularizer=tf.keras.regularizers.l2(5e-4),
-               activation='sigmoid'))(x)
-
-
-def HeadEnd2(x, fs):
-    return Compose(
-        DarkConv2D(fs, (1, 1)),
-        Conv2D(fs, (5, 5), kernel_regularizer=tf.keras.regularizers.l2(5e-4)),
-        Conv2D(fs, (5, 5), kernel_regularizer=tf.keras.regularizers.l2(5e-4)),
-        Conv2D(fs, (5, 5), kernel_regularizer=tf.keras.regularizers.l2(5e-4)),
-        DarkConv2D(fs, (3, 3), strides=(2, 2), activation='sigmoid'))(x)
+        DarkConv2D(filters, (1, 1)),
+        DWConv2D_BN_Leaky(filters, (3, 3)),
+        DWConv2D_BN_Leaky(filters, (3, 3)),
+        DWConv2D_BN_Leaky(filters, (3, 3)),
+        DWConv2D_BN_Leaky(filters, (3, 3)),
+        DWConv2D_BN_Leaky(filters, (3, 3)),
+        DWConv2D_BN_Leaky(filters, (3, 3)),
+        tf.keras.layers.Conv2D(filters, (3, 3), activation='sigmoid'))(x)
 
 
 def Concat(x0, x1, x0_filters):

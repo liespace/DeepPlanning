@@ -1,6 +1,6 @@
 {
   "Model": {
-    "name": "res50",
+    "name": "dark53",
     "epoch": 130,
     "ini_epoch": 0,
     "verbose": 1,
@@ -13,7 +13,6 @@
     "B": 5,
     "C": 1,
     "S": 1,
-    "M": 5,
     "w": 60.0,
     "h": 60.0
   },
