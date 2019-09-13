@@ -37,15 +37,20 @@ class DWModel:
         self.model.summary()
 
     def train(self):
+        batch = int(self.config['Model']['batch'])
+        ts_size = int(self.config['Model']['ts_size'])
+        vs_size = int(self.config['Model']['vs_size'])
+        t_step = int(np.ceil(float(ts_size) / float(batch)))
+        v_step = int(np.ceil(float(vs_size) / float(batch)))
         self.model.fit_generator(
             generator=self.pipeline.train,
-            steps_per_epoch=self.config['Model']['ts_step'],
+            steps_per_epoch=t_step,
             epochs=self.config['Model']['epoch'],
             initial_epoch=self.config['Model']['ini_epoch'],
             verbose=self.config['Model']['verbose'],
             callbacks=self.callbacks,
             validation_data=self.pipeline.valid,
-            validation_steps=self.config['Model']['vs_step'])
+            validation_steps=v_step)
 
         self.model.save(self.log_dir + os.sep + 'model.h5')
 

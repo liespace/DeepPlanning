@@ -21,7 +21,7 @@ def DeepWayLoss(config, part='all', log=False):
                 # coord loss
                 loss += tf.reduce_sum(tf.keras.backend.abs(y_t - y_p)) * obj
         # calculate coord loss
-        loss = lam0 * loss
+        loss = lam0 * loss / batch
         if log:
             loss = tf.Print(loss, [loss], message='coord loss: ')
         return loss
@@ -36,7 +36,7 @@ def DeepWayLoss(config, part='all', log=False):
                 loss += tf.reduce_sum(tf.keras.backend.binary_crossentropy(
                     target=y_p, output=y_t))
         # calculate object loss
-        loss = lam2 * tf.reduce_sum(loss) / b_
+        loss = lam2 * tf.reduce_sum(loss) / b_ / batch
         if log:
             loss = tf.Print(loss, [loss], message='object loss: ')
         return loss
@@ -52,7 +52,7 @@ def DeepWayLoss(config, part='all', log=False):
                 loss += tf.reduce_sum(tf.keras.backend.binary_crossentropy(
                     target=y_p, output=y_t)) * obj
         # calculate class loss
-        loss = lam1 * loss
+        loss = lam1 * loss / batch
         if log:
             loss = tf.Print(loss, [loss], message='class loss: ')
         return loss

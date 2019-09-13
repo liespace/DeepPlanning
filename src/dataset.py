@@ -14,19 +14,27 @@ class Pipeline(object):
     def generator(self, channel='train'):
         while True:
             f = open(self.root + os.sep + channel + '.csv')
-            for line in f:
-                # create numpy arrays of input data
-                # and labels, from each line in the file
-                parts = line.rstrip().split(',')
-                x_path, y_path = parts[0], parts[1]
-                x = Image.open(self.root + x_path)
-                x = x.resize(tuple(self.config['Model']['i_shape'][:2]))
-                x = np.array([np.array(x)])
-                y = np.loadtxt(self.root + y_path, delimiter=',')
-                y = self.preprocess_y(y)
-                y = np.array([y])
-                yield x, y
+            fl = list(f)
             f.close()
+            batch = int(self.config['Model']['batch'])
+            d_size = (int(self.config['Model']['ts_size']) if channel == 'train'
+                      else int(self.config['Model']['vs_size']))
+            step = int(np.ceil(float(d_size) / float(batch)))
+            for i in range(step):
+                indices = (np.array(range(batch)) + i * batch) % d_size
+                xs, ys = [], []
+                for j in indices:
+                    # create numpy arrays of input data
+                    # and labels, from each line in the file
+                    parts = fl[j].rstrip().split(',')
+                    x_path, y_path = parts[0], parts[1]
+                    x = Image.open(self.root + x_path)
+                    x = x.resize(tuple(self.config['Model']['i_shape'][:2]))
+                    xs.append(np.array(x))
+                    y = np.loadtxt(self.root + y_path, delimiter=',')
+                    y = self.preprocess_y(y)
+                    ys.append(y)
+                yield np.array(xs), np.array(ys)
 
     def preprocess_y(self, y):
         """[u, v, x, y , theta, c]"""

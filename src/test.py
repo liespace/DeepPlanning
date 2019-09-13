@@ -57,3 +57,7 @@ b = tf.keras.backend.variable(0.4)
 c = tf.keras.backend.binary_crossentropy(a, b)
 b = tf.keras.backend.eval(c)
 print(b, type(b), b.shape)
+
+f = open('./dataset' + os.sep + 'train' + '.csv')
+print(list(f))
+f.close()
