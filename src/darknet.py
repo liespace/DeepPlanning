@@ -1,8 +1,12 @@
 import tensorflow as tf
 from functools import wraps, reduce
+import os
+import json
 
-
-LAM = 5e-4
+cfg_path = os.getcwd() + os.sep + 'src' + os.sep + 'config.json'
+with open(cfg_path) as handle:
+    config = json.loads(handle.read())
+LAM = config['Loss']['lamb']
 
 
 def Compose(*funcs):
