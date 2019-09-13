@@ -19,7 +19,13 @@ def DeepWayLoss(config, part='all', log=False):
                 y_t = y_true[j, :, :, b*(c_+a_):(b+1)*(c_+a_) - 2]
                 obj = y_true[j, :, :, (b+1)*(c_+a_) - 2]
                 # coord loss
-                loss += tf.reduce_sum(tf.keras.backend.abs(y_t - y_p)) * obj
+                if config['Loss']['coord'] == 'bce':
+                    cor = tf.keras.backend.binary_crossentropy(
+                        target=y_t, output=y_p, from_logits=True)
+                else:
+                    cor = tf.reduce_sum(tf.keras.backend.abs(
+                        y_t - tf.keras.backend.sigmoid(y_p)))
+                loss += cor * obj
         # calculate coord loss
         loss = lam0 * loss / batch / (a_ - 1)
         if log:
@@ -34,7 +40,7 @@ def DeepWayLoss(config, part='all', log=False):
                 y_t = y_true[j, :, :, (b+1)*(c_+a_) - 2]
                 # object loss
                 loss += tf.reduce_sum(tf.keras.backend.binary_crossentropy(
-                    target=y_p, output=y_t))
+                    target=y_t, output=y_p, from_logits=True))
         # calculate object loss
         loss = lam2 * tf.reduce_sum(loss) / b_ / batch
         if log:
@@ -50,7 +56,7 @@ def DeepWayLoss(config, part='all', log=False):
                 obj = y_true[j, :, :, (b+1)*(c_+a_) - 2]
                 # class loss
                 loss += tf.reduce_sum(tf.keras.backend.binary_crossentropy(
-                    target=y_p, output=y_t)) * obj
+                    target=y_t, output=y_p, from_logits=True)) * obj
         # calculate class loss
         loss = lam1 * loss / batch
         if log:

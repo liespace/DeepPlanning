@@ -53,11 +53,7 @@ from cores import DWDark53, DWRes50, DWVGG19, DWDark19
 # model.summary()
 
 a = tf.keras.backend.variable(0.3)
-b = tf.keras.backend.variable(0.4)
+b = tf.keras.backend.variable(0.311)
 c = tf.keras.backend.binary_crossentropy(a, b)
 b = tf.keras.backend.eval(c)
 print(b, type(b), b.shape)
-
-f = open('./dataset' + os.sep + 'train' + '.csv')
-print(list(f))
-f.close()

@@ -142,7 +142,7 @@ def HeadEnd(x, filters):
         DWConv2D_BN_Leaky(filters, (3, 3)),
         DWConv2D_BN_Leaky(filters, (3, 3)),
         DWConv2D_BN_Leaky(filters, (3, 3)),
-        tf.keras.layers.Conv2D(filters, (3, 3), activation='sigmoid'))(x)
+        tf.keras.layers.Conv2D(filters, (3, 3)))(x)
 
 
 def Concat(x0, x1, x0_filters):

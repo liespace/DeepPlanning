@@ -92,6 +92,8 @@ class DWModel:
         epochs = self.config['Model']['epoch']
         if self.config['LRSchedule']['type'] == 'cosine':
             return 0.5 * (1 + np.cos(epoch / epochs * np.pi)) * lr
+        if self.config['LRSchedule']['type'] == 'valid':
+            return lr
 
     @property
     def log_dir(self):
