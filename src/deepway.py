@@ -3,8 +3,10 @@ from model import DWModel
 from cores import DWDark53, DWRes50, DWDark19, DWVGG19
 import json
 import os
+import tensorflow as tf
 
-cfg_path = os.getcwd() + os.sep + 'src' + os.sep + 'config.json'
+cfg_name = 'config'
+cfg_path = os.getcwd() + os.sep + 'src' + os.sep + cfg_name + '.json'
 with open(cfg_path) as handle:
     config = json.loads(handle.read())
 
@@ -14,29 +16,33 @@ if config['Model']['name'] == 'dark53':
         i_shape=tuple(config['Model']['i_shape']),
         a=config['Model']['A'],
         b=config['Model']['B'],
-        c=config['Model']['C'])
+        c=config['Model']['C'],
+        weights=False)
 elif config['Model']['name'] == 'res50':
     print ('Running DWRes50')
     core = DWRes50(
         i_shape=tuple(config['Model']['i_shape']),
         a=config['Model']['A'],
         b=config['Model']['B'],
-        c=config['Model']['C'])
+        c=config['Model']['C'],
+        weights=config['Model']['weights'])
 elif config['Model']['name'] == 'dark19':
     print ('Running DWDark19')
     core = DWDark19(
         i_shape=tuple(config['Model']['i_shape']),
         a=config['Model']['A'],
         b=config['Model']['B'],
-        c=config['Model']['C'])
+        c=config['Model']['C'],
+        weights=False)
 else:
-    print ('Running DWVGG19')
+    tf.logging.warning('Running DWVGG19')
     core = DWVGG19(
         i_shape=tuple(config['Model']['i_shape']),
         a=config['Model']['A'],
         b=config['Model']['B'],
-        c=config['Model']['C'])
+        c=config['Model']['C'],
+        weights=config['Model']['weights'])
 
 model = DWModel(core=core, config=config, pipeline=Pipeline(config=config))
-model.compile()
+model.compile(config['Model']['summary'])
 model.train()

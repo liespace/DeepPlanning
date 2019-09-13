@@ -27,14 +27,15 @@ class DWModel:
     def startup(self):
         self.set_callbacks()
 
-    def compile(self):
+    def compile(self, summary=True):
         self.model.compile(
             optimizer=self.optimizer,
             loss=DeepWayLoss(self.config),
             metrics=[DeepWayLoss(self.config, 'coord'),
                      DeepWayLoss(self.config, 'class'),
                      DeepWayLoss(self.config, 'object')])
-        self.model.summary()
+        if summary:
+            self.model.summary()
 
     def train(self):
         batch = int(self.config['Model']['batch'])
