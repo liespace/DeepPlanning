@@ -33,7 +33,8 @@ class DWModel:
             loss=DeepWayLoss(self.config),
             metrics=[DeepWayLoss(self.config, 'coord'),
                      DeepWayLoss(self.config, 'class'),
-                     DeepWayLoss(self.config, 'object')])
+                     DeepWayLoss(self.config, 'object'),
+                     DeepWayLoss(self.config, 'metric')])
         if summary:
             self.model.summary()
 
@@ -91,7 +92,8 @@ class DWModel:
         lr = self.config['Optimizer']['lr']
         epochs = self.config['Model']['epoch']
         if self.config['LRSchedule']['type'] == 'cosine':
-            return 0.5 * (1 + np.cos(epoch / epochs * np.pi)) * lr
+            lrd = 0.5 * (1.0 + np.cos(epoch / float(epochs) * np.pi)) * lr
+            return lrd
         if self.config['LRSchedule']['type'] == 'valid':
             return lr
 

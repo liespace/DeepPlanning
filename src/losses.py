@@ -11,6 +11,22 @@ def DeepWayLoss(config, part='all', log=False):
     lam1 = config['Loss']['lam1']
     lam2 = config['Loss']['lam2']
 
+    def dw_cor_metric(y_true, y_pred):
+        metric = 0
+        for j in range(batch):
+            for b in range(b_):
+                y_p = y_pred[j, :, :, b*(c_+a_):(b+1)*(c_+a_) - 2]
+                y_t = y_true[j, :, :, b*(c_+a_):(b+1)*(c_+a_) - 2]
+                obj = y_true[j, :, :, (b+1)*(c_+a_) - 2]
+                # coord metric
+                metric += tf.reduce_sum(tf.keras.backend.abs(
+                    y_t - tf.math.sigmoid(y_p))) * obj
+        # calculate coord loss
+        metric = metric / batch / (a_ - 1)
+        if log:
+            metric = tf.Print(metric, [metric], message='coord metric: ')
+        return metric
+
     def dw_cor_loss(y_true, y_pred):
         loss = 0
         for j in range(batch):
@@ -75,5 +91,7 @@ def DeepWayLoss(config, part='all', log=False):
         return dw_cla_loss
     if part == 'object':
         return dw_obj_loss
+    if part == 'metric':
+        return dw_cor_metric
     else:
         return dw_loss
