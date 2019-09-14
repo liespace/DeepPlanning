@@ -24,7 +24,7 @@ def DeepWayLoss(config, part='all', log=False):
                         target=y_t, output=y_p, from_logits=True)
                 else:
                     cor = tf.reduce_sum(tf.keras.backend.abs(
-                        y_t - tf.keras.backend.sigmoid(y_p)))
+                        tf.math.log_sigmoid(y_t) - y_p))
                 loss += cor * obj
         # calculate coord loss
         loss = lam0 * loss / batch / (a_ - 1)
