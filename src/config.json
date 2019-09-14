@@ -1,7 +1,7 @@
 {
   "Model": {
-    "name": "res50",
-    "epoch": 130,
+    "name": "dark53",
+    "epoch": 2000,
     "ini_epoch": 0,
     "verbose": 1,
     "ts_size": 7762,
@@ -21,11 +21,11 @@
 
   "Loss": {
     "type": "self",
-    "coord": "mae",
-    "lamb": 0.0001,
+    "coord": "mse",
+    "lamb": 0.00001,
     "lam0": 10.0,
-    "lam1": 1.0,
-    "lam2": 1.0
+    "lam1": 10.0,
+    "lam2": 10.0
   },
 
   "Optimizer": {
