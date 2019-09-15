@@ -39,8 +39,8 @@ def DeepWayLoss(config, part='all', log=False):
                     cor = tf.keras.backend.binary_crossentropy(
                         target=y_t, output=y_p, from_logits=True)
                 else:
-                    cor = tf.reduce_sum(tf.keras.backend.abs(
-                        tf.math.log_sigmoid(y_t) - y_p))
+                    cor = tf.reduce_sum(tf.keras.backend.square(
+                        tf.math.log_sigmoid(y_t) - y_p)) * 0.5
                 loss += cor * obj
         # calculate coord loss
         loss = lam0 * loss / batch / (a_ - 1)

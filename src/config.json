@@ -24,8 +24,8 @@
     "coord": "mse",
     "lamb": 0.00001,
     "lam0": 10.0,
-    "lam1": 10.0,
-    "lam2": 10.0
+    "lam1": 1.0,
+    "lam2": 1.0
   },
 
   "Optimizer": {
