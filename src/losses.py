@@ -27,6 +27,41 @@ def DeepWayLoss(config, part='all', log=False):
             metric = tf.Print(metric, [metric], message='coord metric: ')
         return metric
 
+    def dw_cla_metric(y_true, y_pred):
+        metric = 0
+        objs = 0 + tf.keras.backend.epsilon()
+        for j in range(batch):
+            for b in range(b_):
+                y_p = y_pred[j, :, :, (b + 1) * (c_ + a_) - 1]
+                y_t = y_true[j, :, :, (b + 1) * (c_ + a_) - 1]
+                obj = y_true[j, :, :, (b + 1) * (c_ + a_) - 2]
+                # class loss
+                objs += y_t
+                y_p = tf.keras.backend.sigmoid(y_p)
+                y_p = tf.cast(y_p > 0.5, y_t.dtype)
+                metric += tf.cast(tf.equal(y_p, y_t), y_t.dtype) * y_t
+        # calculate class accuracy
+        accuracy = metric / objs
+        if log:
+            accuracy = tf.Print(accuracy, [accuracy], message='class accuracy: ')
+        return objs
+
+    def dw_obj_metric(y_true, y_pred):
+        metric = 0
+        for j in range(batch):
+            for b in range(b_):
+                y_p = y_pred[j, :, :, (b + 1) * (c_ + a_) - 2]
+                y_t = y_true[j, :, :, (b + 1) * (c_ + a_) - 2]
+                # object loss
+                y_p = tf.keras.backend.sigmoid(y_p)
+                y_p = tf.cast(y_p > 0.5, y_t.dtype)
+                metric += tf.cast(tf.equal(y_p, y_t), y_t.dtype)
+        # calculate object accuracy
+        accuracy = metric / b_ / batch
+        if log:
+            accuracy = tf.Print(accuracy, [accuracy], message='object accuracy: ')
+        return accuracy
+
     def dw_cor_loss(y_true, y_pred):
         loss = 0
         for j in range(batch):
@@ -91,7 +126,11 @@ def DeepWayLoss(config, part='all', log=False):
         return dw_cla_loss
     if part == 'object':
         return dw_obj_loss
-    if part == 'metric':
+    if part == 'cor_mt':
         return dw_cor_metric
+    if part == 'cla_mt':
+        return dw_cla_metric
+    if part == 'obj_mt':
+        return dw_obj_metric
     else:
         return dw_loss

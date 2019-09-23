@@ -34,7 +34,9 @@ class DWModel:
             metrics=[DeepWayLoss(self.config, 'coord'),
                      DeepWayLoss(self.config, 'class'),
                      DeepWayLoss(self.config, 'object'),
-                     DeepWayLoss(self.config, 'metric')])
+                     DeepWayLoss(self.config, 'cor_mt'),
+                     DeepWayLoss(self.config, 'cla_mt'),
+                     DeepWayLoss(self.config, 'obj_mt')])
         if summary:
             self.model.summary()
 

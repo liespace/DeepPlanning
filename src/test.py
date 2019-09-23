@@ -52,8 +52,9 @@ from cores import DWDark53, DWRes50, DWVGG19, DWDark19
 # model = DWDark19((480, 480, 3), 3, 1, 4)
 # model.summary()
 
-a = tf.log_sigmoid(0.311)
-b = tf.log_sigmoid(0.312)
-c = a - b
-b = tf.keras.backend.eval(c)
+a = tf.keras.backend.variable(0.511)
+b = tf.keras.backend.variable(1)
+c = tf.cast(a > 0.5, b.dtype)
+e = tf.cast(tf.equal(c, b), b.dtype)
+b = tf.keras.backend.eval(e)
 print(b, type(b), b.shape)
