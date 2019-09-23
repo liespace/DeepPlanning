@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9147d471-6244-4115-8739-9234121dd0c5" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/losses.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/losses.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/tools/cook.py" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/tools/cook.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/train.csv" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/train.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/valid.csv" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/valid.csv" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -11,7 +14,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/dataset" />
   </component>
   <component name="ProjectId" id="1QMQV3s9FqnC1BEGQUiDOyUgMj1" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -74,6 +77,7 @@
       <workItem from="1568370659825" duration="6861000" />
       <workItem from="1568403591179" duration="3559000" />
       <workItem from="1568445203261" duration="6406000" />
+      <workItem from="1569240108881" duration="626000" />
     </task>
     <servers />
   </component>
