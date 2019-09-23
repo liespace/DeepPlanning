@@ -2,14 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9147d471-6244-4115-8739-9234121dd0c5" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/tools/cook.py" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/tools/cook.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/train.csv" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/train.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/valid.csv" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/valid.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/losses.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/losses.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset" beforeDir="false" afterPath="$PROJECT_DIR$/dataset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run.sh" beforeDir="false" afterPath="$PROJECT_DIR$/run.sh" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -18,7 +12,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/dataset" />
   </component>
   <component name="ProjectId" id="1QMQV3s9FqnC1BEGQUiDOyUgMj1" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -83,6 +77,7 @@
       <workItem from="1568445203261" duration="6406000" />
       <workItem from="1569240108881" duration="626000" />
       <workItem from="1569242832804" duration="4699000" />
+      <workItem from="1569259072148" duration="236000" />
     </task>
     <servers />
   </component>
