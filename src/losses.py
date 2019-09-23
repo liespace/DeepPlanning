@@ -44,7 +44,7 @@ def DeepWayLoss(config, part='all', log=False):
         accuracy = metric / objs
         if log:
             accuracy = tf.Print(accuracy, [accuracy], message='class accuracy: ')
-        return objs
+        return accuracy
 
     def dw_obj_metric(y_true, y_pred):
         metric = 0
