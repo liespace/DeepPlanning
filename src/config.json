@@ -16,7 +16,7 @@
     "w": 60.0,
     "h": 60.0,
     "weights": false,
-    "summary": false
+    "summary": true
   },
 
   "Loss": {

@@ -69,6 +69,17 @@ def ResBlock(x, num_filters, num_blocks):
     return x
 
 
+def DWResBlock(x, num_filters, num_blocks):
+    """A series of res-blocks starting with a down-sampling Convolution2D"""
+    # Darknet uses left and top padding instead of 'same' mode
+    x = DarkConv2D_BN_Leaky(num_filters, (3, 3), strides=(2, 2))(x)
+    for i in range(num_blocks):
+        y = Compose(DarkConv2D_BN_Leaky(num_filters // 2, (1, 1)),
+                    DarkConv2D_BN_Leaky(num_filters, (3, 3)))(x)
+        x = tf.keras.layers.Add()([x, y])
+    return x
+
+
 def BottleNeck(outer_filters, bottleneck_filters):
     """Bottleneck block of 3x3, 1x1, 3x3 convolutions."""
     return Compose(DarkConv2D_BN_Leaky(outer_filters, (3, 3)),
@@ -81,6 +92,44 @@ def BottleNeck2(outer_filters, bottleneck_filters):
     return Compose(BottleNeck(outer_filters, bottleneck_filters),
                    DarkConv2D_BN_Leaky(bottleneck_filters, (1, 1)),
                    DarkConv2D_BN_Leaky(outer_filters, (3, 3)))
+
+
+def DWBottleNeck(x, filters):
+    x = DarkConv2D_BN_Leaky(filters, (1, 1))(x)
+    x = DWResBlock(x, filters, 2)
+    x = DWResBlock(x, filters, 2)
+    x = DWResBlock(x, filters, 2)
+    return x
+
+
+def DWBottleNeck2(x, filters):
+    x = Compose(
+        tf.keras.layers.ZeroPadding2D(((1, 0), (1, 0))),
+        DarkConv2D_BN_Leaky(filters, (3, 3), strides=(2, 2)))(x)
+    x = DarkConv2D_BN_Leaky(filters, (1, 1))(x)
+    x = DWResBlock(x, filters, 2)
+    x = DWResBlock(x, filters, 2)
+    x = DWResBlock(x, filters, 2)
+    return x
+
+
+def ConvHeadEnd(x, filters, neck=512):
+    x = Compose(DarkConv2D_BN_Leaky(neck / 4, (1, 1)),
+                DarkConv2D_BN_Leaky(neck / 2, (3, 3)),
+                DarkConv2D_BN_Leaky(neck / 8, (1, 1)),
+                DarkConv2D_BN_Leaky(neck / 4, (3, 3)),
+                DarkConv2D_BN_Leaky(neck / 16, (1, 1)),
+                DarkConv2D_BN_Leaky(neck / 8, (3, 3)),
+                DarkConv2D_BN_Leaky(filters, (1, 1)))(x)
+    return x
+
+
+def ConnHeadEnd(x, filters):
+    x = tf.keras.layers.Dense(units=2048)(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.LeakyReLU(alpha=0.1)(x)
+    x = tf.keras.layers.Dense(units=filters)(x)
+    return x
 
 
 def DarkNet19(x):
@@ -109,40 +158,6 @@ def DarkNet53(x):
     x = ResBlock(x, 512, 8)
     x = ResBlock(x, 1024, 4)
     return x
-
-
-def Bottleneck(x, filters):
-    """6 Conv2D_BN_Leaky layers followed by a Conv2D_linear layer"""
-    x = Compose(DarkConv2D_BN_Leaky(filters / 4, (1, 1)),
-                DarkConv2D_BN_Leaky(filters / 2, (3, 3)),
-                DarkConv2D_BN_Leaky(filters / 8, (1, 1)),
-                DarkConv2D_BN_Leaky(filters / 4, (3, 3)),
-                DarkConv2D_BN_Leaky(filters / 16, (1, 1)))(x)
-    return x
-
-
-def Bottleneck2(x, filters):
-    x = Compose(
-        tf.keras.layers.ZeroPadding2D(((1, 0), (1, 0))),
-        DarkConv2D_BN_Leaky(filters, (3, 3), strides=(2, 2)),
-        DarkConv2D_BN_Leaky(filters / 4, (1, 1)),
-        DarkConv2D_BN_Leaky(filters / 2, (3, 3)),
-        DarkConv2D_BN_Leaky(filters / 8, (1, 1)),
-        DarkConv2D_BN_Leaky(filters / 4, (3, 3)),
-        DarkConv2D_BN_Leaky(filters / 16, (1, 1)))(x)
-    return x
-
-
-def HeadEnd(x, filters):
-    return Compose(
-        DarkConv2D(filters, (1, 1)),
-        DWConv2D_BN_Leaky(filters, (3, 3)),
-        DWConv2D_BN_Leaky(filters, (3, 3)),
-        DWConv2D_BN_Leaky(filters, (3, 3)),
-        DWConv2D_BN_Leaky(filters, (3, 3)),
-        DWConv2D_BN_Leaky(filters, (3, 3)),
-        DWConv2D_BN_Leaky(filters, (3, 3)),
-        tf.keras.layers.Conv2D(filters, (3, 3)))(x)
 
 
 def Concat(x0, x1, x0_filters):
