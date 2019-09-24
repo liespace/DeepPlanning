@@ -19,10 +19,17 @@ class DWModel:
     @property
     def optimizer(self):
         if self.config['Optimizer']['type'] == 'adam':
+            print ('Using Optimizer Adam')
             return tf.keras.optimizers.Adam(
                 lr=self.config['Optimizer']['lr'],
                 beta_1=self.config['Optimizer']['beta_1'],
                 beta_2=self.config['Optimizer']['beta_2'])
+        if self.config['Optimizer']['type'] == 'sgd':
+            print ('Using Optimizer SGD')
+            return tf.keras.optimizers.SGD(
+                lr=self.config['Optimizer']['lr'],
+                momentum=self.config['Optimizer']['momentum'],
+                decay=self.config['Optimizer']['decay'])
 
     def startup(self):
         self.set_callbacks()

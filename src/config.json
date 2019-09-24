@@ -29,10 +29,12 @@
   },
 
   "Optimizer": {
-    "type": "adam",
+    "type": "sgd",
     "lr": 0.01,
     "beta_1": 0.9,
-    "beta_2": 0.999
+    "beta_2": 0.999,
+    "momentum": 0.9,
+    "decay": 0.0005
   },
 
   "TensorBoard": {
@@ -42,8 +44,8 @@
 
   "LRSchedule": {
     "enable": true,
-    "wp_step": 1000,
-    "wp_lr": 0.0005,
+    "wp_step": 800,
+    "wp_lr": 0.001,
     "type": "cosine"
   },
 
