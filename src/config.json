@@ -1,6 +1,6 @@
 {
   "Model": {
-    "name": "dark53",
+    "name": "res50",
     "epoch": 2000,
     "ini_epoch": 0,
     "verbose": 1,
@@ -16,21 +16,22 @@
     "w": 60.0,
     "h": 60.0,
     "weights": false,
-    "summary": true
+    "summary": true,
+    "max_queue_size": 4
   },
 
   "Loss": {
     "type": "self",
     "coord": "bce",
     "lamb": 0.00001,
-    "lam0": 10.0,
+    "lam0": 1.0,
     "lam1": 1.0,
     "lam2": 1.0
   },
 
   "Optimizer": {
-    "type": "sgd",
-    "lr": 0.01,
+    "type": "adam",
+    "lr": 0.0003,
     "beta_1": 0.9,
     "beta_2": 0.999,
     "momentum": 0.9,
@@ -45,7 +46,7 @@
   "LRSchedule": {
     "enable": true,
     "wp_step": 800,
-    "wp_lr": 0.001,
+    "wp_lr": 0.0003,
     "type": "cosine"
   },
 

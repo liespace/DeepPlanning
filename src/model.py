@@ -61,7 +61,8 @@ class DWModel:
             verbose=self.config['Model']['verbose'],
             callbacks=self.callbacks,
             validation_data=self.pipeline.valid,
-            validation_steps=v_step)
+            validation_steps=v_step,
+            max_queue_size=self.config['Model']['max_queue_size'])
 
         self.model.save(self.log_dir + os.sep + 'model.h5')
 
