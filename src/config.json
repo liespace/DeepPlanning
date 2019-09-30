@@ -1,6 +1,7 @@
 {
   "Model": {
-    "name": "dark53",
+    "name": "res50",
+    "backbone": "res50",
     "epoch": 2000,
     "ini_epoch": 0,
     "verbose": 1,
@@ -16,7 +17,8 @@
     "w": 60.0,
     "h": 60.0,
     "weights": false,
-    "summary": false
+    "summary": false,
+    "max_queue_size": 4
   },
 
   "Loss": {
