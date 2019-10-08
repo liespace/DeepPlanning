@@ -10,7 +10,7 @@ cfg_path = os.getcwd() + os.sep + 'src' + os.sep + cfg_name + '.json'
 with open(cfg_path) as handle:
     config = json.loads(handle.read())
 
-if config['Model']['name'] == 'dark53':
+if config['Model']['backbone'] == 'dark53':
     print ('Running DWDark53')
     core = DWDark53(
         i_shape=tuple(config['Model']['i_shape']),
@@ -18,7 +18,7 @@ if config['Model']['name'] == 'dark53':
         b=config['Model']['B'],
         c=config['Model']['C'],
         weights=False)
-elif config['Model']['name'] == 'res50':
+elif config['Model']['backbone'] == 'res50':
     print ('Running DWRes50')
     core = DWRes50(
         i_shape=tuple(config['Model']['i_shape']),
@@ -26,7 +26,7 @@ elif config['Model']['name'] == 'res50':
         b=config['Model']['B'],
         c=config['Model']['C'],
         weights=config['Model']['weights'])
-elif config['Model']['name'] == 'dark19':
+elif config['Model']['backbone'] == 'dark19':
     print ('Running DWDark19')
     core = DWDark19(
         i_shape=tuple(config['Model']['i_shape']),
