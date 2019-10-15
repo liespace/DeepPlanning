@@ -9,6 +9,7 @@ class Pipeline(object):
         self.root = os.getcwd() + os.sep + 'dataset' if not root else root
         self.train = self.generator(channel='train')
         self.valid = self.generator(channel='valid')
+        self.cond = self.generator(channel='cond')
         self.config = config
 
     def generator(self, channel='train'):
@@ -16,10 +17,21 @@ class Pipeline(object):
             f = open(self.root + os.sep + channel + '.csv')
             fl = list(f)
             f.close()
-            batch = int(self.config['Model']['batch'])
-            d_size = (int(self.config['Model']['ts_size']) if channel == 'train'
-                      else int(self.config['Model']['vs_size']))
+            # batch setting
+            if channel != 'cond':
+                batch = int(self.config['Model']['batch'])
+            else:
+                batch = 1
+            # channel setting
+            if channel == 'train':
+                d_size = int(self.config['Model']['ts_size'])
+            elif channel == 'valid':
+                d_size = int(self.config['Model']['vs_size'])
+            else:
+                d_size = int(self.config['Model']['pd_size'])
+            # step setting
             step = int(np.ceil(float(d_size) / float(batch)))
+            # yield batches
             for i in range(step):
                 indices = (np.array(range(batch)) + i * batch) % d_size
                 xs, ys = [], []

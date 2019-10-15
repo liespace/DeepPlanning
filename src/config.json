@@ -7,6 +7,7 @@
     "verbose": 1,
     "ts_size": 6900,
     "vs_size": 1725,
+    "pd_size": 1500,
     "batch": 1,
     "i_shape": [480, 480, 3],
     "o_shape": [1, 1, 25],

@@ -66,6 +66,18 @@ class DWModel:
 
         self.model.save(self.log_dir + os.sep + 'model.h5')
 
+    def predict_generator(self, weights_file):
+        self.model.load_weights(filepath=weights_file)
+        print('loading conditions from ' + weights_file)
+        return self.model.predict_generator(
+            generator=self.pipeline.cond,
+            steps=int(self.config['Model']['pd_size']),
+            verbose=self.config['Model']['verbose'],
+            max_queue_size=self.config['Model']['max_queue_size'])
+
+    def predict(self, x):
+        return self.model.predict_on_batch(x=x)
+
     def set_callbacks(self):
         if self.config['TensorBoard']['enable']:
             self.callbacks.append(tf.keras.callbacks.TensorBoard(

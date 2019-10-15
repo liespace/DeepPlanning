@@ -45,4 +45,5 @@ else:
 
 model = DWModel(core=core, config=config, pipeline=Pipeline(config=config))
 model.compile(config['Model']['summary'])
+# model.predict_generator(weights_file='../checkpoint-800.h5')
 model.train()
