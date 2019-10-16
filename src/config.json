@@ -12,7 +12,6 @@
     "o_shape": [1, 1, 25],
     "A": 4,
     "B": 5,
-    "C": 1,
     "S": 1,
     "w": 60.0,
     "h": 60.0,
@@ -24,15 +23,14 @@
   "Loss": {
     "type": "self",
     "coord": "bce",
-    "lamb": 0.00001,
-    "lam0": 1.0,
-    "lam1": 1.0,
-    "lam2": 1.0
+    "lamb": 0.000001,
+    "lam0": 60.0,
+    "lam1": 1.0
   },
 
   "Optimizer": {
     "type": "adam",
-    "lr": 0.0003,
+    "lr": 0.00003,
     "beta_1": 0.9,
     "beta_2": 0.999,
     "momentum": 0.9,
@@ -45,7 +43,7 @@
   },
 
   "LRSchedule": {
-    "enable": true,
+    "enable": false,
     "wp_step": 800,
     "wp_lr": 0.0003,
     "type": "cosine"

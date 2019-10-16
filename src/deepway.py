@@ -16,7 +16,6 @@ if config['Model']['backbone'] == 'dark53':
         i_shape=tuple(config['Model']['i_shape']),
         a=config['Model']['A'],
         b=config['Model']['B'],
-        c=config['Model']['C'],
         weights=False)
 elif config['Model']['backbone'] == 'res50':
     print ('Running DWRes50')
@@ -24,7 +23,6 @@ elif config['Model']['backbone'] == 'res50':
         i_shape=tuple(config['Model']['i_shape']),
         a=config['Model']['A'],
         b=config['Model']['B'],
-        c=config['Model']['C'],
         weights=config['Model']['weights'])
 elif config['Model']['backbone'] == 'dark19':
     print ('Running DWDark19')
@@ -32,7 +30,6 @@ elif config['Model']['backbone'] == 'dark19':
         i_shape=tuple(config['Model']['i_shape']),
         a=config['Model']['A'],
         b=config['Model']['B'],
-        c=config['Model']['C'],
         weights=False)
 else:
     tf.logging.warning('Running DWVGG19')
@@ -40,7 +37,6 @@ else:
         i_shape=tuple(config['Model']['i_shape']),
         a=config['Model']['A'],
         b=config['Model']['B'],
-        c=config['Model']['C'],
         weights=config['Model']['weights'])
 
 model = DWModel(core=core, config=config, pipeline=Pipeline(config=config))
