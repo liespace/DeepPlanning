@@ -27,7 +27,7 @@ def DWRes50(i_shape, b, a, weights=False):
         input_shape=i_shape,
         weights=None)
     if weights:
-        tf.logging.info('Loading ResNet50 Weights')
+        tf.logging.warning('Loading ResNet50 Weights')
         resnet.load_weights('./weights/resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5')
     x = Bottleneck(resnet.output, filters=1024)
     x = HeadEnd(x, filters=b * a)
