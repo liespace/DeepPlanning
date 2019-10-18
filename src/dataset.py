@@ -70,5 +70,4 @@ class Pipeline(object):
             p, y = p_y[i], y_t[i]
             y[0, 0, :3] = p[:3]  # x, y, theta
             y[0, 0, 3] = p[3]  # object
-            break
         return np.concatenate(y_t, axis=-1)
