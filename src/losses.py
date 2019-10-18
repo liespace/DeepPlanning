@@ -11,6 +11,7 @@ def DeepWayLoss(config, part='all', log=False):
 
     def dw_cor_metric(y_true, y_pred):
         metric = 0
+        num = 0
         for j in range(batch):
             for b in range(b_):
                 y_p = y_pred[j, :, :, b*a_:(b+1)*a_ - 1]
@@ -19,8 +20,9 @@ def DeepWayLoss(config, part='all', log=False):
                 # coord metric
                 metric += tf.reduce_sum(tf.keras.backend.abs(
                     y_t - tf.math.sigmoid(y_p))) * obj
+                num += obj
         # calculate coord loss
-        metric = metric / batch / (a_ - 1)
+        metric = metric / (a_ - 1) / (num + tf.keras.backend.epsilon())
         if log:
             metric = tf.Print(metric, [metric], message='coord metric: ')
         return metric
@@ -43,6 +45,7 @@ def DeepWayLoss(config, part='all', log=False):
 
     def dw_cor_loss(y_true, y_pred):
         loss = 0
+        num = 0
         for j in range(batch):
             for b in range(b_):
                 y_p = y_pred[j, :, :, b*a_:(b+1)*a_ - 1]
@@ -56,8 +59,9 @@ def DeepWayLoss(config, part='all', log=False):
                     cor = tf.reduce_sum(tf.keras.backend.square(
                         tf.math.log_sigmoid(y_t) - y_p)) * 0.5
                 loss += cor * obj
+                num += obj
         # calculate coord loss
-        loss = lam0 * loss / batch / (a_ - 1)
+        loss = lam0 * loss / (a_ - 1) / (num + tf.keras.backend.epsilon())
         if log:
             loss = tf.Print(loss, [loss], message='coord loss: ')
         return loss
