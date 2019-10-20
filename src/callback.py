@@ -30,4 +30,4 @@ class WarmUpLRSchedule(tf.keras.callbacks.Callback):
         lrd = self.schedule(epoch)
         # Set the value back to the optimizer before this epoch starts
         tf.keras.backend.set_value(self.model.optimizer.lr, lrd)
-        print('\nEpoch %05d: LR is %6.4f from %6.4f.' % (epoch, lrd, lr))
+        print('\nEpoch %06d: LR is %2.8f from %2.8f.' % (epoch, lrd, lr))

@@ -8,7 +8,6 @@ from losses import DeepWayLoss
 
 class DWModel:
     def __init__(self, core, config, pipeline):
-        self.core = core
         self.model = core
         self.pipeline = pipeline
         self.root = os.getcwd()
@@ -19,13 +18,13 @@ class DWModel:
     @property
     def optimizer(self):
         if self.config['Optimizer']['type'] == 'adam':
-            print ('Using Optimizer Adam')
+            tf.logging.warning('Using Optimizer Adam')
             return tf.keras.optimizers.Adam(
                 lr=self.config['Optimizer']['lr'],
                 beta_1=self.config['Optimizer']['beta_1'],
                 beta_2=self.config['Optimizer']['beta_2'])
         if self.config['Optimizer']['type'] == 'sgd':
-            print ('Using Optimizer SGD')
+            tf.logging.warning('Using Optimizer SGD')
             return tf.keras.optimizers.SGD(
                 lr=self.config['Optimizer']['lr'],
                 momentum=self.config['Optimizer']['momentum'],
@@ -35,7 +34,7 @@ class DWModel:
         self.set_callbacks()
 
     def compile(self, summary=True):
-        self.model.compile(
+        self.model.core.compile(
             optimizer=self.optimizer,
             loss=DeepWayLoss(self.config),
             metrics=[DeepWayLoss(self.config, 'coord'),
@@ -43,38 +42,65 @@ class DWModel:
                      DeepWayLoss(self.config, 'cor_mt'),
                      DeepWayLoss(self.config, 'obj_mt')])
         if summary:
-            self.model.summary()
+            self.model.core.summary()
+
+    def freeze_backbone(self):
+        tf.logging.warning('Freezing backbone')
+        for layer in self.model.backbone.layers:
+            layer.trainable = False
+        self.compile(summary=True)
+
+    def unfreeze_backbone(self):
+        tf.logging.warning('Unfreezing backbone')
+        for layer in self.model.backbone.layers:
+            layer.trainable = True
+        self.compile(summary=True)
 
     def train(self):
-        batch = int(self.config['Model']['batch'])
-        ts_size = int(self.config['Model']['ts_size'])
-        vs_size = int(self.config['Model']['vs_size'])
+        # settings
+        batch = int(self.config['Train']['batch'])
+        ts_size = int(self.config['Train']['ts_size'])
+        vs_size = int(self.config['Train']['vs_size'])
         t_step = int(np.ceil(float(ts_size) / float(batch)))
         v_step = int(np.ceil(float(vs_size) / float(batch)))
-        self.model.fit_generator(
+        # flowing
+        self.freeze_backbone()
+        self.model.core.fit_generator(
             generator=self.pipeline.train,
             steps_per_epoch=t_step,
-            epochs=self.config['Model']['epoch'],
-            initial_epoch=self.config['Model']['ini_epoch'],
-            verbose=self.config['Model']['verbose'],
+            epochs=self.config['Train']['frozen_epoch'],
+            initial_epoch=self.config['Train']['ini_epoch'],
+            verbose=self.config['Train']['verbose'],
             callbacks=self.callbacks,
             validation_data=self.pipeline.valid,
             validation_steps=v_step,
-            max_queue_size=self.config['Model']['max_queue_size'])
+            max_queue_size=self.config['Train']['max_queue_size'])
+        self.model.core.save(self.log_dir + os.sep + 'fr-model.h5')
 
-        self.model.save(self.log_dir + os.sep + 'model.h5')
+        self.unfreeze_backbone()
+        self.model.core.fit_generator(
+            generator=self.pipeline.train,
+            steps_per_epoch=t_step,
+            epochs=self.config['Train']['epoch'],
+            initial_epoch=self.config['Train']['frozen_epoch'],
+            verbose=self.config['Train']['verbose'],
+            callbacks=self.callbacks,
+            validation_data=self.pipeline.valid,
+            validation_steps=v_step,
+            max_queue_size=self.config['Train']['max_queue_size'])
+        self.model.core.save(self.log_dir + os.sep + 'model.h5')
 
     def predict_generator(self, weights_file):
-        self.model.load_weights(filepath=weights_file)
+        self.model.core.load_weights(filepath=weights_file)
         print('loading conditions from ' + weights_file)
-        return self.model.predict_generator(
+        return self.model.core.predict_generator(
             generator=self.pipeline.cond,
-            steps=int(self.config['Model']['pd_size']),
-            verbose=self.config['Model']['verbose'],
-            max_queue_size=self.config['Model']['max_queue_size'])
+            steps=int(self.config['Pred']['pd_size']),
+            verbose=self.config['Pred']['verbose'],
+            max_queue_size=self.config['Train']['max_queue_size'])
 
     def predict(self, x):
-        return self.model.predict_on_batch(x=x)
+        return self.model.core.predict_on_batch(x=x)
 
     def set_callbacks(self):
         if self.config['TensorBoard']['enable']:
@@ -110,12 +136,16 @@ class DWModel:
 
     def schedule(self, epoch):
         lr = self.config['Optimizer']['lr']
-        epochs = self.config['Model']['epoch']
+        epochs = self.config['Train']['epoch']
         if self.config['LRSchedule']['type'] == 'cosine':
             lrd = 0.5 * (1.0 + np.cos(epoch / float(epochs) * np.pi)) * lr
             return lrd
-        if self.config['LRSchedule']['type'] == 'valid':
-            return lr
+        if self.config['LRSchedule']['type'] == 'unfrozen':
+            if epoch >= self.config['Train']['frozen_epoch']:
+                lrd = lr / self.config['LRSchedule']['unfrozen_decay']
+                print ('decay', lrd)
+                return lrd
+        return lr
 
     @property
     def log_dir(self):

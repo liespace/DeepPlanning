@@ -2,40 +2,47 @@
   "Model": {
     "name": "res50",
     "backbone": "res50",
-    "epoch": 2000,
-    "ini_epoch": 0,
-    "verbose": 1,
-    "ts_size": 6900,
-    "vs_size": 1725,
-    "pd_size": 1500,
-    "batch": 1,
     "i_shape": [480, 480, 3],
-    "o_shape": [1, 1, 25],
     "A": 4,
     "B": 5,
     "S": 1,
     "w": 60.0,
-    "h": 60.0,
-    "weights": false,
+    "h": 60.0
+  },
+
+  "Train": {
+    "batch": 1,
+    "epoch": 3000,
+    "frozen_epoch": 2000,
+    "ini_epoch": 0,
+    "ts_size": 6900,
+    "vs_size": 1725,
+    "weights": true,
     "summary": false,
-    "max_queue_size": 4
+    "max_queue_size": 10,
+    "verbose": 1
+  },
+
+  "Pred": {
+    "pd_size": 1500,
+    "verbose": 1
   },
 
   "Loss": {
     "type": "self",
     "coord": "bce",
-    "lamb": 0.000001,
+    "lamb": 0.0005,
     "lam0": 60.0,
     "lam1": 1.0
   },
 
   "Optimizer": {
-    "type": "adam",
-    "lr": 0.00003,
+    "type": "sgd",
+    "lr": 0.0001,
     "beta_1": 0.9,
     "beta_2": 0.999,
     "momentum": 0.9,
-    "decay": 0.0005
+    "decay": 0.0
   },
 
   "TensorBoard": {
@@ -45,9 +52,10 @@
 
   "LRSchedule": {
     "enable": false,
+    "type": "unfrozen",
     "wp_step": 800,
-    "wp_lr": 0.001,
-    "type": "cosine"
+    "wp_lr": 0.00001,
+    "unfrozen_decay": 10.0
   },
 
   "CheckPoint": {

@@ -19,16 +19,16 @@ class Pipeline(object):
             f.close()
             # batch setting
             if channel != 'cond':
-                batch = int(self.config['Model']['batch'])
+                batch = int(self.config['Train']['batch'])
             else:
                 batch = 1
             # channel setting
             if channel == 'train':
-                d_size = int(self.config['Model']['ts_size'])
+                d_size = int(self.config['Train']['ts_size'])
             elif channel == 'valid':
-                d_size = int(self.config['Model']['vs_size'])
+                d_size = int(self.config['Train']['vs_size'])
             else:
-                d_size = int(self.config['Model']['pd_size'])
+                d_size = int(self.config['Pred']['pd_size'])
             # step setting
             step = int(np.ceil(float(d_size) / float(batch)))
             # yield batches

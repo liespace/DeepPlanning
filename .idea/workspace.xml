@@ -3,7 +3,13 @@
   <component name="ChangeListManager">
     <list default="true" id="9147d471-6244-4115-8739-9234121dd0c5" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/callback.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/callback.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cores.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/cores.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/deepway.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/deepway.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/losses.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/losses.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/model.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -19,7 +25,7 @@
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/dataset/tools" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../keras-yolo3/convert.py" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -87,6 +93,7 @@
       <workItem from="1571307922252" duration="60000" />
       <workItem from="1571403470852" duration="29000" />
       <workItem from="1571411749471" duration="1543000" />
+      <workItem from="1571557811197" duration="15504000" />
     </task>
     <servers />
   </component>

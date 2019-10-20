@@ -5,7 +5,7 @@ from itertools import permutations, product
 def DeepWayLoss(config, part='all', log=False):
     a_ = config['Model']['A']
     b_ = config['Model']['B']
-    batch = config['Model']['batch']
+    batch = config['Train']['batch']
     lam0 = config['Loss']['lam0']
     lam1 = config['Loss']['lam1']
 
