@@ -1,7 +1,7 @@
 {
   "Model": {
-    "name": "res50",
-    "backbone": "res50",
+    "name": "dark53",
+    "backbone": "dark53",
     "i_shape": [480, 480, 3],
     "A": 4,
     "B": 5,

@@ -126,3 +126,6 @@ dmypy.json
 food/
 *.tfrecords
 logs/
+
+# h5 files
+*.h5

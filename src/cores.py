@@ -41,7 +41,7 @@ class Core:
         darknet = tf.keras.Model(inputs=inputs, outputs=DarkNet53(inputs))
         if weights:
             tf.logging.warning('Loading Dark53 Weights')
-            darknet.load_weights('./weights/vgg19_weights_tf_dim_ordering_tf_kernels_notop.h5')
+            darknet.load_weights('./weights/darknet53_weights.h5')
 
         x = Bottleneck(darknet.output, filters=1024)
         x = HeadEnd(x, filters=b * a)
@@ -64,7 +64,7 @@ class Core:
             weights=None)
         if weights:
             tf.logging.warning('Loading ResNet50 Weights')
-            resnet.load_weights('./weights/resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5')
+            resnet.load_weights('./weights/resnet50_weights.h5')
 
         x = Bottleneck(resnet.output, filters=10241725)
         x = HeadEnd(x, filters=b * a)
@@ -79,7 +79,7 @@ class Core:
             weights=None)
         if weights:
             tf.logging.warning('Loading VGG19 Weights')
-            vgg.load_weights('./weights/vgg19_weights_tf_dim_ordering_tf_kernels_notop.h5')
+            vgg.load_weights('./weights/vgg19_weights.h5')
 
         x = Bottleneck2(vgg.layers[-2].output, filters=1024)
         x = HeadEnd(x, filters=b * a)
