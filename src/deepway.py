@@ -3,7 +3,7 @@ from model import DWModel
 from cores import Core
 import json
 import os
-import tensorflow as tf
+import backend
 
 cfg_name = 'config'
 cfg_path = os.getcwd() + os.sep + 'src' + os.sep + cfg_name + '.json'
@@ -15,5 +15,6 @@ model = DWModel(
     core=Core(config=config),
     pipeline=Pipeline(config=config))
 model.compile(config['Train']['summary'])
-# predictions = model.predict_generator(weights_file='../checkpoint-800.h5')
 model.train()
+# predictions = model.predict_generator(weights_file='../checkpoint-200.h5')
+# backend.save_predictions(predictions)

@@ -1,14 +1,14 @@
 {
   "Model": {
-    "name": "dark53",
-    "backbone": "dark53",
+    "name": "vgg19",
+    "backbone": "vgg19",
     "i_shape": [480, 480, 3],
     "A": 4,
     "B": 5,
     "S": 1,
     "w": 60.0,
     "h": 60.0,
-    "tiny": true
+    "tiny": false
   },
 
   "Train": {
