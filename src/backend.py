@@ -22,6 +22,6 @@ def save_predictions(forecasts, cond='cond', root='dataset', folder='pred'):
         # form the filename prediction
         name = no + '_pred.txt'
         np.savetxt(folder + os.sep + name, forecast, delimiter=',')
-        print ('saved ' + name)
+        # print ('saved ' + name)
     print ('saved ' + str(len(files)) + ' predictions ' +
            'to folder ' + os.getcwd() + os.sep + folder)

@@ -15,6 +15,8 @@ model = DWModel(
     core=Core(config=config),
     pipeline=Pipeline(config=config))
 model.compile(config['Train']['summary'])
-model.train()
-# predictions = model.predict_generator(weights_file='../checkpoint-200.h5')
-# backend.save_predictions(predictions)
+if config['Pred']['enable']:
+    pred = model.predict_generator(weights_file=config['Pred']['weights_file'])
+    backend.save_predictions(pred)
+else:
+    model.train()

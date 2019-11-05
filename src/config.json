@@ -13,8 +13,8 @@
 
   "Train": {
     "batch": 1,
-    "epoch": 3000,
-    "frozen_epoch": 2000,
+    "epoch": 2000,
+    "frozen_epoch": 1000,
     "ini_epoch": 0,
     "ts_size": 6900,
     "vs_size": 1725,
@@ -25,6 +25,8 @@
   },
 
   "Pred": {
+    "enable": true,
+    "weights_file": "weights/vgg19_comp_free200_check300.h5",
     "pd_size": 1500,
     "verbose": 1
   },
@@ -32,14 +34,14 @@
   "Loss": {
     "type": "self",
     "coord": "bce",
-    "lamb": 0.0005,
-    "lam0": 60.0,
+    "lamb": 0.0001,
+    "lam0": 10000.0,
     "lam1": 1.0
   },
 
   "Optimizer": {
-    "type": "sgd",
-    "lr": 0.0001,
+    "type": "adam",
+    "lr": 0.00003,
     "beta_1": 0.9,
     "beta_2": 0.999,
     "momentum": 0.9,
