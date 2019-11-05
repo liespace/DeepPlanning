@@ -17,6 +17,8 @@ model = DWModel(
 model.compile(config['Train']['summary'])
 if config['Pred']['enable']:
     pred = model.predict_generator(weights_file=config['Pred']['weights_file'])
-    backend.save_predictions(pred)
+    folder = config['Pred']['weights_file'].split('/')[-1].split('.')[0]
+    folder = 'pred/' + folder
+    backend.save_predictions(forecasts=pred, folder=folder)
 else:
     model.train()
