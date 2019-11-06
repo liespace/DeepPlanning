@@ -1,91 +1,73 @@
-from __future__ import print_function
+#!/usr/bin/env python
 import os
 import numpy as np
-import glob
 import matplotlib.pyplot as plt
-
-def plot_pdf_cdf(x):
-    # mean = 100
-    # sigma = 1
-    # x = mean + sigma * np.random.randn(10000)
-    fig, (ax0, ax1) = plt.subplots(nrows=2, figsize=(9, 6))
-    ax0.hist(x, 100, weights=np.ones_like(x) / float(len(x)),
-             histtype='step', facecolor='yellowgreen', alpha=0.75)
-    ax0.set_title('pdf')
-    ax1.hist(x, 100, normed=1, histtype='step', facecolor='pink', alpha=0.75,
-             cumulative=True, rwidth=0.8)
-    ax1.set_title("cdf")
-    fig.subplots_adjust(hspace=0.4)
-    plt.show()
-
-threshold = 0.6
-coor_mask = np.array([0.8, 0.2])
-root_pred = 'pred/valid'
-root_true = 'dataset' + os.sep + 'well'
-folders = os.listdir(root_pred)
-for folder in folders[0:1]:
-    path_pred = root_pred + os.sep + folder
-    print("Processing " + path_pred)
-    files = glob.glob(path_pred + os.sep + '*.txt')
-    rights = 0.
-    op_bias = 0.
-    om_bias = 0.
-    x_error = []
-    y_error = []
-    t_error = []
-    for f in files:
-        # number of the example
-        no = f.split('/')[-1].split('_')[0]
-        # ground true
-        file_true = root_true + os.sep + str(no) + '_way.txt'
-        true = np.loadtxt(file_true, delimiter=',')
-        # grip the number of points
-        n_prt = true.shape[0] - 2
-        # grip the points
-        prt = true[1:-1, :-1]
-        # prediction
-        pred = np.loadtxt(f, delimiter=',')
-        p_obj = pred[:, -1]
-        # grip the number of predicted points
-        n_obj = sum(p_obj > threshold)
-        # grip the predicted points
-        p_prt = []
-        for row in pred:
-            if row[-1] > threshold:
-                p_prt.append(row[:-1])
-        # check if the numbers of points are equal
-        rights += n_obj == n_prt
-        op_bias += (n_obj - 1) == n_prt
-        om_bias += (n_obj + 1) == n_prt
-        # calculate the coordinate error of points
-        if n_obj == n_prt and prt.shape[0] > 0:
-            q = prt - np.array(p_prt)
-            for i,r in enumerate(q):
-                if np.abs(r[0] > 9):
-                    print(prt, np.array(p_prt), f)
-            x_error.extend(q[:, 0])
-            y_error.extend(q[:, 1])
-            t_error.extend(q[:, 2])
-        # if prt.shape[0] == 0:
-        #     continue
-        # for p in p_prt:
-        #     q = prt - p
-        #     dxy = np.sqrt(q[:, 0]**2 + q[:, 1]**2)
-        #     dt = np.abs(q[:, -1])
-        #     ds = dxy * coor_mask[0] + dt * coor_mask[-1]
-        #     index = np.argmin(ds)
-        #     x_error.append(q[index][0])
-        #     y_error.append(q[index][1])
-        #     t_error.append(q[index][2])
-    # print(x_error, y_error, t_error)
-    print(np.mean(x_error), np.var(x_error), np.max(x_error), np.min(x_error))
-    print(np.mean(y_error), np.var(y_error), np.max(y_error), np.min(y_error))
-    print(np.mean(t_error), np.var(t_error), np.max(t_error), np.min(t_error))
-    plot_pdf_cdf(x_error)
-    break
-    # stochastic performance
-    precision = rights / len(files) * 100
-    ob_precision = (rights + op_bias + om_bias) / len(files) * 100
-    print(precision, ob_precision, rights, op_bias, om_bias)
+import reeds_shepp
 
 
+def get_point(center, radius, orin):
+    x = center[0] + radius * np.cos(orin)
+    y = center[1] + radius * np.sin(orin)
+    return x, y
+
+
+def plot_path(path, line_color='g', point_color='r'):
+    xs = [q[0] for q in path]
+    ys = [q[1] for q in path]
+    plt.plot(xs, ys, line_color+'-')
+    plt.plot(xs, ys, point_color+'.')
+    plt.axis('equal')
+
+
+def plot_car(q, size, color='g'):
+    a = get_point(q[:-1], size, q[2])
+    b = get_point(q[:-1], size / 2, q[2] + 150. / 180. * np.pi)
+    c = get_point(q[:-1], size / 2, q[2] - 150. / 180. * np.pi)
+    tri = np.array([a, b, c, a])
+    plt.plot(tri[:, 0], tri[:, 1], color+'-')
+
+
+def plot_keys(way, size, color='g'):
+    for p in way:
+        q = p[0:3]
+        circle = plt.Circle(xy=(q[0], q[1]), radius=size/15, color=color)
+        plt.gca().add_patch(circle)
+        plot_car(q, size, color=color)
+
+
+def plot_way(way, step_size, rho=5., car_size=1.,
+             car_color='b', line_color='g', point_color='r'):
+    num = way.shape[0]
+    path = []
+    for i in range(num-1):
+        q0 = way[i][0:3]
+        q1 = way[i+1][0:3]
+        path.extend(reeds_shepp.path_sample(q0, q1, rho, step_size))
+    path.append([way[-1][0], way[-1][1]])
+    plot_path(path, line_color=line_color, point_color=point_color)
+    plot_keys(way=way, size=car_size, color=car_color)
+
+
+def plot_grid(grid, res=0.1, wic=600, hic=600):
+    """plot grid map"""
+    row, col = grid.shape[0], grid.shape[1]
+    u = np.array(range(row)).repeat(col)
+    v = np.array(range(col) * row)
+    uv = np.array([u, v, np.ones_like(u)])
+    xy2uv = np.array([[0., 1. / res, hic / 2.],
+                     [1. / res, 0., wic / 2.],
+                     [0., 0., 1.]])
+    xy = np.dot(np.linalg.inv(xy2uv), uv)
+    data = {'x': xy[0, :], 'y': xy[1, :],
+            'c': np.array(grid).flatten() - 1}
+    plt.scatter(x='x', y='y', c='c', data=data, s=30., marker="s")
+
+
+def test(no=0, well_path='./well'):
+    filename = well_path + os.sep + str(no) + '_way.txt'
+    way = np.loadtxt(filename, delimiter=',')
+    plot_way(way=way, step_size=0.5, rho=5.)
+
+
+if __name__ == '__main__':
+    test(no=8200)

@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="9147d471-6244-4115-8739-9234121dd0c5" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/deepway.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/deepway.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment/visual.py" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/stochastic.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -19,7 +19,7 @@
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../keras-yolo3/convert.py" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/experiment" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -32,6 +32,7 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/experiment" />
       <recent name="$PROJECT_DIR$/dataset/tools" />
       <recent name="$PROJECT_DIR$/dataset" />
       <recent name="$PROJECT_DIR$/src" />
