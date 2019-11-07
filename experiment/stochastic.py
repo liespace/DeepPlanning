@@ -148,11 +148,14 @@ class StochasticViewer(object):
             ps.append(res[-1])
         return ps
 
-    def fitted_gaussian_dist(self, ps, size=1000000, pp=False, alpha=1.):
-        x_m, x_v = ps[0][0][1], ps[0][0][0] * alpha
-        y_m, y_v = ps[0][1][1], ps[0][1][0] * alpha
-        t_m, t_v = ps[0][2][1], ps[0][2][0] * alpha
-        print(x_m, x_v, y_m, y_v, t_m, t_v)
+    def fitted_gaussian_dist(
+            self, ps, size=1000000, pp=False, mask=(1., 1., 1.)):
+        x_m, x_v = ps[0][0][1], ps[0][0][0] * mask[0]
+        y_m, y_v = ps[0][1][1], ps[0][1][0] * mask[1]
+        t_m, t_v = ps[0][2][1], ps[0][2][0] * mask[2]
+        print('f-X-m: %2.6f, f-X-SE: %2.6f' % (x_m, x_v))
+        print('f-Y-m: %2.6f, f-Y-SE: %2.6f' % (y_m, y_v))
+        print('f-T-m: %2.6f, f-T-SE: %2.6f' % (t_m, t_v))
         x = x_m + x_v * np.random.randn(size)
         y = y_m + y_v * np.random.randn(size)
         t = t_m + t_v * np.random.randn(size)
@@ -163,7 +166,7 @@ if __name__ == '__main__':
     viewer = StochasticViewer('valid', recall_bar=0.7)
     e_s, p_s = viewer.view(3, 4, remain=-1)
     # plot gaussian pdf anc cdf
-    viewer.fitted_gaussian_dist(p_s, alpha=1.2)
+    viewer.fitted_gaussian_dist(p_s, mask=(1., 1., 1.))
     plt.show()
     # 0 vgg19_tiny_free250_check600 - 0.6
     # 1 vgg19_comp_free100_check200 - 0.7
