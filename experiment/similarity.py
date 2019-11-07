@@ -5,6 +5,8 @@ import glob
 import matplotlib.pyplot as plt
 import visual
 import cv2
+from rrt.planner import Planner
+from rrt.dtype import State, Location, Rotation, Velocity, C2GoType
 
 
 class SimilarityViewer:
@@ -29,11 +31,27 @@ class SimilarityViewer:
             files = glob.glob(pred_filepath + os.sep + '*.txt')
             return files, folder
 
-    def check_collision(self, true, p_path, no):
+    def check_collision(self, no, true, p_path):
         # grid map
         grid_file = self.grid_filepath_root + os.sep + str(
             no) + '_gridmap.png'
         grid = cv2.imread(filename=grid_file, flags=-1)
+        org = State(location=Location(vec=[0., 0., 0.]),
+                    rotation=Rotation(rpy=(0., 0., 0.)),
+                    velocity=Velocity())
+        planner = Planner()
+        planner.gridmap.refresh(data=grid, seq=no, origin=org)
+        for i in range(p_path.shape[0] - 1):
+            p0, p1 = p_path[i], p_path[i+1]
+            start = State(location=Location(vec=[p0[0], p0[1], 0.]),
+                          rotation=Rotation(rpy=(0., 0., p0[2])),
+                          velocity=Velocity())
+            end = State(location=Location(vec=[p1[0], p1[1], 0.]),
+                        rotation=Rotation(rpy=(0., 0., p1[2])),
+                        velocity=Velocity())
+            c2go, curve = planner.propagator.compute_cost(start, end)
+            if c2go.c2gtype is C2GoType.BREAK:
+                return False
         return True
 
     def plot_responses(self, res):
@@ -107,12 +125,20 @@ class SimilarityViewer:
 
 
 if __name__ == '__main__':
-    viewer = SimilarityViewer(recall_bar=0.7, file_type='valid')
+    viewer = SimilarityViewer(recall_bar=0.7, file_type='train')
     fs, fd = viewer.find_files(3)
 
-    viewer.target_number = 385
     response = viewer.find_object(files=fs, fun=viewer.check_collision)
-    print(len(response[0]))
+    print('ALL Collision-Free Num: %d' % len(response[0]))
 
+    response = viewer.find_object(files=fs, fun=viewer.check_predicted_number_of_obj)
+    print('ALL Right Obj Prediction Num: %d' % len(response[0]))
+
+    response = viewer.find_object(files=response[0], fun=viewer.check_collision)
+    print('Collision-Free and Right Obj-Prediction Num: %d' % len(response[0]))
+
+    # viewer.target_number = 8550
+    # response = viewer.find_object(files=fs, fun=viewer.check_number)
+    # print(response[2:4])
     # viewer.plot_responses(response)
     # plt.show()

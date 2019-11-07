@@ -3,6 +3,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import reeds_shepp
+import dubins
 
 
 def get_point(center, radius, orin):
@@ -44,6 +45,23 @@ def plot_way(way, step_size, rho=5., car_size=1.,
         q1 = way[i+1][0:3]
         path.extend(reeds_shepp.path_sample(q0, q1, rho, step_size))
     path.append([way[-1][0], way[-1][1]])
+    plot_path(path, line_color=line_color, point_color=point_color)
+    plot_keys(way=way, size=car_size, color=car_color)
+
+
+def plot_dubins(way, step_size, rho=5., car_size=1., mask=(0, 1),
+                car_color='b', line_color='g', point_color='r'):
+    num = way.shape[0]
+    path = []
+    for i in range(num-1):
+        q0 = way[i][0:3]
+        q1 = way[i+1][0:3]
+        if mask[i] == 0:
+            p = dubins.shortest_path(q0, q1, rho)
+        else:
+            p = dubins.shortest_path(q1, q0, rho)
+        configurations, _ = p.sample_many(step_size)
+        path.extend(configurations)
     plot_path(path, line_color=line_color, point_color=point_color)
     plot_keys(way=way, size=car_size, color=car_color)
 
