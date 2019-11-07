@@ -15,16 +15,19 @@ class StochasticViewer(object):
         self.pred_filepath_root = 'pred/' + file_type
         self.true_filepath_root = 'dataset' + os.sep + 'well'
         self.pred_folders = os.listdir(self.pred_filepath_root)
-        self.fig, self.axes = plt.subplots(nrows=2, ncols=3, figsize=(9, 6))
+        self.fig, self.axes = plt.subplots(nrows=3, ncols=3, figsize=(9, 6))
 
-    def view(self, first, last):
+    def view(self, first, last, remain=-1):
+        errors, pps = [], []
         for folder in self.pred_folders[first: last]:
             pred_filepath = self.pred_filepath_root + os.sep + folder
             print("Processing " + pred_filepath)
             files = glob.glob(pred_filepath + os.sep + '*.txt')
             rights, op_bias, om_bias = 0., 0., 0.
             x_error, y_error, t_error = [], [], []
-            for f in files:
+            for i, f in enumerate(files):
+                if i % 2 == remain:
+                    continue
                 # number of the example
                 no = f.split('/')[-1].split('_')[0]
                 # ground true
@@ -51,29 +54,33 @@ class StochasticViewer(object):
                 # calculate the error of points
                 self.errors_when_obj_numbers_equal(
                     t_prt, np.array(p_prt), [x_error, y_error, t_error])
-
             self.show_info(
                 x_error, y_error, t_error, rights, om_bias, op_bias, len(files))
-            self.plot_pdf_cdf(x_error, y_error, t_error)
+            pps.append(self.plot_pdf_cdf(x_error, y_error, t_error))
+            errors.append([x_error, y_error, t_error])
+        return errors, pps
 
     @staticmethod
     def show_info(x_e, y_e, t_e, rights, om_bias, op_bias, number):
-        print('X-mean: %2.6f, X-variance: %2.6f, X-max: %2.6f, X-min: %2.6f' %
-              (np.mean(x_e), np.var(x_e), np.max(x_e), np.min(x_e)))
-        print('Y-mean: %2.6f, Y-variance: %3.6f, Y-max: %2.6f, Y-min: %2.6f' %
-              (np.mean(y_e), np.var(y_e), np.max(y_e), np.min(y_e)))
-        print('T-mean: %2.6f, T-variance: %2.6f, T-max: %2.6f, T-min: %2.6f' %
-              (np.mean(t_e), np.var(t_e), np.max(t_e), np.min(t_e)))
+        sx, sy, st = pd.Series(x_e), pd.Series(y_e), pd.Series(t_e)
+        print('X-mean: %2.6f, X-SE: %2.6f, '
+              'X-max: %2.6f, X-min: %2.6f, X-skew: %2.6f, X-kurt: %2.6f' %
+              (np.mean(x_e), np.sqrt(np.var(x_e)),
+               np.max(x_e), np.min(x_e), sx.skew(), sx.kurt()))
+        print('Y-mean: %2.6f, Y-SE: %3.6f, '
+              'Y-max: %2.6f, Y-min: %2.6f, Y-skew: %2.6f, Y-kurt: %2.6f' %
+              (np.mean(y_e), np.sqrt(np.var(y_e)),
+               np.max(y_e), np.min(y_e), sy.skew(), sy.kurt()))
+        print('T-mean: %2.6f, T-SE: %2.6f, '
+              'T-max: %2.6f, T-min: %2.6f, T-skew: %2.6f, T-kurt: %2.6f' %
+              (np.mean(t_e), np.sqrt(np.var(t_e)),
+               np.max(t_e), np.min(t_e), st.skew(), st.kurt()))
         # stochastic performance
         precision = rights / number * 100
         ob_precision = (rights + op_bias + om_bias) / number * 100
         print('Precision: %2.4f%%, OB-Precision: %2.4f%%, '
               'Rights: %5d, OP-B: %5d OM-B: %5d' %
               (precision, ob_precision, rights, op_bias, om_bias))
-        s = pd.Series(x_e)
-        print(s.skew())
-        print(s.kurt())
-
 
     @staticmethod
     def errors_when_obj_numbers_equal(t_prt, p_prt, errors):
@@ -97,7 +104,8 @@ class StochasticViewer(object):
                 errors[1].append(q[index][1])
                 errors[2].append(q[index][2])
 
-    def plot_pdf_cdf(self, x, y, t):
+    def plot_pdf_cdf(self, x, y, t, pp=True):
+        ps = []
         # x error
         self.axes[0, 0].set_title('pdf-x')
         self.axes[0, 0].hist(
@@ -107,6 +115,10 @@ class StochasticViewer(object):
         self.axes[1, 0].hist(
             x, 100, normed=1, histtype='step', facecolor='pink',
             alpha=0.75, cumulative=True, rwidth=0.8)
+        if pp:
+            self.axes[2, 0].set_title("p-p-x")
+            res = stats.probplot(x, plot=self.axes[2, 0])
+            ps.append(res[-1])
         # y error
         self.axes[0, 1].set_title('pdf-y')
         self.axes[0, 1].hist(
@@ -116,6 +128,10 @@ class StochasticViewer(object):
         self.axes[1, 1].hist(
             y, 100, normed=1, histtype='step', facecolor='pink',
             alpha=0.75, cumulative=True, rwidth=0.8)
+        if pp:
+            self.axes[2, 1].set_title("p-p-y")
+            res = stats.probplot(y, plot=self.axes[2, 1])
+            ps.append(res[-1])
         # theta error
         self.axes[0, 2].set_title('pdf-theta')
         self.axes[0, 2].hist(
@@ -126,22 +142,28 @@ class StochasticViewer(object):
             t, 100, normed=1, histtype='step', facecolor='pink',
             alpha=0.75, cumulative=True, rwidth=0.8)
         self.fig.subplots_adjust(hspace=0.4)
+        if pp:
+            self.axes[2, 2].set_title("p-p-t")
+            res = stats.probplot(t, plot=self.axes[2, 2])
+            ps.append(res[-1])
+        return ps
+
+    def fitted_gaussian_dist(self, ps, size=1000000, pp=False, alpha=1.):
+        x_m, x_v = ps[0][0][1], ps[0][0][0] * alpha
+        y_m, y_v = ps[0][1][1], ps[0][1][0] * alpha
+        t_m, t_v = ps[0][2][1], ps[0][2][0] * alpha
+        print(x_m, x_v, y_m, y_v, t_m, t_v)
+        x = x_m + x_v * np.random.randn(size)
+        y = y_m + y_v * np.random.randn(size)
+        t = t_m + t_v * np.random.randn(size)
+        self.plot_pdf_cdf(x, y, t, pp=pp)
 
 
 if __name__ == '__main__':
     viewer = StochasticViewer('valid', recall_bar=0.7)
-    viewer.view(3, 4)
-
+    e_s, p_s = viewer.view(3, 4, remain=-1)
     # plot gaussian pdf anc cdf
-    number = 1000000
-    x_m, x_v = 0.517915, np.sqrt(4.527876)
-    y_m, y_v = -0.005470, np.sqrt(4.377433)
-    t_m, t_v = -0.010660, np.sqrt(0.215080)
-    x = x_m + x_v * np.random.randn(number)
-    y = y_m + y_v * np.random.randn(number)
-    t = t_m + t_v * np.random.randn(number)
-    viewer.plot_pdf_cdf(x, y, t)
-
+    viewer.fitted_gaussian_dist(p_s, alpha=1.2)
     plt.show()
     # 0 vgg19_tiny_free250_check600 - 0.6
     # 1 vgg19_comp_free100_check200 - 0.7
