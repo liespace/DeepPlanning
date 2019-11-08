@@ -7,6 +7,8 @@ import visual
 import cv2
 from rrt.planner import Planner
 from rrt.dtype import State, Location, Rotation, Velocity, C2GoType
+import reeds_shepp
+from scipy import stats
 
 
 class SimilarityViewer:
@@ -18,7 +20,6 @@ class SimilarityViewer:
         self.true_filepath_root = 'dataset' + os.sep + 'well'
         self.grid_filepath_root = 'dataset' + os.sep + 'blue'
         self.pred_folders = os.listdir(self.pred_filepath_root)
-        self.fig, self.axes = plt.subplots(nrows=1, ncols=1, figsize=(9, 6))
 
         self.error_mask = error_mask
         self.target_number = target_number
@@ -30,6 +31,38 @@ class SimilarityViewer:
             print("Processing " + pred_filepath)
             files = glob.glob(pred_filepath + os.sep + '*.txt')
             return files, folder
+
+    def path_length_diff(self, res, rho=5.0, plot=False):
+        ts, ps = res[2], res[3]
+        assert len(ts) == len(ps)
+        t_lens, p_lens = [], []
+        for true in ts:
+            t_len = 0.
+            for i in range(true.shape[0] - 1):
+                t_len += reeds_shepp.path_length(true[i], true[i+1], rho)
+            t_lens.append(t_len)
+        for pred in ps:
+            p_len = 0.
+            for i in range(pred.shape[0] - 1):
+                p_len += reeds_shepp.path_length(pred[i], pred[i+1], rho)
+            p_lens.append(p_len)
+        diff = np.array(p_lens) - np.array(t_lens)
+        print(np.mean(diff), np.sqrt(np.var(diff)), np.max(diff), np.min(diff))
+        print(res[1][np.argmax(diff)], res[1][np.argmin(diff)])
+
+        if plot:
+            fig, axes = plt.subplots(nrows=3, ncols=1, figsize=(9, 6))
+            axes[0].set_title('pdf-diff')
+            axes[0].hist(
+                diff, 100, weights=np.ones_like(diff) / float(len(diff)),
+                histtype='step', facecolor='yellowgreen')
+            axes[1].set_title("cdf-diff")
+            axes[1].hist(
+                diff, 100, normed=1, histtype='step', facecolor='pink',
+                alpha=0.75, cumulative=True, rwidth=0.8)
+            axes[2].set_title("p-p-diff")
+            print(stats.probplot(diff, plot=axes[2])[-1])
+        return diff
 
     def check_collision(self, no, true, p_path):
         # grid map
@@ -66,6 +99,7 @@ class SimilarityViewer:
             no) + '_gridmap.png'
         grid = cv2.imread(filename=grid_file, flags=-1)
         # show
+        fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(9, 6))
         visual.plot_grid(grid)
         visual.plot_way(true, 0.5, rho=5., car_size=1.0,
                         car_color='g', line_color='g', point_color='g')
@@ -110,9 +144,10 @@ class SimilarityViewer:
             q = true[1:-1, :] - p_path[1:-1, :]
             q = np.abs(q)
             x_e, y_e, t_e = max(q[:, 0]), max(q[:, 1]), max(q[:, 2])
-            print('x_errors: {}, y_errors:{}, t_errors: {}'.
-                  format(x_e, y_e, t_e))
             ind = np.array([x_e, y_e, t_e]) > np.array(self.error_mask)
+            if np.all(ind):
+                print('no: {}, x_errors: {}, y_errors:{}, t_errors: {}'.
+                      format(no, x_e, y_e, t_e))
             return np.all(ind)
         return False
 
@@ -125,20 +160,30 @@ class SimilarityViewer:
 
 
 if __name__ == '__main__':
-    viewer = SimilarityViewer(recall_bar=0.7, file_type='train')
+    viewer = SimilarityViewer(recall_bar=0.7, file_type='valid')
     fs, fd = viewer.find_files(3)
 
-    response = viewer.find_object(files=fs, fun=viewer.check_collision)
-    print('ALL Collision-Free Num: %d' % len(response[0]))
+    # response = viewer.find_object(files=fs, fun=viewer.check_collision)
+    # print('ALL Collision-Free Num: %d' % len(response[0]))
+    #
+    # viewer.path_length_diff(response, plot=True)
+    # plt.show()
 
+    viewer.target_diff = 0
     response = viewer.find_object(files=fs, fun=viewer.check_predicted_number_of_obj)
     print('ALL Right Obj Prediction Num: %d' % len(response[0]))
 
-    response = viewer.find_object(files=response[0], fun=viewer.check_collision)
-    print('Collision-Free and Right Obj-Prediction Num: %d' % len(response[0]))
+    # response = viewer.find_object(files=response[0], fun=viewer.check_collision)
+    # print('Collision-Free and Right Obj-Prediction Num: %d' % len(response[0]))
 
-    # viewer.target_number = 8550
+    viewer.error_mask = (-1, 2.092*2, -1)  # [2.128*2, 2.092*2, 0.464*2]
+    response = viewer.find_object(files=response[0], fun=viewer.check_prediction_error)
+    print('Error Num: %d' % len(response[0]))
+    response = viewer.find_object(files=response[0], fun=viewer.check_collision)
+    print('Collision-Free Num: %d' % len(response[0]))
+
+
+    # viewer.target_number = 5185
     # response = viewer.find_object(files=fs, fun=viewer.check_number)
-    # print(response[2:4])
     # viewer.plot_responses(response)
     # plt.show()
