@@ -26,6 +26,7 @@ class SimilarityViewer:
         self.error_mask = error_mask
         self.target_number = target_number
         self.target_diff = diff
+        self.xrange = np.inf
 
     def find_files(self, number):
         for folder in self.pred_folders[number: number+1]:
@@ -66,7 +67,7 @@ class SimilarityViewer:
             print(stats.probplot(diff, plot=axes[2])[-1])
         return diff, t_lens, p_lens
 
-    def check_collision(self, no, true, p_path):
+    def check_collision(self, no, true, p_path, index):
         # grid mapenerate random experimental data
         grid_file = self.grid_filepath_root + os.sep + str(
             no) + '_gridmap.png'
@@ -148,18 +149,22 @@ class SimilarityViewer:
             p_path = np.array(p_path)
 
             # checking
-            if fun(no, true, p_path):
+            if fun(no, true, p_path, i):
                 res[0].append(f)
                 res[1].append(no)
                 res[2].append(true)
                 res[3].append(p_path)
         return res
 
-    def check_predicted_number_of_obj(self, no, true, p_path):
+    def check_predicted_number_of_obj(self, no, true, p_path, index):
         # check if the numbers of points are equal
         return (p_path.shape[0] - true.shape[0]) == self.target_diff
 
-    def check_prediction_error(self, no, true, p_path):
+    def check_range(self, no, true, p_path, index):
+        # check if index is needed
+        return index < self.xrange
+
+    def check_prediction_error(self, no, true, p_path, index):
         if true.shape[0] > 2:
             q = true[1:-1, :] - p_path[1:-1, :]
             q = np.abs(q)
@@ -171,11 +176,11 @@ class SimilarityViewer:
             return np.all(ind)
         return False
 
-    def check_number(self, no, true, p_path):
+    def check_number(self, no, true, p_path, index):
         return no == self.target_number
 
     @staticmethod
-    def check_sequence(no, true, p_path):
+    def check_sequence(no, true, p_path, index):
         return not no % 2 == -1
 
 
@@ -203,9 +208,11 @@ if __name__ == '__main__':
     # print('Collision-Free Num: %d' % len(response[0]))
 
     viewer.target_number = 7076
-    response = viewer.find_object(files=fs, fun=viewer.check_number)
-    diff, tl, pl = viewer.path_length_diff(response)
-    print(diff, tl, pl)
+    viewer.xrange = 10
+    response = viewer.find_object(files=fs, fun=viewer.check_range)
+    response = viewer.find_object(files=response[0], fun=viewer.check_collision)
+    df, tl, pl = viewer.path_length_diff(response)
+    print(df, np.mean(tl), np.mean(pl))
 
     # n, t, p = response[1][0], response[2][0], response[3][0]
     # viewer.path_similarity(n, t, p, step_size=0.1)
