@@ -20,32 +20,43 @@ class PlanRunner(object):
 
     def running(self, number, times=100):
         files, folder = self.find_files(number)
-        for f in files:
+        ttf_me, ttf_se, cost_me, cost_se = [], [], [], []
+        for j, f in enumerate(files):
+            print ('Processing Number {} and {}:'.format(j, f))
             # number of the example
             no = int(f.split('/')[-1].split('_')[0])
             grid = self.read_grid(no=no)
             org, aim = self.read_task(no=no)
-            path = []
+            path, cost, ttf = [], [], []
             for i in range(times):
-                print ('Times: %d' % i)
-                past = time.time()
+                # print ('Times: %d' % i)
                 planner = Planner()
                 planner.director.aim = aim
                 planner.gridmap.refresh(data=grid, seq=no, origin=org)
+                past = time.time()
                 planner.propagator.propagate()
+                now = time.time()
                 if planner.propagator.path:
-                    logging.debug('Path Cost: %f, Size: %d',
-                                  planner.propagator.path[0].c2go.cost(),
-                                  len(planner.propagator.path[0].path))
+                    ttf.append((now - past) * 1000)
                     path.append(planner.propagator.path[0])
+                    cost.append(planner.propagator.path[0].c2go.cost())
+                    # print ('Path Cost: %f, Size: %d' %
+                    #        (planner.propagator.path[0].c2go.cost(),
+                    #         len(planner.propagator.path[0].path)))
                     # self.write_info(seq=no, planner=planner)
                     # planner.propagator.plot(filepath='')
-                else:
-                    logging.debug('This time failed')
-                now = time.time()
-                print ('Runtime is: %.3f s' % (now - past))
-                break
-            break
+                # else:
+                #     print ('This time failed')
+                # print ('Runtime is: %.3f s' % (now - past))
+            if ttf and cost:
+                print (np.mean(ttf), np.sqrt(np.var(ttf)), np.mean(cost), np.sqrt(np.var(cost)))
+                ttf_me.append(np.mean(ttf))
+                ttf_me.append(np.sqrt(np.var(ttf)))
+                cost_me.append(np.mean(cost))
+                cost_se.append(np.sqrt(np.var(cost)))
+            else:
+                print (f + ' is FAILED')
+        print (np.mean(ttf_me), np.sqrt(np.var(ttf_se)), np.mean(cost_me), np.sqrt(np.var(cost_se)))
 
     def write_info(self, seq, planner):
         """write way"""

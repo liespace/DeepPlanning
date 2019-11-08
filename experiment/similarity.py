@@ -64,7 +64,7 @@ class SimilarityViewer:
                 alpha=0.75, cumulative=True, rwidth=0.8)
             axes[2].set_title("p-p-diff")
             print(stats.probplot(diff, plot=axes[2])[-1])
-        return diff
+        return diff, t_lens, p_lens
 
     def check_collision(self, no, true, p_path):
         # grid mapenerate random experimental data
@@ -202,15 +202,16 @@ if __name__ == '__main__':
     # response = viewer.find_object(files=response[0], fun=viewer.check_collision)
     # print('Collision-Free Num: %d' % len(response[0]))
 
-    past = time.time()
-    viewer.target_number = 10
+    viewer.target_number = 685
     response = viewer.find_object(files=fs, fun=viewer.check_number)
-    n, t, p = response[1][0], response[2][0], response[3][0]
-    viewer.path_similarity(n, t, p, step_size=0.1)
-    viewer.plot_responses(response)
+    diff, tl, pl = viewer.path_length_diff(response)
+    print(diff, tl, pl)
+
+    # n, t, p = response[1][0], response[2][0], response[3][0]
+    # viewer.path_similarity(n, t, p, step_size=0.1)
+    # viewer.plot_responses(response)
+
     # plt.show()
-    now = time.time()
-    print(now - past)
 
 
 # dw_time = [
