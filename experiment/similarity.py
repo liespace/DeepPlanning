@@ -9,6 +9,7 @@ from rrt.planner import Planner
 from rrt.dtype import State, Location, Rotation, Velocity, C2GoType
 import reeds_shepp
 from scipy import stats
+import similaritymeasures
 
 
 class SimilarityViewer:
@@ -65,7 +66,7 @@ class SimilarityViewer:
         return diff
 
     def check_collision(self, no, true, p_path):
-        # grid map
+        # grid mapenerate random experimental data
         grid_file = self.grid_filepath_root + os.sep + str(
             no) + '_gridmap.png'
         grid = cv2.imread(filename=grid_file, flags=-1)
@@ -86,6 +87,24 @@ class SimilarityViewer:
             if c2go.c2gtype is C2GoType.BREAK:
                 return False
         return True
+
+    def path_similarity(self, no, true, pred, rho=5.0, step_size=0.5):
+        t_path = self.from_keys_to_path(true, rho, step_size)
+        p_path = self.from_keys_to_path(pred, rho, step_size)
+        t_path = np.array([p[:2] for p in t_path])
+        p_path = np.array([p[:2] for p in p_path])
+        s = similaritymeasures.frechet_dist(t_path, p_path)
+        print("Similarity of No {}: {}".format(no, s))
+
+    @staticmethod
+    def from_keys_to_path(way, rho=5., step_size=0.5):
+        num, path = way.shape[0], []
+        for i in range(num - 1):
+            q0 = way[i][0:3]
+            q1 = way[i + 1][0:3]
+            path.extend(reeds_shepp.path_sample(q0, q1, rho, step_size))
+        path.append([way[-1][0], way[-1][1], way[-1][2]])
+        return path
 
     def plot_responses(self, res):
         number = len(res[0])
@@ -169,21 +188,23 @@ if __name__ == '__main__':
     # viewer.path_length_diff(response, plot=True)
     # plt.show()
 
-    viewer.target_diff = 0
-    response = viewer.find_object(files=fs, fun=viewer.check_predicted_number_of_obj)
-    print('ALL Right Obj Prediction Num: %d' % len(response[0]))
+    # viewer.target_diff = 0
+    # response = viewer.find_object(files=fs, fun=viewer.check_predicted_number_of_obj)
+    # print('ALL Right Obj Prediction Num: %d' % len(response[0]))
 
     # response = viewer.find_object(files=response[0], fun=viewer.check_collision)
     # print('Collision-Free and Right Obj-Prediction Num: %d' % len(response[0]))
 
-    viewer.error_mask = (-1, 2.092*2, -1)  # [2.128*2, 2.092*2, 0.464*2]
-    response = viewer.find_object(files=response[0], fun=viewer.check_prediction_error)
-    print('Error Num: %d' % len(response[0]))
-    response = viewer.find_object(files=response[0], fun=viewer.check_collision)
-    print('Collision-Free Num: %d' % len(response[0]))
+    # viewer.error_mask = (-1, 2.092*2, -1)  # [2.128*2, 2.092*2, 0.464*2]
+    # response = viewer.find_object(files=response[0], fun=viewer.check_prediction_error)
+    # print('Error Num: %d' % len(response[0]))
+    # response = viewer.find_object(files=response[0], fun=viewer.check_collision)
+    # print('Collision-Free Num: %d' % len(response[0]))
 
 
-    # viewer.target_number = 5185
-    # response = viewer.find_object(files=fs, fun=viewer.check_number)
-    # viewer.plot_responses(response)
-    # plt.show()
+    viewer.target_number = 10
+    response = viewer.find_object(files=fs, fun=viewer.check_number)
+    n, t, p = response[1][0], response[2][0], response[3][0]
+    viewer.path_similarity(n, t, p, step_size=0.1)
+    viewer.plot_responses(response)
+    plt.show()
