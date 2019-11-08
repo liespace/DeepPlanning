@@ -20,16 +20,15 @@ class PlanRunner(object):
 
     def running(self, number, times=100):
         files, folder = self.find_files(number)
-        ttf_me, ttf_se, cost_me, cost_se = [], [], [], []
+        ttf_ms, ttf_ss, cost_ms, cost_ss, sts, sf = [], [], [], [], [], 0
         for j, f in enumerate(files):
             print ('Processing Number {} and {}:'.format(j, f))
             # number of the example
             no = int(f.split('/')[-1].split('_')[0])
             grid = self.read_grid(no=no)
             org, aim = self.read_task(no=no)
-            path, cost, ttf = [], [], []
+            path, cost, ttf, st = [], [], [], 0
             for i in range(times):
-                # print ('Times: %d' % i)
                 planner = Planner()
                 planner.director.aim = aim
                 planner.gridmap.refresh(data=grid, seq=no, origin=org)
@@ -37,28 +36,55 @@ class PlanRunner(object):
                 planner.propagator.propagate()
                 now = time.time()
                 if planner.propagator.path:
+                    st += 1
                     ttf.append((now - past) * 1000)
                     path.append(planner.propagator.path[0])
                     cost.append(planner.propagator.path[0].c2go.cost())
-                    # print ('Path Cost: %f, Size: %d' %
-                    #        (planner.propagator.path[0].c2go.cost(),
-                    #         len(planner.propagator.path[0].path)))
                     # self.write_info(seq=no, planner=planner)
                     # planner.propagator.plot(filepath='')
-                # else:
-                #     print ('This time failed')
-                # print ('Runtime is: %.3f s' % (now - past))
-            if ttf and cost:
-                print (np.mean(ttf), np.sqrt(np.var(ttf)), np.mean(cost), np.sqrt(np.var(cost)))
-                ttf_me.append(np.mean(ttf))
-                ttf_me.append(np.sqrt(np.var(ttf)))
-                cost_me.append(np.mean(cost))
-                cost_se.append(np.sqrt(np.var(cost)))
+            if st > 0:
+                ttf_m, ttf_s = np.mean(ttf), np.sqrt(np.var(ttf))
+                cost_m, cost_s = np.mean(cost), np.sqrt(np.var(ttf))
+                self.write_info(no, ttf, cost, st)
+                sf += 1
+                sts.append(st)
+                ttf_ms.append(ttf_m)
+                ttf_ss.append(ttf_s)
+                cost_ms.append(cost_m)
+                cost_ss.append(cost_s)
+                print (ttf_m, ttf_s, cost_m, cost_s, st)
             else:
                 print (f + ' is FAILED')
-        print (np.mean(ttf_me), np.sqrt(np.var(ttf_se)), np.mean(cost_me), np.sqrt(np.var(cost_se)))
+            if j == 9:
+                break
+        self.write_result(ttf_ms, ttf_ss, cost_ms, cost_ss, sts, sf)
+        print (np.mean(ttf_ms), np.mean(ttf_ss),
+               np.mean(cost_ms), np.mean(cost_ss),
+               np.mean(sts), sf)
 
-    def write_info(self, seq, planner):
+    def write_result(self, ttf_ms, ttf_ss, cost_ms, cost_ss, sts, sf):
+        ttf_ms_file = self.plan_filepath_root + os.sep + 'tff_ms.txt'
+        ttf_ss_file = self.plan_filepath_root + os.sep + 'tff_ss.txt'
+        cost_ms_file = self.plan_filepath_root + os.sep + 'cost_ms.txt'
+        cost_ss_file = self.plan_filepath_root + os.sep + 'cost_ss.txt'
+        sts_file = self.plan_filepath_root + os.sep + 'sts.txt'
+        sf_file = self.plan_filepath_root + os.sep + 'sf.txt'
+        np.savetxt(ttf_ms_file, np.array(ttf_ms), delimiter=',')
+        np.savetxt(ttf_ss_file, np.array(ttf_ss), delimiter=',')
+        np.savetxt(cost_ms_file, np.array(cost_ms), delimiter=',')
+        np.savetxt(cost_ss_file, np.array(cost_ss), delimiter=',')
+        np.savetxt(sts_file, np.array(sts), delimiter=',')
+        np.savetxt(sf_file, np.array([sf]), delimiter=',')
+
+    def write_info(self, seq, ttf, cost, st):
+        ttf_file = self.plan_filepath_root + os.sep + str(seq) + '_tff.txt'
+        cost_file = self.plan_filepath_root + os.sep + str(seq) + '_cost.txt'
+        st_file = self.plan_filepath_root + os.sep + str(seq) + '_st.txt'
+        np.savetxt(ttf_file, np.array(ttf), delimiter=',')
+        np.savetxt(cost_file, np.array(cost), delimiter=',')
+        np.savetxt(st_file, np.array([st]), delimiter=',')
+
+    def write_way(self, seq, planner):
         """write way"""
         if not os.path.isdir(self.plan_filepath_root):
             os.makedirs(self.plan_filepath_root)
