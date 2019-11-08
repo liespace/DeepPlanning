@@ -9,28 +9,16 @@
       <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/1366_tff.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/1366_tff.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/2825_cost.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/2825_cost.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/2825_tff.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/2825_tff.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/3190_cost.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/3190_cost.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/3190_st.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/3190_st.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/3190_tff.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/3190_tff.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/3375_cost.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/3375_cost.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/3375_tff.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/3375_tff.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/3990_cost.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/3990_cost.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/3990_tff.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/3990_tff.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/660_cost.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/660_cost.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/660_st.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/660_st.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/660_tff.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/660_tff.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/685_cost.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/685_cost.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/685_tff.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/685_tff.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/7076_cost.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/7076_cost.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/7076_st.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/7076_st.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/7076_tff.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/7076_tff.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/715_cost.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/715_cost.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/715_tff.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/715_tff.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/cost_ms.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/cost_ms.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/cost_ss.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/cost_ss.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/sf.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/sf.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/sts.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/sts.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/tff_ms.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/tff_ms.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/experiment/plan/rrt/tff_ss.txt" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/plan/rrt/tff_ss.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment/planning.py" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/planning.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment/rrt/propagation.py" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/rrt/propagation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/experiment/similarity.py" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/similarity.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />

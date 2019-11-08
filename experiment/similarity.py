@@ -208,7 +208,7 @@ if __name__ == '__main__':
     # print('Collision-Free Num: %d' % len(response[0]))
 
     viewer.target_number = 7076
-    viewer.xrange = 10
+    viewer.xrange = 1
     response = viewer.find_object(files=fs, fun=viewer.check_range)
     response = viewer.find_object(files=response[0], fun=viewer.check_collision)
     df, tl, pl = viewer.path_length_diff(response)

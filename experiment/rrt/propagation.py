@@ -435,6 +435,8 @@ class BiPropagator(Propagator):
         self.sampler.config = SamplerConfig(r_mean=2.0, r_sigma=0.5,
                                             t_mean=0., t_sigma=np.pi / 4.,
                                             h_mean=0., h_sigma=np.pi / 6.)
+        self.is_first = True
+        self.extend = 0
 
     def propagate(self):  # type: () -> None
         """
@@ -444,9 +446,10 @@ class BiPropagator(Propagator):
         if not self.director.aim:
             logging.warning('Aim is Empty, No Need to Propagation')
         else:
-            self.refresh()
+            if self.is_first:
+                self.refresh()
             times, unlucky, unadded, repeat, is_over = -1, 0, 0, 0, False
-            while times < self.config.duration and not is_over:
+            while times < (self.config.duration + self.extend) and not (is_over and self.is_first):
                 times += 1
                 self._switch(times)
                 if not self.sampling(base=self._get_base(times=times)):
