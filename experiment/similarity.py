@@ -10,6 +10,7 @@ from rrt.dtype import State, Location, Rotation, Velocity, C2GoType
 import reeds_shepp
 from scipy import stats
 import similaritymeasures
+import time
 
 
 class SimilarityViewer:
@@ -201,10 +202,19 @@ if __name__ == '__main__':
     # response = viewer.find_object(files=response[0], fun=viewer.check_collision)
     # print('Collision-Free Num: %d' % len(response[0]))
 
-
+    past = time.time()
     viewer.target_number = 10
     response = viewer.find_object(files=fs, fun=viewer.check_number)
     n, t, p = response[1][0], response[2][0], response[3][0]
     viewer.path_similarity(n, t, p, step_size=0.1)
     viewer.plot_responses(response)
-    plt.show()
+    # plt.show()
+    now = time.time()
+    print(now - past)
+
+
+# dw_time = [
+#     26, 25, 25, 25, 25, 24, 26, 26, 25, 25,
+#     26, 25, 25, 26, 25, 25, 25, 25, 25, 25
+# ]
+# print(np.mean(dw_time), np.sqrt(np.var(dw_time)))  # M:25.2 ms, SE:0.510 ms
