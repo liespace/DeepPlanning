@@ -8,9 +8,9 @@ import time
 import logging
 from map import GridMap
 from dtype import PlannerStatus
-from propagation import BiPropagator
-from sampling import GBSE2Sampler
-from selection import WaySelector
+from propagation import BiPropagator, DWAPropagator
+from sampling import GBSE2Sampler, DWGBSE2Sampler
+from selection import WaySelector, DWWaySelector
 from task import Director
 from vehicle import Vehicle
 
@@ -111,3 +111,18 @@ class Planner(object):
             writer.writerow([int((t_1 - t_0) * 1e9),
                              int((t_2 - t_1) * 1e9),
                              int((t_3 - t_2) * 1e9)])
+
+
+class DWAPlanner(Planner):
+    def __init__(self):
+        super(DWAPlanner, self).__init__()
+        self.vehicle = Vehicle()
+        self.gridmap = GridMap(vehicle=self.vehicle)
+        self.director = Director(gridmap=self.gridmap)
+        self.sampler = DWGBSE2Sampler(gridmap=self.gridmap)
+        self.propagator = DWAPropagator(vehicle=self.vehicle,
+                                        gridmap=self.gridmap,
+                                        sampler=self.sampler,
+                                        director=self.director)
+        self.selector = DWWaySelector(propagator=self.propagator)
+        self.seqs = {'VehicleStatus': None, 'GridMap': None}

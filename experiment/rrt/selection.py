@@ -324,3 +324,29 @@ class WaySelector(object):
                  ['Track Size', len(self.track)],
                  ['Trace Size', len(self.trace)]]
         return tabulate(table, headers=[title, 'Value'], tablefmt='orgtbl')
+
+
+class DWWaySelector(WaySelector):
+    def __init__(self, propagator=None):
+        super(DWWaySelector, self).__init__(propagator=propagator)
+
+    def search_way(self):
+        # type: () -> None
+        """
+        search way
+        """
+        rospy.loginfo('Searching way')
+        if not self.propagator.root:
+            rospy.logwarn('Tree is Empty, No Need to Search Way')
+            return
+        times, self.is_solved = 0, False
+        while times < self.config.duration and not self.is_solved:
+            times += 1
+            self.find_best_trace()
+            self.adjust_trace()
+            self.is_solved = self.build_track()
+        self.reset_anode()
+        self.build_way(times=times)
+        # self.way.plan_speeds(self.propagator.vehicle)
+        # logging
+        rospy.loginfo(self.table)

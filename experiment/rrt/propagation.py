@@ -17,7 +17,7 @@ import numpy as np
 from map import GridMap  # pylint: disable=unused-import
 from task import Director  # pylint: disable=unused-import
 from vehicle import Vehicle  # pylint: disable=unused-import
-from sampling import GBSE2Sampler, SamplerConfig  # pylint: disable=unused-import
+from sampling import GBSE2Sampler, DWGBSE2Sampler, SamplerConfig, DWSamplerConfig  # pylint: disable=unused-import
 from dtype import TreeNode, State, C2Go, C2GoType
 from dtype import NStatus, Location, Rotation, Velocity
 
@@ -42,7 +42,7 @@ class Propagator(object):  # pylint: disable=too-many-instance-attributes
     """
 
     def __init__(self, director=None, vehicle=None, gridmap=None, sampler=None):
-        # type: (Director, Vehicle, GridMap, GBSE2Sampler) -> None
+        # type: (Director, Vehicle, GridMap, Union[GBSE2Sampler, DWGBSE2Sampler]) -> None
         """
         :param director: Director class
         :param vehicle: Vehicle class
@@ -267,6 +267,27 @@ class Propagator(object):  # pylint: disable=too-many-instance-attributes
                 [State(Location(xyz[i]), Rotation(rpy[i]), Velocity())
                  for i in range(npts)])
 
+    @staticmethod
+    def build_reeds_shepp(start, end, vehicle, ratio=2.0):
+        # type: (State, State, Vehicle, float) -> Tuple[C2Go, List[State]]
+        """
+        build Reeds Shepp Curve
+        """
+        q_0 = np.array((start.location.x, start.location.y, start.rotation.y))
+        q_1 = np.array((end.location.x, end.location.y, end.rotation.y))
+        configurations = reeds_shepp.path_sample(
+            q_0, q_1, vehicle.vinfo.attrs.mtr, 1.0 / ratio)
+        configurations.append(tuple(q_1))  # include the end point
+        npts = len(configurations)
+        cfg = np.array(configurations).transpose()
+        xyz = np.stack((cfg[0], cfg[1], np.zeros(npts))).transpose()
+        rpy = np.stack((np.zeros(npts), np.zeros(npts), cfg[2])).transpose()
+        dist = reeds_shepp.path_length(q_0, q_1, vehicle.vinfo.attrs.mtr)
+        return (C2Go(vec=[dist, 0., 0.,
+                          np.linalg.norm(q_0[0:2] - q_1[0:2])]),
+                [State(Location(xyz[i]), Rotation(rpy[i]), Velocity())
+                 for i in range(npts)])
+
     def is_curve_free(self, curve):
         # type: (List[State]) -> Tuple[bool, int]
         """
@@ -449,7 +470,8 @@ class BiPropagator(Propagator):
             if self.is_first:
                 self.refresh()
             times, unlucky, unadded, repeat, is_over = -1, 0, 0, 0, False
-            while times < (self.config.duration + self.extend) and not (is_over and self.is_first):
+            while (times < (self.config.duration + self.extend)
+                   and not (is_over and self.is_first)):
                 times += 1
                 self._switch(times)
                 if not self.sampling(base=self._get_base(times=times)):
@@ -475,27 +497,6 @@ class BiPropagator(Propagator):
         """
         return self.build_reeds_shepp(
             start=start, end=end, ratio=ratio, vehicle=self.vehicle)
-
-    @staticmethod
-    def build_reeds_shepp(start, end, vehicle, ratio=2.0):
-        # type: (State, State, Vehicle, float) -> Tuple[C2Go, List[State]]
-        """
-        build Reeds Shepp Curve
-        """
-        q_0 = np.array((start.location.x, start.location.y, start.rotation.y))
-        q_1 = np.array((end.location.x, end.location.y, end.rotation.y))
-        configurations = reeds_shepp.path_sample(
-            q_0, q_1, vehicle.vinfo.attrs.mtr, 1.0 / ratio)
-        configurations.append(tuple(q_1))  # include the end point
-        npts = len(configurations)
-        cfg = np.array(configurations).transpose()
-        xyz = np.stack((cfg[0], cfg[1], np.zeros(npts))).transpose()
-        rpy = np.stack((np.zeros(npts), np.zeros(npts), cfg[2])).transpose()
-        dist = reeds_shepp.path_length(q_0, q_1, vehicle.vinfo.attrs.mtr)
-        return (C2Go(vec=[dist, 0., 0.,
-                          np.linalg.norm(q_0[0:2] - q_1[0:2])]),
-                [State(Location(xyz[i]), Rotation(rpy[i]), Velocity())
-                 for i in range(npts)])
 
     def _switch(self, times):
         """
@@ -720,3 +721,100 @@ class BiPropagator(Propagator):
                  ['Repeated Times', 1. * params[2] / (params[0] + 1e-10)],
                  ['Un-added Times', 1. * params[3] / (params[0] + 1e-10)]]
         return tabulate(table, headers=[title, 'Value'], tablefmt='orgtbl')
+
+
+class DWAPropagator(BiPropagator):
+    def __init__(self, director=None, vehicle=None, gridmap=None, sampler=None):
+        # type: (Director, Vehicle, GridMap, DWGBSE2Sampler) -> None
+        super(DWAPropagator, self).__init__(director, vehicle, gridmap, sampler)
+        self.config = PropagatorConfig(duration=150, density=2.0, precision=0.1)
+        self.sampler.config = DWSamplerConfig(x_mean=0.518, x_sigma=2.102,
+                                              y_mean=-0.005, y_sigma=1.917,
+                                              t_mean=-0.011, t_sigma=0.394)
+
+    def propagate(self):
+        # type: () -> None
+        """
+        Propagate the tree
+        """
+        if not self.director.path:
+            logging.warning('Path is Empty, No Need to Propagation')
+        elif len(self.director.path) == 1:
+            print('No interchanging point')
+            self.refresh()
+        else:
+            logging.info('Propagating tree')
+            if self.is_first:
+                self.refresh()
+            times, unlucky, unadded, repeat, is_over = -1, 0, 0, 0, False
+            while (times < (self.config.duration + self.extend)
+                   and not (is_over and self.is_first)):
+                if self._is_over() and self.is_first:
+                    is_over = True
+                    continue
+                times += 1
+                if not self.sampling(base=self._get_base(times=times)):
+                    unlucky += 1
+                    continue
+                if not self.is_necessary(who=self.sampler.sample):
+                    repeat += 1
+                    continue
+                if not self.build_edge(parent=self.parent_of_new()):
+                    unadded += 1
+                    continue
+                # self.rewiring(radius=5.0, ratio=4.0)
+            # self.render_tree()
+            logging.info(super(BiPropagator, self).table(
+                [times, unlucky, repeat, unadded]))
+
+    def _get_base(self, times=0):
+        if len(self.director.path) <= 2:
+            return self.director.path[0]
+        else:
+            return self.director.path[times % (len(self.director.path) - 1)]
+
+    def _is_over(self):  # type: ()->bool
+        for node in PreOrderIter(self.root):
+            if node.c2get.c2gtype is C2GoType.CLOSE:
+                return True
+        return False
+
+    def _add_reference_to_tree(self):  # type: ()-> Union[None, TreeNode]
+        last, c2gos = self.root.state, []
+        for p in self.director.path:
+            c2go, _ = self.compute_cost(start=last, end=p)
+            if c2go.c2gtype is C2GoType.BREAK:
+                return None
+            c2gos.append(c2go)
+            last = p
+        path, parent = [], self.root
+        for i, p in enumerate(self.director.path):
+            node = TreeNode(name='path',
+                            state=p,
+                            c2go=c2gos[i],
+                            c2get=C2Go(),
+                            status=NStatus.FREE)
+            node.parent = parent
+            path.append(node)
+            parent = node
+        return path[-1]
+
+    def refresh(self):  # type: () -> None
+        super(BiPropagator, self).init()
+        self._add_reference_to_tree()
+        self._update_c2get()
+
+    def plot(self, filepath):
+        """
+        plot tree, path and grid map
+        :param filepath: image saved filepath
+        :return:
+        """
+        plt.figure()
+        plt.gca().set_aspect('equal', adjustable='box')
+        self.plot_grid()
+        self.plot_space(space=list(PreOrderIter(self.root)), color='b')
+        # self.plot_space(space=list(PreOrderIter(self.root)), color='r')
+        self.plot_path(color='r')
+        plt.show()
+        # plt.savefig('{}.eps'.format(filepath), bbox_inches='tight', format='eps')
