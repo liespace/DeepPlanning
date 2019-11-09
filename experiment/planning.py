@@ -8,6 +8,7 @@ import cv2
 from rrt.dtype import Location, State, Rotation, Velocity, TreeNode
 import os
 import glob
+import sys
 
 
 class PlanRunner(object):
@@ -18,12 +19,16 @@ class PlanRunner(object):
         self.plan_filepath_root = 'experiment' + os.sep + 'plan' + os.sep + name
         self.pred_folders = os.listdir(self.pred_filepath_root)
 
-    def running(self, number, times=100):
+    def running(self, number, index=0, processing=4):
         files, folder = self.find_files(number)
+        step = int(np.ceil(len(files) / float(processing)))
+        self.run_one(files[index*step:(index+1)*step], 100)
+
+    def run_one(self, files, times=100):
         ttf_ms, ttf_ss, cost_ms, cost_ss, sts, sf = [], [], [], [], [], 0
         cost2_ms, cost2_ss = [], []
         for j, f in enumerate(files):
-            print ('Processing Number {} and {}:'.format(j, f))
+            print ('Processing Number {}/{} and {}:'.format(j, len(files), f))
             # number of the example
             no = int(f.split('/')[-1].split('_')[0])
             grid = self.read_grid(no=no)
@@ -42,7 +47,7 @@ class PlanRunner(object):
                     path.append(planner.propagator.path[0])
                     cost.append(planner.propagator.path[0].c2go.cost())
 
-                    planner.propagator.extend = -50
+                    planner.propagator.extend = -100
                     planner.propagator.is_first = False
                     planner.propagator.propagate()
                     cost2.append(planner.propagator.path[0].c2go.cost())
@@ -64,8 +69,8 @@ class PlanRunner(object):
                 print (ttf_m, ttf_s, cost_m, cost_s, st, cost2_m, cost2_s)
             else:
                 print (f + ' is FAILED')
-            if j == 5:
-                break
+            # if j == 2:
+            #     break
         self.write_result(
             ttf_ms, ttf_ss, cost_ms, cost_ss, sts, sf, cost2_ms, cost2_ss)
         print (np.mean(ttf_ms), np.mean(ttf_ss),
@@ -145,7 +150,9 @@ class PlanRunner(object):
 
 if __name__ == '__main__':
     runner = PlanRunner(file_type='valid', name='rrt')
-    runner.running(3)
+    needed = int(sys.argv[1]) if len(sys.argv) > 1 else 0
+    thread = 4 if len(sys.argv) > 1 else 1
+    runner.running(number=3, index=needed, processing=thread)
     # pr = cProfile.Profile()
     # pr.enable()
     # main()

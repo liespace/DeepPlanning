@@ -431,7 +431,7 @@ class BiPropagator(Propagator):
         self.path = []
         self.main = None
         self.minor = None
-        self.config = PropagatorConfig(duration=100, density=2.0, precision=0.1)
+        self.config = PropagatorConfig(duration=150, density=2.0, precision=0.1)
         self.sampler.config = SamplerConfig(r_mean=2.0, r_sigma=0.5,
                                             t_mean=0., t_sigma=np.pi / 4.,
                                             h_mean=0., h_sigma=np.pi / 6.)
