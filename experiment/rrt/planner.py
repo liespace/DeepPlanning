@@ -5,8 +5,7 @@ Assemble all components of a rrt planner
 import csv
 import os.path
 import time
-import rospkg
-import rospy
+import logging
 from map import GridMap
 from dtype import PlannerStatus
 from propagation import BiPropagator
@@ -49,7 +48,7 @@ class Planner(object):
         """
         if not self.ok():
             return PlannerStatus.STANDBY
-        rospy.loginfo('Planning from ({}, {}, {})'.format(
+        logging.info('Planning from ({}, {}, {})'.format(
             self.vehicle.status.point().x,
             self.vehicle.status.point().y,
             self.vehicle.status.point().z))
@@ -71,22 +70,22 @@ class Planner(object):
         check if material is ready
         """
         if self.director.route is None:
-            rospy.logwarn('Route is Missing')
+            logging.warning('Route is Missing')
             return False
 
         if self.vehicle.status.seq is self.seqs['VehicleStatus']:
-            rospy.logwarn('Vehicle Status is Missing')
+            logging.warning('Vehicle Status is Missing')
             return False
         else:
             self.seqs['VehicleStatus'] = self.vehicle.status.seq
 
         if self.gridmap.seq is self.seqs['GridMap']:
-            rospy.logwarn('Grid Map is Missing')
+            logging.warning('Grid Map is Missing')
             return False
         else:
             self.seqs['GridMap'] = self.gridmap.seq
 
-        rospy.loginfo('Materials are Ready')
+        logging.warning('Materials are Ready')
         return True
 
     def over(self):
@@ -94,7 +93,7 @@ class Planner(object):
         check if task if finished
         """
         if self.director.is_goal(location=self.vehicle.status.location):
-            rospy.logwarn('GOT THE GOAL')
+            logging.warning('GOT THE GOAL')
             return True
         return False
 
@@ -103,8 +102,7 @@ class Planner(object):
         """
         record runtime of each component
         """
-        rospack = rospkg.RosPack()
-        pkg_path = rospack.get_path('motion')
+        pkg_path = './experiment/plan/'
         root_path = os.path.abspath(
             os.path.join(pkg_path, os.pardir, os.pardir, os.pardir))
         with open('{}/{}/rrt_mplanner_runtime.csv'
