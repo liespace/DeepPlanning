@@ -16,20 +16,26 @@ class PlanChecker(object):
         self.base_filepath = work_dir + os.sep + file_type + os.sep + base_type
         self.obj_filepath = work_dir + os.sep + file_type + os.sep + obj_type
 
-    def check(self):
+    def check_obj(self, save=False):
         # obj
         obj_files = self.find_files(self.obj_filepath)
         obj_res = self.resolve_infos(obj_files, self.obj_filepath)
         obj_sfs = self.resolve_res(obj_res)
+        self.print_sf(obj_sfs, len(obj_files), self.obj_filepath)
+        if save:
+            self.save_sf(obj_sfs, len(obj_files), self.obj_filepath)
+
+    def check_base(self, save=False):
         # base
         base_files = self.find_files(self.base_filepath)
         base_res = self.resolve_infos(base_files, self.base_filepath)
         base_sfs = self.resolve_res(base_res)
         # print or save
         self.print_sf(base_sfs, len(base_files), self.base_filepath)
-        self.print_sf(obj_sfs, len(obj_files), self.obj_filepath)
+        if save:
+            self.save_sf(base_sfs, len(base_files), self.base_filepath)
 
-    def diff(self):
+    def diff(self, save=False):
         # obj
         obj_nos = self.find_files(self.obj_filepath)
         obj_res = self.resolve_infos(obj_nos, self.obj_filepath)
@@ -42,7 +48,8 @@ class PlanChecker(object):
             diff_res.append(dr)
         diff_sf = self.resolve_res(diff_res)
         self.print_sf(diff_sf, len(obj_nos), self.obj_filepath)
-        # self.save_sf(diff_sf, len(obj_nos), self.obj_filepath, 'diff_se')
+        if save:
+            self.save_sf(diff_sf, len(obj_nos), self.obj_filepath, 'diff_se')
 
     @staticmethod
     def print_sf(sfs, amount, filepath='base'):
@@ -131,9 +138,9 @@ class PlanChecker(object):
 
 if __name__ == '__main__':
     base = 'rrt'
-    obj = 'dwa-rrt' + os.sep + 'vgg19_comp_free200_check400_0.7'
+    obj = 'dwa-rrt-small' + os.sep + 'vgg19_comp_free200_check400_0.7'
     checker = PlanChecker(file_type='valid', base_type=base, obj_type=obj)
-    # checker.check()
-    checker.diff()
+    # checker.check_obj()
+    checker.diff(True)
 
 # vgg19_comp_free200_check400_0.7
