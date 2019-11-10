@@ -14,7 +14,7 @@ import visual
 
 
 class DWPlanRunner(PlanRunner):
-    def __init__(self, file_type='valid', name='dw-rrt-alpha', recall_bar=0.7):
+    def __init__(self, file_type='valid', name='dwa-rrt', recall_bar=0.7):
         super(DWPlanRunner, self).__init__(file_type=file_type, name=name)
         self.recall_bar = recall_bar
 
@@ -115,7 +115,7 @@ class DWPlanRunner(PlanRunner):
 
 
 if __name__ == '__main__':
-    runner = DWPlanRunner(file_type='valid', name='rrt')
+    runner = DWPlanRunner(file_type='valid', name='dwa-rrt')
     needed = int(sys.argv[1]) if len(sys.argv) > 1 else 0
     thread = 4 if len(sys.argv) > 1 else 1
     runner.running(number=3, index=needed, processing=thread)
