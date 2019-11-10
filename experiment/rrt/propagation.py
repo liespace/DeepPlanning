@@ -728,9 +728,9 @@ class DWAPropagator(BiPropagator):
         # type: (Director, Vehicle, GridMap, DWGBSE2Sampler) -> None
         super(DWAPropagator, self).__init__(director, vehicle, gridmap, sampler)
         self.config = PropagatorConfig(duration=150, density=2.0, precision=0.1)
-        self.sampler.config = DWSamplerConfig(x_mean=0.518, x_sigma=2.102,
-                                              y_mean=-0.005, y_sigma=1.917,
-                                              t_mean=-0.011, t_sigma=0.394)
+        self.sampler.config = DWSamplerConfig(x_mean=0.518, x_sigma=2.102 / 1,
+                                              y_mean=-0.005, y_sigma=1.917 / 1,
+                                              t_mean=-0.011, t_sigma=0.394 / 1)
 
     def propagate(self):
         # type: () -> None
@@ -741,7 +741,8 @@ class DWAPropagator(BiPropagator):
             logging.warning('Path is Empty, No Need to Propagation')
         elif len(self.director.path) == 1:
             print('No interchanging point')
-            self.refresh()
+            if self.is_first:
+                self.refresh()
         else:
             logging.info('Propagating tree')
             if self.is_first:
@@ -764,8 +765,8 @@ class DWAPropagator(BiPropagator):
                     continue
                 # self.rewiring(radius=5.0, ratio=4.0)
             # self.render_tree()
-            logging.info(super(BiPropagator, self).table(
-                [times, unlucky, repeat, unadded]))
+            # logging.info(super(BiPropagator, self).table(
+            #     [times, unlucky, repeat, unadded]))
 
     def _get_base(self, times=0):
         if len(self.director.path) <= 2:
@@ -780,13 +781,15 @@ class DWAPropagator(BiPropagator):
         return False
 
     def _add_reference_to_tree(self):  # type: ()-> Union[None, TreeNode]
-        last, c2gos = self.root.state, []
+        last, c2gos, last_c2go = self.root.state, [], self.root.c2go
         for p in self.director.path:
             c2go, _ = self.compute_cost(start=last, end=p)
             if c2go.c2gtype is C2GoType.BREAK:
+                # print('reference collision')
                 return None
+            c2go.reset_vec(c2go.vec + last_c2go.vec)
             c2gos.append(c2go)
-            last = p
+            last, last_c2go = p, c2go
         path, parent = [], self.root
         for i, p in enumerate(self.director.path):
             node = TreeNode(name='path',
@@ -810,7 +813,6 @@ class DWAPropagator(BiPropagator):
         :param filepath: image saved filepath
         :return:
         """
-        plt.figure()
         plt.gca().set_aspect('equal', adjustable='box')
         self.plot_grid()
         self.plot_space(space=list(PreOrderIter(self.root)), color='b')
@@ -818,3 +820,17 @@ class DWAPropagator(BiPropagator):
         self.plot_path(color='r')
         plt.show()
         # plt.savefig('{}.eps'.format(filepath), bbox_inches='tight', format='eps')
+
+    def plot_path(self, color='r', width=1.0):
+        """plot path"""
+        if not self.path:
+            return
+        leaf = self.path[0]
+        path = list(leaf.path)
+        for i in range(len(path) - 1):
+            _, curve = self.compute_cost(start=path[i].state, end=path[i+1].state, ratio=4.0)
+            way = [[s.location.x, s.location.y, 0, 1] for s in curve]
+            way = np.array(way).transpose()
+            way = np.dot(self.gridmap.origin.transformation(inv=True), way)
+            plt.plot(way[0, :], way[1, :],
+                     color=color, linewidth=width, linestyle='-', )

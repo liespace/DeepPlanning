@@ -270,7 +270,9 @@ class WaySelector(object):
                 if self.trace[i] not in self.trace[i-1].children:
                     self.propagator.print_tree()
                 # remove node from the tree
-                self.trace[i-1].children.remove(self.trace[i])
+                children = list(self.trace[i-1].children)
+                children.remove(self.trace[i])
+                self.trace[i-1].children = children
                 self.trace[:] = self.trace[:i]
                 self.trace[-1].status = NStatus.STOP
                 return False
@@ -343,7 +345,6 @@ class DWWaySelector(WaySelector):
         while times < self.config.duration and not self.is_solved:
             times += 1
             self.find_best_trace()
-            self.adjust_trace()
             self.is_solved = self.build_track()
         self.reset_anode()
         self.build_way(times=times)

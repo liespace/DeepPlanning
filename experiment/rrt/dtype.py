@@ -310,7 +310,7 @@ class C2Go(object):
     """
     __slots__ = ('vec', 'scales', 'c2gtype', 'grade', 'reverse')
 
-    def __init__(self, c2gtype=None, scales=(0.8, 0.1, 0.1, 0.),
+    def __init__(self, c2gtype=None, scales=(1.0, 0.0, 0.0, 0.),
                  vec=(np.inf, np.inf, np.inf, np.inf), grade=np.inf):
         """
         :param vec: 1-D array, in order [leg, k, dk, euler]

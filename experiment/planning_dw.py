@@ -10,6 +10,7 @@ import os
 import glob
 import sys
 from planning import PlanRunner
+import visual
 
 
 class DWPlanRunner(PlanRunner):
@@ -26,7 +27,7 @@ class DWPlanRunner(PlanRunner):
             no = int(f.split('/')[-1].split('_')[0])
             grid = self.read_grid(no=no)
             org, aim = self.read_task(no=no)
-            reference = self.read_referential_path(f, aim)
+            reference = self.read_referential_path(f, no)
             path, cost, ttf, st, cost2 = [], [], [], 0, []
             for i in range(times):
                 planner = DWAPlanner()
@@ -50,8 +51,8 @@ class DWPlanRunner(PlanRunner):
                     planner.selector.search_way()
                     cost2.append(planner.propagator.anode.c2go.cost())
                     # plot
-                    planner.propagator.path.append(planner.propagator.anode)
-                    planner.propagator.plot(filepath='')
+                    # planner.propagator.path.append(planner.propagator.anode)
+                    # planner.propagator.plot(filepath='')
             if st > 0:
                 ttf_m, ttf_s = np.mean(ttf), np.sqrt(np.var(ttf))
                 cost_m, cost_s = np.mean(cost), np.sqrt(np.var(cost))
@@ -68,8 +69,8 @@ class DWPlanRunner(PlanRunner):
                 print (ttf_m, ttf_s, cost_m, cost_s, st, cost2_m, cost2_s)
             else:
                 print (f + ' is FAILED')
-            if j == 0:
-                break
+            # if j == 10:
+            #     break
         self.write_result(
             ttf_ms, ttf_ss, cost_ms, cost_ss, sts, sf, cost2_ms, cost2_ss)
         print (np.mean(ttf_ms), np.mean(ttf_ss),
@@ -90,18 +91,26 @@ class DWPlanRunner(PlanRunner):
                     velocity=Velocity())
         return org, aim
 
-    def read_referential_path(self, f, aim):
+    def read_referential_path(self, f, no):
+        true_file = self.true_filepath_root + os.sep + str(no) + '_way.txt'
+        true = np.loadtxt(true_file, delimiter=',')
+        true = true[:, :-1]
         pred = np.loadtxt(f, delimiter=',')
         p_prt, path = [], []
         for row in pred:
             if row[-1] > self.recall_bar:
                 p_prt.append(row[:-1])
-        for p in p_prt:
+        p_prt.append(true[-1])
+        p_prt.insert(0, true[0])
+        # visual.plot_way(np.array(p_prt), step_size=0.5,
+        #                 car_color='b', line_color='b', point_color='b')
+        # visual.plot_way(np.array(true), step_size=0.5,
+        #                 car_color='g', line_color='g', point_color='g')
+        for p in p_prt[1:]:
             state = State(location=Location(vec=[p[0], p[1], 0.]),
                           rotation=Rotation(rpy=(0., 0., p[2])),
                           velocity=Velocity())
             path.append(state)
-        path.append(aim)
         return path
 
 

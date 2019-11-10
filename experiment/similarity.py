@@ -207,12 +207,12 @@ if __name__ == '__main__':
     # response = viewer.find_object(files=response[0], fun=viewer.check_collision)
     # print('Collision-Free Num: %d' % len(response[0]))
 
-    viewer.target_number = 7076
-    viewer.xrange = 1
+    viewer.target_number = 685
+    viewer.xrange = 10
     response = viewer.find_object(files=fs, fun=viewer.check_range)
     response = viewer.find_object(files=response[0], fun=viewer.check_collision)
     df, tl, pl = viewer.path_length_diff(response)
-    print(df, np.mean(tl), np.mean(pl))
+    print(df, response[1], np.mean(tl), np.mean(pl))
 
     # n, t, p = response[1][0], response[2][0], response[3][0]
     # viewer.path_similarity(n, t, p, step_size=0.1)
