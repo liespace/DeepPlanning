@@ -17,14 +17,32 @@ class PlanChecker(object):
         self.obj_filepath = work_dir + os.sep + file_type + os.sep + obj_type
 
     def check(self):
-        base_files = self.find_files(self.base_filepath)
-        base_res = self.resolve_infos(base_files, self.base_filepath)
-        base_sfs = self.resolve_res(base_res)
+        # obj
         obj_files = self.find_files(self.obj_filepath)
         obj_res = self.resolve_infos(obj_files, self.obj_filepath)
         obj_sfs = self.resolve_res(obj_res)
-        self.save_sf(base_sfs, len(base_files), self.base_filepath)
-        self.save_sf(obj_sfs, len(obj_files), self.obj_filepath)
+        # base
+        base_files = self.find_files(self.base_filepath)
+        base_res = self.resolve_infos(base_files, self.base_filepath)
+        base_sfs = self.resolve_res(base_res)
+        # print or save
+        self.print_sf(base_sfs, len(base_files), self.base_filepath)
+        self.print_sf(obj_sfs, len(obj_files), self.obj_filepath)
+
+    def diff(self):
+        # obj
+        obj_nos = self.find_files(self.obj_filepath)
+        obj_res = self.resolve_infos(obj_nos, self.obj_filepath)
+        # base
+        base_res = self.resolve_infos(obj_nos, self.base_filepath)
+        # diff
+        diff_res = []
+        for i in range(len(obj_res)):
+            dr = np.array(obj_res[i]) - np.array(base_res[i])
+            diff_res.append(dr)
+        diff_sf = self.resolve_res(diff_res)
+        self.print_sf(diff_sf, len(obj_nos), self.obj_filepath)
+        # self.save_sf(diff_sf, len(obj_nos), self.obj_filepath, 'diff_se')
 
     @staticmethod
     def print_sf(sfs, amount, filepath='base'):
@@ -51,8 +69,8 @@ class PlanChecker(object):
                 cost_ms_sf, cost_ss_sf, cost2_ms_sf, cost2_ss_sf)
 
     @staticmethod
-    def save_sf(sfs, amount, filepath):
-        res_file = filepath + os.sep + 'statistical_features.csv'
+    def save_sf(sfs, amount, filepath, filename='statistical_features'):
+        res_file = filepath + os.sep + filename + '.csv'
         with open(res_file, mode='w') as csv_file:
             fieldnames = [
                 'SR', 'ST-M', 'ST-SE',
@@ -115,7 +133,7 @@ if __name__ == '__main__':
     base = 'rrt'
     obj = 'dwa-rrt' + os.sep + 'vgg19_comp_free200_check400_0.7'
     checker = PlanChecker(file_type='valid', base_type=base, obj_type=obj)
-    checker.check()
-
+    # checker.check()
+    checker.diff()
 
 # vgg19_comp_free200_check400_0.7
