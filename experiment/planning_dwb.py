@@ -21,7 +21,7 @@ class DWBPlanRunner(PlanRunner):
     def running(self, number, index=0, processing=4):
         files, folder = self.find_files(number)
         step = int(np.ceil(len(files) / float(processing)))
-        self.plan_filepath_root += (os.sep + folder)
+        self.plan_filepath_root += (os.sep + folder + '_' + str(self.recall_bar))
         self.run_one(files[index * step:(index + 1) * step], 100)
 
     def run_one(self, files, times=100):
@@ -119,10 +119,10 @@ class DWBPlanRunner(PlanRunner):
 
 
 if __name__ == '__main__':
-    runner = DWBPlanRunner(file_type='valid', name='dwb-rrt')
+    runner = DWBPlanRunner(file_type='valid', name='dwb-rrt', recall_bar=0.8)
     needed = int(sys.argv[1]) if len(sys.argv) > 1 else 0
     thread = 4 if len(sys.argv) > 1 else 1
-    runner.running(number=3, index=needed, processing=thread)
+    runner.running(number=2, index=needed, processing=thread)
     # pr = cProfile.Profile()
     # pr.enable()
     # main()

@@ -21,7 +21,7 @@ class DWPlanRunner(PlanRunner):
     def running(self, number, index=0, processing=4):
         files, folder = self.find_files(number)
         step = int(np.ceil(len(files) / float(processing)))
-        self.plan_filepath_root += (os.sep + folder)
+        self.plan_filepath_root += (os.sep + folder + '_' + str(self.recall_bar))
         self.run_one(files[index * step:(index + 1) * step], 100)
 
     def run_one(self, files, times=100):
