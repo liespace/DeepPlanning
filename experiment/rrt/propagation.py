@@ -834,3 +834,63 @@ class DWAPropagator(BiPropagator):
             way = np.dot(self.gridmap.origin.transformation(inv=True), way)
             plt.plot(way[0, :], way[1, :],
                      color=color, linewidth=width, linestyle='-', )
+
+
+class DWBPropagator(BiPropagator):
+    def __init__(self, director=None, vehicle=None, gridmap=None, sampler=None):
+        # type: (Director, Vehicle, GridMap, GBSE2Sampler) -> None
+        super(DWBPropagator, self).__init__(director, vehicle, gridmap, sampler)
+        self.split_line = 0.6
+        self.expectation = np.random.uniform(0, 1)
+        self.config = PropagatorConfig(duration=150, density=2.0, precision=0.1)
+        self.sampler1 = GBSE2Sampler(gridmap=self.gridmap)
+        self.sampler2 = DWGBSE2Sampler(gridmap=self.gridmap)
+        self.sampler1.config = SamplerConfig(r_mean=2.0, r_sigma=0.5,
+                                             t_mean=0., t_sigma=np.pi / 4.,
+                                             h_mean=0., h_sigma=np.pi / 6.)
+        self.sampler2.config = DWSamplerConfig(x_mean=0.518, x_sigma=2.102 / 1,
+                                               y_mean=-0.005, y_sigma=1.917 / 1,
+                                               t_mean=-0.011, t_sigma=0.394 / 1)
+
+    def propagate(self):  # type: () -> None
+        """
+        :return:
+        """
+        logging.debug('Propagating tree')
+        if not self.director.aim:
+            logging.warning('Aim is Empty, No Need to Propagation')
+        else:
+            if self.is_first:
+                self.refresh()
+            times, unlucky, unadded, repeat, is_over = -1, 0, 0, 0, False
+            while (times < (self.config.duration + self.extend)
+                   and not (is_over and self.is_first)):
+                times += 1
+                self._switch(times)
+                if not self.sampling(base=self._get_base(times=times)):
+                    unlucky += 1
+                    continue
+                if not self.is_necessary(who=self.sampler.sample):
+                    repeat += 1
+                    continue
+                if not self.build_edge(parent=self.parent_of_new()):
+                    unadded += 1
+                    continue
+                # self.rewiring(radius=5.0, ratio=4.0)
+                if self._is_over():
+                    is_over = True
+                    self._extract()
+            self.sort_path()
+            # logging.info(self.table([times, unlucky, repeat, unadded, is_over]))
+
+    def _get_base(self, times=0):
+        self.expectation = np.random.uniform(0, 1)
+        if len(self.director.path) > 1:
+            if self.expectation < self.split_line:
+                self.sampler = self.sampler2
+                return random.choice(self.director.path[:-1])
+        self.sampler = self.sampler1
+        return random.choice(list(PreOrderIter(self.root))).state
+
+
+

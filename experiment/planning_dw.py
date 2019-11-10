@@ -75,8 +75,8 @@ class DWPlanRunner(PlanRunner):
                 print (ttf_m, ttf_s, cost_m, cost_s, st, cost2_m, cost2_s)
             else:
                 print (f + ' is FAILED')
-            # if j == 10:
-            #     break
+            if j == 10:
+                break
         self.write_result(
             ttf_ms, ttf_ss, cost_ms, cost_ss, sts, sf, cost2_ms, cost2_ss)
         print (np.mean(ttf_ms), np.mean(ttf_ss),
