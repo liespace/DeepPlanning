@@ -728,9 +728,9 @@ class DWAPropagator(BiPropagator):
         # type: (Director, Vehicle, GridMap, DWGBSE2Sampler) -> None
         super(DWAPropagator, self).__init__(director, vehicle, gridmap, sampler)
         self.config = PropagatorConfig(duration=150, density=2.0, precision=0.1)
-        self.sampler.config = DWSamplerConfig(x_mean=0.518, x_sigma=2.102 / 1,
-                                              y_mean=-0.005, y_sigma=1.917 / 1,
-                                              t_mean=-0.011, t_sigma=0.394 / 1)
+        self.sampler.config = DWSamplerConfig(x_mean=0.612, x_sigma=2.145 / 1,
+                                              y_mean=0.015, y_sigma=1.952 / 1,
+                                              t_mean=0.005, t_sigma=0.401 / 1)
 
     def propagate(self):
         # type: () -> None

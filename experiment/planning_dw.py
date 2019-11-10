@@ -121,12 +121,20 @@ class DWPlanRunner(PlanRunner):
 
 
 if __name__ == '__main__':
-    runner = DWPlanRunner(file_type='valid', name='dwa-rrt')
+    runner = DWPlanRunner(file_type='valid', name='dwa-rrt', recall_bar=0.8)
     needed = int(sys.argv[1]) if len(sys.argv) > 1 else 0
     thread = 4 if len(sys.argv) > 1 else 1
-    runner.running(number=3, index=needed, processing=thread)
+    runner.running(number=2, index=needed, processing=thread)
     # pr = cProfile.Profile()
     # pr.enable()
     # main()
     # pr.disable()
     # pr.print_stats(sort='cumtime')
+
+    # First 10 Examples and Fitted Gaussian
+    # 2 vgg19_comp_free200_check300 - 0.7 ** / 0.8 *
+    # 3 vgg19_comp_free200_check400 - 0.7 *** / 0.8 ****
+
+    # First 10 Examples and unFitted Gaussian
+    # 2 vgg19_comp_free200_check300 - 0.7 * / 0.8 *
+    # 3 vgg19_comp_free200_check400 - 0.7 * / 0.8 *

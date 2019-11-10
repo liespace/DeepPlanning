@@ -185,8 +185,8 @@ class SimilarityViewer:
 
 
 if __name__ == '__main__':
-    viewer = SimilarityViewer(recall_bar=0.7, file_type='valid')
-    fs, fd = viewer.find_files(3)
+    viewer = SimilarityViewer(recall_bar=0.8, file_type='valid')
+    fs, fd = viewer.find_files(2)
 
     # response = viewer.find_object(files=fs, fun=viewer.check_collision)
     # print('ALL Collision-Free Num: %d' % len(response[0]))
@@ -207,12 +207,20 @@ if __name__ == '__main__':
     # response = viewer.find_object(files=response[0], fun=viewer.check_collision)
     # print('Collision-Free Num: %d' % len(response[0]))
 
-    viewer.target_number = 685
+    # viewer.target_number = 685
     viewer.xrange = 10
     response = viewer.find_object(files=fs, fun=viewer.check_range)
     response = viewer.find_object(files=response[0], fun=viewer.check_collision)
+    print(len(response[0]))
     df, tl, pl = viewer.path_length_diff(response)
-    print(df, response[1], np.mean(tl), np.mean(pl))
+    print(np.mean(tl), np.mean(pl))
+
+    # viewer.target_number = 295
+    # response = viewer.find_object(files=fs, fun=viewer.check_number)
+    # response = viewer.find_object(files=response[0], fun=viewer.check_collision)
+    # viewer.plot_responses(response)
+    # print(response[0])
+    # plt.show()
 
     # n, t, p = response[1][0], response[2][0], response[3][0]
     # viewer.path_similarity(n, t, p, step_size=0.1)
@@ -220,6 +228,12 @@ if __name__ == '__main__':
 
     # plt.show()
 
+    # 0 vgg19_tiny_free250_check600 - 0.6
+    # 1 vgg19_comp_free100_check200 - 0.7
+    # 2 vgg19_comp_free200_check300 - 0.7 **** / 0.8 *****
+    # 3 vgg19_comp_free200_check400 - 0.7 ** / 0.8 ***
+    # 4 vgg19_tiny_free250_check800 - 0.6 *
+    # 5 vgg19_comp_free100_check300 - 0.7
 
 # dw_time = [
 #     26, 25, 25, 25, 25, 24, 26, 26, 25, 25,

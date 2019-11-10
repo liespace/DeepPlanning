@@ -163,15 +163,15 @@ class StochasticViewer(object):
 
 
 if __name__ == '__main__':
-    viewer = StochasticViewer('valid', recall_bar=0.7)
-    e_s, p_s = viewer.view(3, 4, remain=-1)
+    viewer = StochasticViewer('valid', recall_bar=0.8)
+    e_s, p_s = viewer.view(2, 3, remain=-1)
     # plot gaussian pdf anc cdf
     viewer.fitted_gaussian_dist(p_s, mask=(1., 1., 1.))
     plt.show()
     # 0 vgg19_tiny_free250_check600 - 0.6
     # 1 vgg19_comp_free100_check200 - 0.7
-    # 2 vgg19_comp_free200_check300 - 0.7
-    # 3 vgg19_comp_free200_check400 - 0.7* / 0.8* ---
-    # 4 vgg19_tiny_free250_check800 - 0.6
+    # 2 vgg19_comp_free200_check300 - 0.7 *** / 0.8 *****
+    # 3 vgg19_comp_free200_check400 - 0.7 ** / 0.8 ****
+    # 4 vgg19_tiny_free250_check800 - 0.6 *
     # 5 vgg19_comp_free100_check300 - 0.7
 
