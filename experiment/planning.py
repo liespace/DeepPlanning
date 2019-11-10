@@ -16,7 +16,8 @@ class PlanRunner(object):
         self.pred_filepath_root = 'pred/' + file_type
         self.true_filepath_root = 'dataset' + os.sep + 'well'
         self.cond_filepath_root = 'dataset' + os.sep + 'blue'
-        self.plan_filepath_root = 'experiment' + os.sep + 'plan' + os.sep + name
+        self.plan_filepath_root = 'experiment' + os.sep + 'plan' + os.sep + \
+                                  file_type + os.sep + name
         self.pred_folders = os.listdir(self.pred_filepath_root)
 
     def running(self, number, index=0, processing=4):
@@ -80,6 +81,8 @@ class PlanRunner(object):
 
     def write_result(
             self, ttf_ms, ttf_ss, cost_ms, cost_ss, sts, sf, cost2_ms, cost2_ss):
+        if not os.path.isdir(self.plan_filepath_root):
+            os.makedirs(self.plan_filepath_root)
         ttf_ms_file = self.plan_filepath_root + os.sep + 'tff_ms.txt'
         ttf_ss_file = self.plan_filepath_root + os.sep + 'tff_ss.txt'
         cost_ms_file = self.plan_filepath_root + os.sep + 'cost_ms.txt'
@@ -98,6 +101,8 @@ class PlanRunner(object):
         np.savetxt(sf_file, np.array([sf]), delimiter=',')
 
     def write_info(self, seq, ttf, cost, st, cost2):
+        if not os.path.isdir(self.plan_filepath_root):
+            os.makedirs(self.plan_filepath_root)
         ttf_file = self.plan_filepath_root + os.sep + str(seq) + '_tff.txt'
         cost_file = self.plan_filepath_root + os.sep + str(seq) + '_cost.txt'
         cost2_file = self.plan_filepath_root + os.sep + str(seq) + '_cost2.txt'

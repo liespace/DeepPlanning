@@ -18,6 +18,12 @@ class DWPlanRunner(PlanRunner):
         super(DWPlanRunner, self).__init__(file_type=file_type, name=name)
         self.recall_bar = recall_bar
 
+    def running(self, number, index=0, processing=4):
+        files, folder = self.find_files(number)
+        step = int(np.ceil(len(files) / float(processing)))
+        self.plan_filepath_root += (os.sep + folder)
+        self.run_one(files[index * step:(index + 1) * step], 100)
+
     def run_one(self, files, times=100):
         ttf_ms, ttf_ss, cost_ms, cost_ss, sts, sf = [], [], [], [], [], 0
         cost2_ms, cost2_ss = [], []
