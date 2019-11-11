@@ -138,7 +138,7 @@ class PlanChecker(object):
 
 if __name__ == '__main__':
     base = 'rrt'
-    obj = 'dwa-rrt-small' + os.sep + 'vgg19_comp_free200_check400_0.7'
+    obj = 'dwa-rrt' + os.sep + 'vgg19_comp_free200_check400_0.7'
     checker = PlanChecker(file_type='valid', base_type=base, obj_type=obj)
     # checker.check_obj()
     checker.diff(True)
