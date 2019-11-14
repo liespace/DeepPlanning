@@ -194,9 +194,9 @@ if __name__ == '__main__':
     # viewer.path_length_diff(response, plot=True)
     # plt.show()
 
-    # viewer.target_diff = 0
-    # response = viewer.find_object(files=fs, fun=viewer.check_predicted_number_of_obj)
-    # print('ALL Right Obj Prediction Num: %d' % len(response[0]))
+    viewer.target_diff = 0
+    response = viewer.find_object(files=fs, fun=viewer.check_predicted_number_of_obj)
+    print('ALL Right Obj Prediction Num: %d' % len(response[0]))
 
     # response = viewer.find_object(files=response[0], fun=viewer.check_collision)
     # print('Collision-Free and Right Obj-Prediction Num: %d' % len(response[0]))
@@ -208,12 +208,12 @@ if __name__ == '__main__':
     # print('Collision-Free Num: %d' % len(response[0]))
 
     # viewer.target_number = 685
-    viewer.xrange = 10000
-    response = viewer.find_object(files=fs, fun=viewer.check_range)
-    response = viewer.find_object(files=response[0], fun=viewer.check_collision)
-    print(len(response[0]))
-    df, tl, pl = viewer.path_length_diff(response)
-    print(np.mean(tl), np.mean(pl))
+    # viewer.xrange = 10000
+    # response = viewer.find_object(files=fs, fun=viewer.check_range)
+    # response = viewer.find_object(files=response[0], fun=viewer.check_collision)
+    # print(len(response[0]))
+    # df, tl, pl = viewer.path_length_diff(response)
+    # print(np.mean(tl), np.mean(pl))
 
     # viewer.target_number = 295
     # response = viewer.find_object(files=fs, fun=viewer.check_number)
