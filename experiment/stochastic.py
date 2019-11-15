@@ -10,12 +10,12 @@ import visual
 
 class StochasticViewer(object):
     """ """
-    def __init__(self, file_type='valid', recall_bar=0.5):
+    def __init__(self, file_type='valid', recall_bar=0.5, nrows=3, ncols=3):
         self.recall_bar = recall_bar
         self.pred_filepath_root = 'pred/' + file_type
         self.true_filepath_root = 'dataset' + os.sep + 'well'
         self.pred_folders = os.listdir(self.pred_filepath_root)
-        self.fig, self.axes = plt.subplots(nrows=3, ncols=3, figsize=(9, 6))
+        self.fig, self.axes = plt.subplots(nrows=nrows, ncols=ncols)
 
     def view(self, first, last, remain=-1):
         errors, pps = [], []
