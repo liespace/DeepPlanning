@@ -15,7 +15,7 @@ class StochasticViewer(object):
         self.pred_filepath_root = 'pred/' + file_type
         self.true_filepath_root = 'dataset' + os.sep + 'well'
         self.pred_folders = os.listdir(self.pred_filepath_root)
-        self.fig, self.axes = plt.subplots(nrows=2, ncols=3, figsize=(9, 6))
+        self.fig, self.axes = plt.subplots(nrows=3, ncols=3, figsize=(9, 6))
 
     def view(self, first, last, remain=-1):
         errors, pps = [], []
@@ -108,44 +108,44 @@ class StochasticViewer(object):
         ps = []
         linewidth = 4
         # x error
-        # self.axes[0, 0].set_title('pdf-x')
-        # self.axes[0, 0].hist(
-        #     x, 100, weights=np.ones_like(x) / float(len(x)),
-        #     histtype='step', facecolor='yellowgreen', linewidth=linewidth)
-        self.axes[0, 0].set_title(r"CDF of error on $x$")
+        self.axes[0, 0].set_title('pdf-x')
         self.axes[0, 0].hist(
+            x, 100, weights=np.ones_like(x) / float(len(x)),
+            histtype='step', facecolor='yellowgreen', linewidth=linewidth)
+        self.axes[1, 0].set_title(r"CDF of error on $x$")
+        self.axes[1, 0].hist(
             x, 100, normed=1, histtype='step', facecolor='pink',
             alpha=0.75, cumulative=True, rwidth=0.8, linewidth=linewidth)
         if pp:
-            self.axes[1, 0].set_title("p-p-x")
-            res = stats.probplot(x, plot=self.axes[1, 0])
+            self.axes[2, 0].set_title("p-p-x")
+            res = stats.probplot(x, plot=self.axes[2, 0])
             ps.append(res[-1])
         # y error
-        # self.axes[0, 1].set_title('pdf-y')
-        # self.axes[0, 1].hist(
-        #     y, 100, weights=np.ones_like(y) / float(len(y)),
-        #     histtype='step', facecolor='yellowgreen', linewidth=linewidth)
-        self.axes[0, 1].set_title(r"CDF of error on $y$")
+        self.axes[0, 1].set_title('pdf-y')
         self.axes[0, 1].hist(
+            y, 100, weights=np.ones_like(y) / float(len(y)),
+            histtype='step', facecolor='yellowgreen', linewidth=linewidth)
+        self.axes[1, 1].set_title(r"CDF of error on $y$")
+        self.axes[1, 1].hist(
             y, 100, normed=1, histtype='step', facecolor='pink',
             alpha=0.75, cumulative=True, rwidth=0.8, linewidth=linewidth)
         if pp:
-            self.axes[1, 1].set_title("p-p-y")
-            res = stats.probplot(y, plot=self.axes[1, 1])
+            self.axes[2, 1].set_title("p-p-y")
+            res = stats.probplot(y, plot=self.axes[2, 1])
             ps.append(res[-1])
         # theta error
-        # self.axes[0, 2].set_title('pdf-theta')
-        # self.axes[0, 2].hist(
-        #     t, 100, weights=np.ones_like(t) / float(len(t)),
-        #     histtype='step', facecolor='yellowgreen', linewidth=linewidth)
-        self.axes[0, 2].set_title(r"CDF of error on $\theta$")
+        self.axes[0, 2].set_title('pdf-theta')
         self.axes[0, 2].hist(
+            t, 100, weights=np.ones_like(t) / float(len(t)),
+            histtype='step', facecolor='yellowgreen', linewidth=linewidth)
+        self.axes[1, 2].set_title(r"CDF of error on $\theta$")
+        self.axes[1, 2].hist(
             t, 100, normed=1, histtype='step', facecolor='pink',
             alpha=0.75, cumulative=True, rwidth=0.8, linewidth=linewidth)
         self.fig.subplots_adjust(hspace=0.4)
         if pp:
-            self.axes[1, 2].set_title("p-p-t")
-            res = stats.probplot(t, plot=self.axes[1, 2])
+            self.axes[2, 2].set_title("p-p-t")
+            res = stats.probplot(t, plot=self.axes[2, 2])
             ps.append(res[-1])
         return ps
 
