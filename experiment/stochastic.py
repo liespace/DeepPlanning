@@ -106,7 +106,7 @@ class StochasticViewer(object):
 
     def plot_pdf_cdf(self, x, y, t, pp=True):
         ps = []
-        linewidth = 4
+        linewidth = 2
         # x error
         self.axes[0, 0].set_title('pdf-x')
         self.axes[0, 0].hist(

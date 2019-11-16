@@ -87,8 +87,8 @@ class SimilarityViewer:
                         velocity=Velocity())
             c2go, curve = planner.propagator.compute_cost(start, end)
             if c2go.c2gtype is C2GoType.BREAK:
-                return False
-        return True
+                return True
+        return False
 
     def path_similarity(self, no, true, pred, rho=5.0, step_size=0.5):
         t_path = self.from_keys_to_path(true, rho, step_size)
@@ -194,18 +194,22 @@ if __name__ == '__main__':
     # viewer.path_length_diff(response, plot=True)
     # plt.show()
 
-    viewer.target_diff = 0
-    response = viewer.find_object(files=fs, fun=viewer.check_predicted_number_of_obj)
-    print('ALL Right Obj Prediction Num: %d' % len(response[0]))
+    # viewer.target_diff = 0
+    # response = viewer.find_object(files=fs, fun=viewer.check_predicted_number_of_obj)
+    # print('ALL Right Obj Prediction Num: %d' % len(response[0]))
 
     # response = viewer.find_object(files=response[0], fun=viewer.check_collision)
     # print('Collision-Free and Right Obj-Prediction Num: %d' % len(response[0]))
 
-    # viewer.error_mask = (-1, 2.092*2, -1)  # [2.128*2, 2.092*2, 0.464*2]
+    # response = viewer.find_object(files=response[0], fun=viewer.check_collision)
+    # print('Collision-Free Num: %d' % len(response[0]))
+
+    # viewer.error_mask = (-1, 4.0, 1.0)  # [2.128*2, 2.092*2, 0.464*2]
     # response = viewer.find_object(files=response[0], fun=viewer.check_prediction_error)
     # print('Error Num: %d' % len(response[0]))
     # response = viewer.find_object(files=response[0], fun=viewer.check_collision)
     # print('Collision-Free Num: %d' % len(response[0]))
+    # print(response[1])
 
     # viewer.target_number = 685
     # viewer.xrange = 10000
@@ -215,12 +219,12 @@ if __name__ == '__main__':
     # df, tl, pl = viewer.path_length_diff(response)
     # print(np.mean(tl), np.mean(pl))
 
-    # viewer.target_number = 295
-    # response = viewer.find_object(files=fs, fun=viewer.check_number)
-    # response = viewer.find_object(files=response[0], fun=viewer.check_collision)
-    # viewer.plot_responses(response)
+    viewer.target_number = 8600
+    response = viewer.find_object(files=fs, fun=viewer.check_number)
+    response = viewer.find_object(files=response[0], fun=viewer.check_collision)
+    viewer.plot_responses(response)
     # print(response[0])
-    # plt.show()
+    plt.show()
 
     # n, t, p = response[1][0], response[2][0], response[3][0]
     # viewer.path_similarity(n, t, p, step_size=0.1)
