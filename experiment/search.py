@@ -13,7 +13,7 @@ import similaritymeasures
 import time
 
 
-class SimilarityViewer:
+class SearchEngine:
     """ """
     def __init__(self, recall_bar, file_type,
                  error_mask=(0., 0., 0.), target_number=1000, diff=0):
@@ -185,7 +185,7 @@ class SimilarityViewer:
 
 
 if __name__ == '__main__':
-    viewer = SimilarityViewer(recall_bar=0.8, file_type='valid')
+    viewer = SearchEngine(recall_bar=0.8, file_type='valid')
     fs, fd = viewer.find_files(2)
 
     # response = viewer.find_object(files=fs, fun=viewer.check_collision)

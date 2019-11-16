@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from scipy import stats
 import visual
-from stochastic import StochasticViewer
+from statistics import StochasticViewer
 
 
 class CGPViewer(StochasticViewer):
