@@ -146,7 +146,7 @@ if __name__ == '__main__':
     obj = 'dwb-rrt-l' + os.sep + 'vgg19_comp_free200_check300_0.8'
     # obj = 'rrt-fast'
     checker = PlanChecker(file_type='valid', base_type=base, obj_type=obj)
-    checker.check_obj(True)
-    checker.diff(True)
+    # checker.check_obj(True)
+    checker.diff(False)
 
 # vgg19_comp_free200_check400_0.7
