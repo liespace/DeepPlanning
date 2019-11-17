@@ -73,7 +73,7 @@ if __name__ == '__main__':
     # response = viewer.find_object(files=response[0], fun=viewer.check_collision)
     # print('Collision-Free Num: %d' % len(response[0]))
     # print(response[1])
-    for p in [8263, 370, 3990, 6186, 3770, 3625, 4810, 5220]:  #
+    for p in [8428]:  #
         viewer.target_number = p
         response = viewer.find_object(files=fs, fun=viewer.check_number)
         # response = viewer.find_object(files=response[0], fun=viewer.check_collision)
@@ -87,3 +87,9 @@ if __name__ == '__main__':
     # 3 vgg19_comp_free200_check400 - 0.7 ** / 0.8 ***
     # 4 vgg19_tiny_free250_check800 - 0.6 *
     # 5 vgg19_comp_free100_check300 - 0.7
+
+    # ttf-m to10:   [8448, 8428, 8490, 8460, 8470, 8418, 8465, 1767, 1733, 1750]
+    # [-3304.8, -3224.9, -2725.6, -2650.9, -2327.4, -2296.3, -2103.7, -2049.7]
+    # ttf-s top10:  [8448, 8438, 8460, 8465, 8418, 8133, 7766, 1792, 1787, 8490]
+    # cost-m top10: [8428, 8460, 8133, 7786, 8418, 7766, 8448, 8470, 8465, 8093]
+    # cost-s top10: [8418, 8428, 8470, 8133, 3625, 5055, 3655, 7806, 5050, 1750]

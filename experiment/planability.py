@@ -50,6 +50,11 @@ class PlanChecker(object):
         self.print_sf(diff_sf, len(obj_nos), self.obj_filepath)
         if save:
             self.save_sf(diff_sf, len(obj_nos), self.obj_filepath, 'diff_se')
+        channel = 1
+        arr = np.array(diff_res)[channel, :]
+        nos = arr.argsort()[:10]
+        # no = np.argmin(arr[channel, :])
+        print([self.extract_no(obj_nos[n]) for n in nos], [diff_res[channel][n] for n in nos])
 
     @staticmethod
     def print_sf(sfs, amount, filepath='base'):
@@ -142,6 +147,6 @@ if __name__ == '__main__':
     # obj = 'rrt'
     checker = PlanChecker(file_type='valid', base_type=base, obj_type=obj)
     # checker.check_obj(True)
-    checker.diff(True)
+    checker.diff(False)
 
 # vgg19_comp_free200_check400_0.7
