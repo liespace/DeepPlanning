@@ -112,15 +112,15 @@ if __name__ == '__main__':
     #             colors=('r', 'g', 'b'), line_styles=styles,
     #             prefixes=prefixes, zorders=zs)
 
-    viewer = DataViewer(file_type='diff_type')
+    viewer = DataViewer(file_type='diff_free')
     styles = (
         [viewer.lines[0], viewer.lines[1]],
         [viewer.lines[4], viewer.lines[5]],
         [viewer.lines[2], viewer.lines[3]])
-    prefixes = ['YIPS-V', 'YIPS-R', 'YIPS-VT']
+    prefixes = ['YIPS-V-8', 'YIPS-V-7', 'YIPS-V-6']
     zs = [200, 100, 0]
-    viewer.view(begin=30, end=400, window=20, anchor=(0.98, 0.85),
-                colors=('r', 'b', 'g'), line_styles=styles, prefixes=prefixes,
+    viewer.view(begin=30, end=350, window=20, anchor=(0.95, 0.75),
+                colors=('r', 'g', 'b'), line_styles=styles, prefixes=prefixes,
                 yt1=np.arange(0.042, 0.080, 0.005),
                 yt2=np.arange(0.850, 0.9425, 0.01),
                 zorders=[100, 0, 200])

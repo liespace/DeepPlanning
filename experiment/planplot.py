@@ -41,17 +41,17 @@ class PlanPlot(SearchEngine):
             true, curve=True, keys=False, car=True,
             curve_zorder=100, key_zorder=20, car_zorder=200,
             step_size=0.5, rho=4.8, width=4.6, height=1.8,
-            car_color='b', car_fill=False, car_width=2, car_alpha=1.0,
-            key_color='b', key_width=1, key_fill=False, key_alpha=1.0,
-            curve_color='b', curve_style='-', curve_width=4,
+            car_color='g', car_fill=False, car_width=6, car_alpha=1.0,
+            key_color='g', key_width=1, key_fill=False, key_alpha=1.0,
+            curve_color='g', curve_style='-', curve_width=12,
             poster=poster)
         vsl.plot_path(
             p_path, curve=True, keys=False, car=True,
             curve_zorder=400, key_zorder=200, car_zorder=400,
             step_size=0.5, rho=4.8, width=4.6, height=1.8,
-            car_color='r', car_fill=False, car_width=2, car_alpha=1.0,
+            car_color='r', car_fill=False, car_width=6, car_alpha=1.0,
             key_color='g', key_width=1, key_fill=False, key_alpha=1.0,
-            curve_color='r', curve_style='-', curve_width=4,
+            curve_color='r', curve_style='-', curve_width=12,
             poster=poster)
         vsl.plot_cond(
             true, colors=('#48C9B0', 'g'), width=4.6, height=1.8,
@@ -73,7 +73,7 @@ if __name__ == '__main__':
     # response = viewer.find_object(files=response[0], fun=viewer.check_collision)
     # print('Collision-Free Num: %d' % len(response[0]))
     # print(response[1])
-    for p in [8428]:  #
+    for p in [3990]:  #
         viewer.target_number = p
         response = viewer.find_object(files=fs, fun=viewer.check_number)
         # response = viewer.find_object(files=response[0], fun=viewer.check_collision)
@@ -88,8 +88,17 @@ if __name__ == '__main__':
     # 4 vgg19_tiny_free250_check800 - 0.6 *
     # 5 vgg19_comp_free100_check300 - 0.7
 
-    # ttf-m to10:   [8448, 8428, 8490, 8460, 8470, 8418, 8465, 1767, 1733, 1750]
-    # [-3304.8, -3224.9, -2725.6, -2650.9, -2327.4, -2296.3, -2103.7, -2049.7]
-    # ttf-s top10:  [8448, 8438, 8460, 8465, 8418, 8133, 7766, 1792, 1787, 8490]
-    # cost-m top10: [8428, 8460, 8133, 7786, 8418, 7766, 8448, 8470, 8465, 8093]
-    # cost-s top10: [8418, 8428, 8470, 8133, 3625, 5055, 3655, 7806, 5050, 1750]
+    # ttf-m to10:
+    # [8448, 8418, 8470, 8460, 8428, 8465, 8490, 1787, 1738, 1750] dwa
+    # [-5097.854 -3729.70, -3662.59, -3598.51, -3557.35, -3212.43, -2937.70, -2517.25, -2225.02, -1893.65]
+    # [8448, 8418, 8470, 8460, 8428, 8465, 8490, 1787, 1738, 1750] dwb
+    # [-5003.17, -3713.39, -3584.85, -3532.98, -3506.57, -3196.50, -2836.25, -2412.37, -2175.15, -1788.90]
+    # cost-m top10:
+    # [8448, 8470, 8460, 8438, 8465, 7983, 8475, 8418, 7766, 7786] dwa
+    # [-50.81, -42.26, -37.09, -34.33, -33.00, -32.38, -31.90, -30.44, -30.16, -29.19]
+    # [8448, 8470, 8460, 8465, 8418, 8475, 8428, 8438, 1792, 7806] dwb
+    # [-46.85, -36.14, -32.30, -30.48, -27.29, -24.29, -23.48, -20.22, -18.84, -17.84]
+
+
+    # 8470 [-3s], 1750[-1.8s], 7983 (7766)
+    ## 8133 [-1.8s],

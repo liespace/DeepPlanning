@@ -70,7 +70,7 @@ def plot_vehicles(
         # poster.gca().add_patch(patch)
 
         plot_tri(
-            q, radius=1.0, color=color, zorder=zorder,
+            q, radius=1.5, color=color, zorder=zorder,
             fill=False, width=linewidth, poster=poster)
 
 

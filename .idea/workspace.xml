@@ -3,8 +3,19 @@
   <component name="ChangeListManager">
     <list default="true" id="9147d471-6244-4115-8739-9234121dd0c5" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment/backup/valid/statistical_features.csv" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/backup/valid/statistical_features.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment/databorad.py" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/databorad.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment/error_guassian.py" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/error_guassian.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/experiment/planability.py" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/planability.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment/planplot.py" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/planplot.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment/search.py" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/search.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment/train/free_epoch/run_comp_vgg19-b16-10000_1_0.0001-adam_0.00003-unfrozen_10-free_100-tag-epoch_val_dw_cor_metric.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment/train/free_epoch/run_comp_vgg19-b16-10000_1_0.0001-adam_0.00003-unfrozen_10-free_100-tag-epoch_val_dw_obj_metric.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment/train/free_epoch/run_comp_vgg19-b16-10000_1_0.0001-adam_0.00003-unfrozen_10-free_150-tag-epoch_val_dw_cor_metric.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment/train/free_epoch/run_comp_vgg19-b16-10000_1_0.0001-adam_0.00003-unfrozen_10-free_150-tag-epoch_val_dw_obj_metric.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment/train/free_epoch/run_comp_vgg19-b16-10000_1_0.0001-adam_0.00003-unfrozen_10-free_200-tag-epoch_val_dw_cor_metric.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment/train/free_epoch/run_comp_vgg19-b16-10000_1_0.0001-adam_0.00003-unfrozen_10-free_200-tag-epoch_val_dw_obj_metric.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment/visual.py" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/visual.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment/visualization.py" beforeDir="false" afterPath="$PROJECT_DIR$/experiment/visualization.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -102,7 +113,10 @@
       <workItem from="1573222036236" duration="18029000" />
       <workItem from="1573400028560" duration="48000" />
       <workItem from="1573838646691" duration="37207000" />
-      <workItem from="1573941587700" duration="14878000" />
+      <workItem from="1573941587700" duration="31502000" />
+      <workItem from="1574292771228" duration="2478000" />
+      <workItem from="1574295635793" duration="6000" />
+      <workItem from="1574297943300" duration="1038000" />
     </task>
     <servers />
   </component>

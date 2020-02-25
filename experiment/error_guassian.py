@@ -15,7 +15,7 @@ class CGPViewer(StochasticViewer):
         super(CGPViewer, self).__init__(file_type, recall_bar, nrows=1, ncols=1)
         self.fig1, self.ax1 = plt.subplots(nrows=1, ncols=1)
         self.fig2, self.ax2 = plt.subplots(nrows=1, ncols=1)
-        self.fontsize = 60
+        self.fontsize = 70
         self.ax1.tick_params(labelsize=self.fontsize)
         self.ax1.set_xlabel('error[m]', fontsize=self.fontsize)
         self.ax1.set_ylabel('probability[-]', fontsize=self.fontsize)
@@ -56,7 +56,7 @@ class CGPViewer(StochasticViewer):
                 # calculate the error of points
                 self.errors_when_obj_numbers_equal(
                     t_prt, np.array(p_prt), [x_error, y_error, t_error])
-            error = t_error
+            error = y_error
             res = self.plot_cdf(error, label=r'$\Theta$-error', color='r')
             m, v = res[-1][1], res[-1][0]
             x = m + v * np.random.randn(100000)
@@ -77,9 +77,9 @@ class CGPViewer(StochasticViewer):
             self.ax2.set_ylabel('ordered values [-]', fontsize=self.fontsize)
             self.ax2.set_title('')
             k, b = res[-1][0], res[-1][1]
-            self.ax2.scatter(res[0][0], res[0][1], s=200, c='b',
+            self.ax2.scatter(res[0][0], res[0][1], s=500, c='b',
                              zorder=100, label='x-error')
-            self.ax2.plot([-3.5, 3.5], [-3.5*k+b, k*3.5+b], linewidth=6,
+            self.ax2.plot([-3.5, 3.5], [-3.5*k+b, k*3.5+b], linewidth=12,
                           zorder=1000, color='r', label='f-x-error')
             return res
 
