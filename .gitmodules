@@ -1,3 +1,12 @@
 [submodule "dataset"]
 	path = dataset
-	url = https://www.usilab.cn:10080/TroubleLie/dw_dataset.git
+	url = https://github.com/liespace/DPDataset.git
+[submodule "pyRRTs"]
+	path = pyRRTs
+	url = https://github.com/liespace/pyRRTs.git
+[submodule "pySEA"]
+	path = pyRRTs
+	url = https://github.com/liespace/pyRRTs.git
+[submodule "YIPS"]
+	path = YIPS
+	url = https://github.com/liespace/YIPS.git
