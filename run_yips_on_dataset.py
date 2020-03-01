@@ -20,6 +20,7 @@ y_suffix = '_pred.txt'
 
 def read_input(filepath, size=(480, 480)):
     x = cv2.imread(dataset_folder + filepath)
+    x = cv2.cvtColor(x, cv2.COLOR_BGR2RGB)
     x = cv2.resize(x, size)
     return x
 
