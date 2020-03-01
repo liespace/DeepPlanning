@@ -10,3 +10,6 @@
 [submodule "YIPS"]
 	path = YIPS
 	url = https://github.com/liespace/YIPS.git
+[submodule "DataMaker"]
+	path = DataMaker
+	url = https://github.com/liespace/DataMaker.git
