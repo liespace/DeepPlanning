@@ -62,7 +62,7 @@ def read_grid(filepath, seq):
 def read_ose(filepath, seq, folder='ose'):
     """read heuristic ose"""
     oseh = np.loadtxt('{}/{}/{}_corridor.txt'.format(filepath, folder, seq), delimiter=',')
-    oseh = [((x[0], x[1], x[2]), ((0., x[3]/3.), (0., x[3]/3.), (0., x[3]/3. * np.pi/3./3.))) for x in oseh]
+    oseh = [((x[0], x[1], x[2]), ((0., x[3]/3.), (0., x[3]/3.), (0., np.pi/4./1.))) for x in oseh]
     return oseh
 
 
@@ -74,7 +74,7 @@ def read_yips(filepath, seq, folder='vgg19_comp_free200_check300', discriminatio
     return yips
 
 
-def set_plot(grid_map, grid_res, heuristic, switch=True):
+def set_plot(switch=True):
     if switch:
         plt.ion()
         plt.figure()
@@ -84,15 +84,22 @@ def set_plot(grid_map, grid_res, heuristic, switch=True):
         plt.gca().set_facecolor((0.2, 0.2, 0.2))
         plt.gca().set_xlim((-30, 30))
         plt.gca().set_ylim((-30, 30))
-        Debugger.plot_grid(grid_map, grid_res)
-        Debugger.plot_heuristic(heuristic) if heuristic else None
         plt.draw()
 
 
-def transform(pts, pto):
+def plot_task(grid_map, grid_res, heuristic, start, goal):
+    Debugger.plot_grid(grid_map, grid_res)
+    Debugger.plot_heuristic(heuristic) if heuristic else None
+    Debugger().plot_polygon(transform(contour(), start.state), color='y')
+    Debugger().plot_polygon(transform(contour(), goal.state), color='y')
+    plt.draw()
+
+
+def transform(poly, pto):
+    pts = poly.transpose()
     xyo = np.array([[pto[0]], [pto[1]]])
     rot = np.array([[np.cos(pto[2]), -np.sin(pto[2])], [np.sin(pto[2]), np.cos(pto[2])]])
-    return np.dot(rot, pts) + xyo
+    return (np.dot(rot, pts) + xyo).transpose()
 
 
 def read_heuristic(heuristic_folder, seq, heuristic_name):
@@ -113,10 +120,10 @@ def read_seqs(dataset_folder, inputs_filename):
     return [re.sub('\\D', '', f.strip().split(',')[0]) for f in file_list]
 
 
-def main(dataset_folder, inputs_filename, heuristic_name, outputs_folder, outputs_tag, times, rounds, debug):
+def main(dataset_folder, inputs_filename, heuristic_name, outputs_folder, outputs_tag, times, rounds, debug, optimize):
     outputs_folder = outputs_folder + os.sep + outputs_tag + os.sep + heuristic_name
     rrt_star = BiRRTStar().set_vehicle(contour(), 0.3, 0.2)
-    for seq in [64]:  # read_seqs(dataset_folder, inputs_filename)
+    for seq in read_seqs(dataset_folder, inputs_filename):  # read_seqs(dataset_folder, inputs_filename)
         print('Processing Scene: {}'.format(seq))
         heuristic = read_heuristic('./predictions'+os.sep+outputs_tag, seq, heuristic_name)
         source, target = read_task(dataset_folder+os.sep+'scenes', seq)
@@ -124,19 +131,20 @@ def main(dataset_folder, inputs_filename, heuristic_name, outputs_folder, output
         goal = center2rear(deepcopy(target)).gcs2lcs(source.state)
         grid_ori = deepcopy(source).gcs2lcs(source.state)
         grid_map, grid_res = read_grid(dataset_folder+os.sep+'scenes', seq), 0.1
-        set_plot(grid_map, grid_res, heuristic, debug)
         rrt_star.debug = debug
+        Debugger.plan_hist = []
         for i in range(rounds):
             rrt_star.preset(start, goal, grid_map, grid_res, grid_ori, 255, heuristic)
-            rrt_star.planning(times, debug=debug)
+            rrt_star.planning(times, repeat=100, optimize=optimize, debug=debug)
         os.makedirs(outputs_folder) if not os.path.isdir(outputs_folder) else None
         Debugger().save_hist(outputs_folder + os.sep + str(seq) + '_summary.txt')
+        plt.cla()
 
 
 if __name__ == '__main__':
     main(dataset_folder='./DataMaker/dataset',  # ./Dataset
          inputs_filename='inputs',  # test.csv
-         heuristic_name='ose',  # vgg19_comp_free200_check300
+         heuristic_name='ose',  # vgg19_comp_free200_check300, ose, none
          outputs_folder='./planned_paths',
          outputs_tag='debug',
-         times=100, rounds=1, debug=False)  # test
+         times=500, rounds=1, debug=False, optimize=False)  # test
