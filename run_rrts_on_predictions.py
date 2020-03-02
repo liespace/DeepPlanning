@@ -11,7 +11,12 @@ from rrts.debugger import Debugger
 import logging
 
 
-def center2rear(node, wheelbase=2.96):
+vehicle_wheelbase = 2.850
+vehicle_length = 4.925 + 0.2
+vehicle_width = 2.116 + 0.2
+
+
+def center2rear(node, wheelbase=2.850):
     """calculate the coordinate of rear track center according to mass center"""
     if not isinstance(node, RRTStar.StateNode):
         theta, r = node[2] + np.pi, wheelbase / 2.
@@ -24,7 +29,7 @@ def center2rear(node, wheelbase=2.96):
     return node
 
 
-def contour(wheelbase=2.96, width=2.0, length=5.0):  # 2.96, 2.2, 5.0
+def contour(wheelbase=2.850, width=2.116 + 0.2, length=4.925 + 0.2):  # 2.96, 2.2, 5.0
     return np.array([
         [-(length/2. - wheelbase / 2.), width/2. - 1.0], [-(length/2. - wheelbase / 2. - 0.4), width/2.],
         [length/2. + wheelbase / 2. - 0.6, width/2.], [length/2. + wheelbase / 2., width/2. - 0.8],
@@ -69,7 +74,7 @@ def read_yips(filepath, seq, folder='vgg19_comp_free200_check300', discriminatio
     return yips
 
 
-def set_plot(switch=True):
+def set_plot(grid_map, grid_res, heuristic, switch=True):
     if switch:
         plt.ion()
         plt.figure()
@@ -79,6 +84,8 @@ def set_plot(switch=True):
         plt.gca().set_facecolor((0.2, 0.2, 0.2))
         plt.gca().set_xlim((-30, 30))
         plt.gca().set_ylim((-30, 30))
+        Debugger.plot_grid(grid_map, grid_res)
+        Debugger.plot_heuristic(heuristic) if heuristic else None
         plt.draw()
 
 
@@ -88,29 +95,48 @@ def transform(pts, pto):
     return np.dot(rot, pts) + xyo
 
 
-def main():
-    dataset_folder, inputs_filename, scenes_folder = './Dataset', 'test', './Dataset/scenes'
-    heuristic_name, heuristic_folder = 'ose', './predictions/test'
-    inputs_filepath = dataset_folder + os.sep + inputs_filename + '.csv'
-    output_folder = './planned_paths' + os.sep + inputs_filename + os.sep + heuristic_name
-    x_filepath = [f.rstrip().split(',')[0] for f in list(open(inputs_filepath))]
-    seqs = [re.sub('\\D', '', f.strip().split(',')[0]) for f in x_filepath]
+def read_heuristic(heuristic_folder, seq, heuristic_name):
+    if 'ose' in heuristic_name:
+        return read_ose(heuristic_folder, seq, heuristic_name)  # read_ose
+    elif 'yips' in heuristic_name:
+        return read_yips(heuristic_folder, seq, heuristic_name)  # read_yips
+    else:
+        return None
+
+
+def read_seqs(dataset_folder, inputs_filename):
+    inputs_filepath = dataset_folder + os.sep + inputs_filename
+    if 'csv' in inputs_filename:
+        file_list = [f.rstrip().split(',')[0] for f in list(open(inputs_filepath))]
+    else:
+        file_list = os.listdir(inputs_filepath)
+    return [re.sub('\\D', '', f.strip().split(',')[0]) for f in file_list]
+
+
+def main(dataset_folder, inputs_filename, heuristic_name, outputs_folder, outputs_tag, times, rounds, debug):
+    outputs_folder = outputs_folder + os.sep + outputs_tag + os.sep + heuristic_name
     rrt_star = BiRRTStar().set_vehicle(contour(), 0.3, 0.2)
-    times, rounds, debug = 100, 100, False
-    for seq in seqs:
+    for seq in [64]:  # read_seqs(dataset_folder, inputs_filename)
         print('Processing Scene: {}'.format(seq))
-        heuristic = read_ose(heuristic_folder, seq, heuristic_name)  # read_ose
-        # heuristic = None
-        source, target = read_task(scenes_folder, seq)
+        heuristic = read_heuristic('./predictions'+os.sep+outputs_tag, seq, heuristic_name)
+        source, target = read_task(dataset_folder+os.sep+'scenes', seq)
         start = center2rear(deepcopy(source)).gcs2lcs(source.state)
         goal = center2rear(deepcopy(target)).gcs2lcs(source.state)
         grid_ori = deepcopy(source).gcs2lcs(source.state)
-        grid_map, grid_res = read_grid(scenes_folder, seq), 0.1
+        grid_map, grid_res = read_grid(dataset_folder+os.sep+'scenes', seq), 0.1
+        set_plot(grid_map, grid_res, heuristic, debug)
+        rrt_star.debug = debug
         for i in range(rounds):
-            rrt_star.preset(start, goal, grid_map, grid_res, grid_ori, 255, heuristic).planning(100, debug=debug)
-        os.makedirs(output_folder) if not os.path.isdir(output_folder) else None
-        Debugger().save_hist(output_folder + os.sep + str(seq) + '_summary.txt')
+            rrt_star.preset(start, goal, grid_map, grid_res, grid_ori, 255, heuristic)
+            rrt_star.planning(times, debug=debug)
+        os.makedirs(outputs_folder) if not os.path.isdir(outputs_folder) else None
+        Debugger().save_hist(outputs_folder + os.sep + str(seq) + '_summary.txt')
 
 
 if __name__ == '__main__':
-    main()
+    main(dataset_folder='./DataMaker/dataset',  # ./Dataset
+         inputs_filename='inputs',  # test.csv
+         heuristic_name='ose',  # vgg19_comp_free200_check300
+         outputs_folder='./planned_paths',
+         outputs_tag='debug',
+         times=100, rounds=1, debug=False)  # test
