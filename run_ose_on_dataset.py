@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def center2rear(circle, wheelbase=2.96):  # type: (OSExplorer.CircleNode, float) -> OSExplorer.CircleNode
+def center2rear(circle, wheelbase=2.850):  # type: (OSExplorer.CircleNode, float) -> OSExplorer.CircleNode
     """calculate the coordinate of rear track center according to mass center"""
     theta, r = circle.a + np.pi, wheelbase/2.
     circle.x += r * np.cos(theta)
@@ -69,12 +69,20 @@ def plotting(explorer, debug=False):
 
 
 def main():
-    dataset_folder, inputs_filename, debug = './Dataset', 'test', False
-    inputs_filepath = dataset_folder + os.sep + inputs_filename + '.csv'
+    dataset_folder, inputs_filename, debug = './DataMaker/dataset', 'debug', False
     output_folder = './predictions' + os.sep + inputs_filename + os.sep + 'ose'
-    x_filepath = [f.rstrip().split(',')[0] for f in list(open(inputs_filepath))]
-    seqs = [re.sub('\\D', '', f.strip().split(',')[0]) for f in x_filepath]
-    explorer = OSExplorer()
+    # inputs_filepath = dataset_folder + os.sep + inputs_filename + '.csv'
+    # x_filepath = [f.rstrip().split(',')[0] for f in list(open(inputs_filepath))]
+    # seqs = [re.sub('\\D', '', f.strip().split(',')[0]) for f in x_filepath]
+    file_list = os.listdir('./DataMaker/dataset/inputs/')
+    seqs = [re.sub('\\D', '', f.strip().split(',')[0]) for f in file_list]
+    explorer = OSExplorer(
+        minimum_radius=0.200,
+        maximum_radius=3.029,  # 2.5
+        minimum_clearance=1.058,
+        neighbors=32,
+        maximum_curvature=0.200)
+    long_time_number = 0
     for seq in seqs:
         print('Processing Scene: {}'.format(seq))
         source, target = read_task(dataset_folder + '/scenes', seq)
@@ -94,7 +102,12 @@ def main():
         np.savetxt('{}/{}_corridor.txt'.format(output_folder, seq), explorer.path(), delimiter=',')
         np.savetxt('{}/{}_summary.txt'.format(output_folder, seq), [result, runtime], delimiter=',')
         print('    Runtime: {}s, SR: {}'.format(np.mean(runtime), np.mean(result)))
-        plotting(debug)
+        if np.mean(runtime) > 1:
+            long_time_number += 1
+            print ('Long time:{}'.format(long_time_number))
+            plotting(explorer, True)
+        if np.mean(result) < 1:
+            print ('Failed!!!')
 
 
 if __name__ == '__main__':
