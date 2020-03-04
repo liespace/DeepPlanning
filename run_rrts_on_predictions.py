@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import time
 from copy import deepcopy
 import numpy as np
 import matplotlib.pyplot as plt
@@ -123,8 +124,9 @@ def read_seqs(dataset_folder, inputs_filename):
 def main(dataset_folder, inputs_filename, heuristic_name, outputs_folder, outputs_tag, times, rounds, debug, optimize):
     outputs_folder = outputs_folder + os.sep + outputs_tag + os.sep + heuristic_name
     rrt_star = BiRRTStar().set_vehicle(contour(), 0.3, 0.2)
-    for seq in read_seqs(dataset_folder, inputs_filename):  # read_seqs(dataset_folder, inputs_filename)
-        print('Processing Scene: {}'.format(seq))
+    seqs = read_seqs(dataset_folder, inputs_filename)
+    for i, seq in enumerate(seqs):  # read_seqs(dataset_folder, inputs_filename)
+        print('Processing Scene: {} ({} of {})'.format(seq, i+1, len(seqs)))
         heuristic = read_heuristic('./predictions'+os.sep+outputs_tag, seq, heuristic_name)
         source, target = read_task(dataset_folder+os.sep+'scenes', seq)
         start = center2rear(deepcopy(source)).gcs2lcs(source.state)
@@ -133,12 +135,15 @@ def main(dataset_folder, inputs_filename, heuristic_name, outputs_folder, output
         grid_map, grid_res = read_grid(dataset_folder+os.sep+'scenes', seq), 0.1
         rrt_star.debug = debug
         Debugger.plan_hist = []
-        for i in range(rounds):
+
+        past = time.time()
+        for r in range(rounds):
             rrt_star.preset(start, goal, grid_map, grid_res, grid_ori, 255, heuristic)
             rrt_star.planning(times, repeat=100, optimize=optimize, debug=debug)
+        print ('    Runtime: {}'.format(time.time() - past))
+
         os.makedirs(outputs_folder) if not os.path.isdir(outputs_folder) else None
         Debugger().save_hist(outputs_folder + os.sep + str(seq) + '_summary.txt')
-        plt.cla()
 
 
 if __name__ == '__main__':

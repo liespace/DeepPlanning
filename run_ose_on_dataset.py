@@ -77,7 +77,7 @@ def read_seqs(dataset_folder, inputs_filename):
     return [re.sub('\\D', '', f.strip().split(',')[0]) for f in file_list]
 
 
-def main(dataset_folder, inputs_filename, outputs_tag):
+def main(dataset_folder, inputs_filename, outputs_tag, rounds):
     outputs_folder = './predictions' + os.sep + outputs_tag + os.sep + 'ose'
     explorer = OSExplorer(
         minimum_radius=0.200,
@@ -86,8 +86,8 @@ def main(dataset_folder, inputs_filename, outputs_tag):
         neighbors=32,
         maximum_curvature=0.200)
     seqs = read_seqs(dataset_folder, inputs_filename)
-    for seq in seqs:
-        print('Processing Scene: {}'.format(seq))
+    for i, seq in enumerate(seqs):
+        print('Processing Scene: {} ({} of {})'.format(seq, i+1, len(seqs)))
         source, target = read_task(dataset_folder + '/scenes', seq)
         start = center2rear(deepcopy(source)).gcs2lcs(source)  # coordinate of rear track center on start state in LCS
         goal = center2rear(deepcopy(target)).gcs2lcs(source)  # coordinate of rear track center on goal state in LCS
@@ -99,13 +99,13 @@ def main(dataset_folder, inputs_filename, outputs_tag):
         def predicting(x):
             past = time.time()
             return explorer.exploring(), time.time() - past
-        result, runtime = zip(*map(predicting, range(10)))
+        result, runtime = zip(*map(predicting, range(rounds)))
+        print('    Runtime: {}s, SR: {}'.format(np.sum(runtime), result[-1]))
 
         os.makedirs(outputs_folder) if not os.path.isdir(outputs_folder) else None
         np.savetxt('{}/{}_corridor.txt'.format(outputs_folder, seq), explorer.path(), delimiter=',')
         np.savetxt('{}/{}_summary.txt'.format(outputs_folder, seq), [result, runtime], delimiter=',')
-        print('    Runtime: {}s, SR: {}'.format(np.mean(runtime), np.mean(result)))
 
 
 if __name__ == '__main__':
-    main(dataset_folder='Dataset', inputs_filename='test.csv', outputs_tag='test')
+    main(dataset_folder='Dataset', inputs_filename='test.csv', outputs_tag='test', rounds=10)
