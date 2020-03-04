@@ -1,8 +1,8 @@
 | Key            | Value          |
 | -------------- | -------------- |
-| Vehicle        | Tesla Model 3  |
-| Wheelbase      | 2.88 m         |
-| Wheeltrack     | 1.58 m         |
-| Length         | 4.69 m         |
-| Width          | 2.09 m         |
-| Turning Radius | 5.11 m / 0.195 |
+| Vehicle        | lincoln.MKZ2017  |
+| Wheelbase      | 2.850 m         |
+| Wheeltrack     | 1.575 m         |
+| Length         | 4.925 m         |
+| Width          | 2.116 m         |
+| Turning Radius | 5.003 m / 0.200 |

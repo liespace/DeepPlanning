@@ -68,21 +68,24 @@ def plotting(explorer, debug=False):
         raw_input('Plotting')
 
 
-def main():
-    dataset_folder, inputs_filename, debug = './DataMaker/dataset', 'debug', False
-    output_folder = './predictions' + os.sep + inputs_filename + os.sep + 'ose'
-    # inputs_filepath = dataset_folder + os.sep + inputs_filename + '.csv'
-    # x_filepath = [f.rstrip().split(',')[0] for f in list(open(inputs_filepath))]
-    # seqs = [re.sub('\\D', '', f.strip().split(',')[0]) for f in x_filepath]
-    file_list = os.listdir('./DataMaker/dataset/inputs/')
-    seqs = [re.sub('\\D', '', f.strip().split(',')[0]) for f in file_list]
+def read_seqs(dataset_folder, inputs_filename):
+    inputs_filepath = dataset_folder + os.sep + inputs_filename
+    if 'csv' in inputs_filename:
+        file_list = [f.rstrip().split(',')[0] for f in list(open(inputs_filepath))]
+    else:
+        file_list = os.listdir(inputs_filepath)
+    return [re.sub('\\D', '', f.strip().split(',')[0]) for f in file_list]
+
+
+def main(dataset_folder, inputs_filename, outputs_tag):
+    outputs_folder = './predictions' + os.sep + outputs_tag + os.sep + 'ose'
     explorer = OSExplorer(
         minimum_radius=0.200,
         maximum_radius=3.029,  # 2.5
         minimum_clearance=1.058,
         neighbors=32,
         maximum_curvature=0.200)
-    long_time_number = 0
+    seqs = read_seqs(dataset_folder, inputs_filename)
     for seq in seqs:
         print('Processing Scene: {}'.format(seq))
         source, target = read_task(dataset_folder + '/scenes', seq)
@@ -91,24 +94,18 @@ def main():
         grid_ori = deepcopy(source).gcs2lcs(source)  # coordinate of grid map center in LCS
         grid_map, grid_res = read_grid(dataset_folder + '/scenes', seq), 0.1
         explorer.initialize(start, goal, grid_map, grid_res, grid_ori, obstacle=255)
+        map(explorer.exploring, [None])  # compile jit
 
         def predicting(x):
             past = time.time()
             return explorer.exploring(), time.time() - past
-        map(explorer.exploring, [None])  # compile jit
         result, runtime = zip(*map(predicting, range(10)))
 
-        os.makedirs(output_folder) if not os.path.isdir(output_folder) else None
-        np.savetxt('{}/{}_corridor.txt'.format(output_folder, seq), explorer.path(), delimiter=',')
-        np.savetxt('{}/{}_summary.txt'.format(output_folder, seq), [result, runtime], delimiter=',')
+        os.makedirs(outputs_folder) if not os.path.isdir(outputs_folder) else None
+        np.savetxt('{}/{}_corridor.txt'.format(outputs_folder, seq), explorer.path(), delimiter=',')
+        np.savetxt('{}/{}_summary.txt'.format(outputs_folder, seq), [result, runtime], delimiter=',')
         print('    Runtime: {}s, SR: {}'.format(np.mean(runtime), np.mean(result)))
-        if np.mean(runtime) > 1:
-            long_time_number += 1
-            print ('Long time:{}'.format(long_time_number))
-            plotting(explorer, True)
-        if np.mean(result) < 1:
-            print ('Failed!!!')
 
 
 if __name__ == '__main__':
-    main()
+    main(dataset_folder='Dataset', inputs_filename='test.csv', outputs_tag='test')

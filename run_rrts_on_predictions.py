@@ -142,9 +142,9 @@ def main(dataset_folder, inputs_filename, heuristic_name, outputs_folder, output
 
 
 if __name__ == '__main__':
-    main(dataset_folder='./DataMaker/dataset',  # ./Dataset
-         inputs_filename='inputs',  # test.csv
+    main(dataset_folder='./Dataset',  # ./Dataset
+         inputs_filename='test.csv',  # test.csv
          heuristic_name='ose',  # vgg19_comp_free200_check300, ose, none
          outputs_folder='./planned_paths',
-         outputs_tag='debug',
+         outputs_tag='test',
          times=500, rounds=1, debug=False, optimize=False)  # test
