@@ -85,8 +85,9 @@ def main(dataset_folder, inputs_filename, outputs_tag, rounds):
         minimum_clearance=1.058,
         neighbors=32,
         maximum_curvature=0.200)
+    couples = []
     seqs = read_seqs(dataset_folder, inputs_filename)
-    for i, seq in enumerate(seqs):
+    for i, seq in enumerate(seqs[:10]):
         print('Processing Scene: {} ({} of {})'.format(seq, i+1, len(seqs)))
         source, target = read_task(dataset_folder + '/scenes', seq)
         start = center2rear(deepcopy(source)).gcs2lcs(source)  # coordinate of rear track center on start state in LCS
@@ -105,7 +106,10 @@ def main(dataset_folder, inputs_filename, outputs_tag, rounds):
         os.makedirs(outputs_folder) if not os.path.isdir(outputs_folder) else None
         np.savetxt('{}/{}_corridor.txt'.format(outputs_folder, seq), explorer.path(), delimiter=',')
         np.savetxt('{}/{}_summary.txt'.format(outputs_folder, seq), [result, runtime], delimiter=',')
+        couples.append((np.mean(runtime) if np.mean(result) >= 1 else np.inf, int(seq)))
+    print(sorted(couples))
+    np.savetxt('{}/summary.txt'.format(outputs_folder), sorted(couples), delimiter=',')
 
 
 if __name__ == '__main__':
-    main(dataset_folder='Dataset', inputs_filename='test.csv', outputs_tag='test', rounds=10)
+    main(dataset_folder='DataMaker/dataset', inputs_filename='inputs', outputs_tag='debug', rounds=3)
