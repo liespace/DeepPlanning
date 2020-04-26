@@ -71,7 +71,7 @@ def read_ose(filepath, seq, folder='ose'):
 def read_yips(filepath, seq, folder='vgg19_comp_free200_check300', discrimination=0.7):
     yips = np.loadtxt('{}/{}/{}_inference.txt'.format(filepath, folder, seq), delimiter=',')
     yips = filter(lambda x: x[-1] > discrimination, yips)
-    yips = map(center2rear, yips)
+    # yips = map(center2rear, yips)
     yips = [((yip[0], yip[1], yip[2]), ((0.621, 2.146), (0.015, 1.951 * 1.0), (0.005, 0.401 * 1.0))) for yip in yips]
     return yips
 
@@ -158,11 +158,10 @@ def plot_path(path, rho=5., real=False):
 
 def main(dataset_folder, inputs_filename, heuristic_name, folder):
     seqs = read_seqs(dataset_folder, inputs_filename)
-    # seqs.sort()
+    seqs.sort()
     for i, seq in enumerate(seqs):  # enumerate(seqs)
         print('Processing Scene: {} ({} of {})'.format(seq, i+1, len(seqs)))
         heuristic = read_heuristic(folder, seq, heuristic_name)
-        print(heuristic)
         source, target = read_task(dataset_folder+os.sep+'scenes', seq)
         start = center2rear(deepcopy(source)).gcs2lcs(source.state)
         goal = center2rear(deepcopy(target)).gcs2lcs(source.state)
@@ -171,12 +170,11 @@ def main(dataset_folder, inputs_filename, heuristic_name, folder):
         path = np.loadtxt(path_filename, delimiter=',')
         predicted_path = []
         for h in heuristic:
-            print(h[0])
-            predicted_path.append(h[0])
-        print(path)
-        predicted_path.append(path[-1])
-        predicted_path.insert(0, path[0])
-        print(predicted_path)
+            predicted_path.append(list(h[0]))
+        print('Labeled Samples: {}'.format([list(p) for p in path[1:-1]]))
+        predicted_path.append(list(path[-1]))
+        predicted_path.insert(0, list(path[0]))
+        print('Predicted Samples: {}'.format([list(p) for p in predicted_path[1:-1]]))
         set_plot()
         plot_task(grid_map, grid_res, heuristic, start, goal)
         plot_path(path)
@@ -187,8 +185,13 @@ def main(dataset_folder, inputs_filename, heuristic_name, folder):
 if __name__ == '__main__':
     main(dataset_folder='../../../DataMaker/dataset',  # ./Dataset
          inputs_filename='valid.csv',  # test.csv
-         heuristic_name='rgous-res50PC-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr30_steps10[30, 140, 170]_wp0o0e+00)',  # vgg19_comp_free200_check300, ose, none
+         heuristic_name='rgous-vgg19v2C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr75_steps10[75, 105, 135]_wp0o0e+00)-'
+                        'checkpoint-200',  # vgg19_comp_free200_check300, ose, none
          folder='valid')  # test
 
-    # rgous-vgg19v2C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr75_steps10[75, 105, 135]_wp0o0e+00)
-    # rgous-res50PC-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr30_steps10[30, 140, 170]_wp0o0e+00)
+    # 'rgous-vgg19v1C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr75_cosine150[]_wp0o0e+00)',
+    # 'rgous-vgg16C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr70_steps10[70, 95, 110]_wp0o0e+00)',
+    # 'rgous-vgg19C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr75_cosine200[])',
+    # 'rgous-res50PC-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr30_steps10[30, 140, 170]_wp0o0e+00)',
+    # 'rgous-svg16C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr1000_steps10[70, 95, 110]_wp0o0e+00)',
+    # 'rgous-vgg19v2C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr75_steps10[75, 105, 135]_wp0o0e+00)-checkpoint-200'
