@@ -36,7 +36,7 @@ class DataPlotter(object):
         files = self.find_files(self.filepath, form='*epoch_val_dw_obj_loss.csv')
         files.sort()
         colors = ['green', 'red', 'blue', 'black', 'purple']
-        ends = [100, 200, 200, 200, 300]
+        ends = [200, 200, 200, 200, 300]
         ax, handles = self.new_figure(y_label='$J_c$[-]'), []
         labels = ['DarkNet-53', 'Resnet-50', 'VGG-16', 'VGG-19', 'XceptionV3']
         for i, f in enumerate(files):
@@ -52,7 +52,7 @@ class DataPlotter(object):
         files = self.find_files(self.filepath, form='*epoch_dw_obj_loss.csv')
         files.sort()
         colors = ['green', 'red', 'blue', 'black', 'purple']
-        ends = [100, 200, 200, 200, 300]
+        ends = [200, 200, 200, 200, 300]
         ax, handles = self.new_figure(y_label='$J_c$[-]'), []
         labels = ['DarkNet-53', 'Resnet-50', 'VGG-16', 'VGG-19', 'XceptionV3']
         for i, f in enumerate(files):
@@ -68,7 +68,7 @@ class DataPlotter(object):
         files = self.find_files(self.filepath, form='*epoch_val_dw_cor_loss.csv')
         files.sort()
         colors = ['green', 'red', 'blue', 'black', 'purple']
-        ends = [100, 200, 200, 200, 300]
+        ends = [200, 200, 200, 200, 300]
         ax, handles = self.new_figure(), []
         labels = ['DarkNet-53', 'Resnet-50', 'VGG-16', 'VGG-19', 'XceptionV3']
         for i, f in enumerate(files):
@@ -85,7 +85,7 @@ class DataPlotter(object):
         files = self.find_files(self.filepath, form='*epoch_dw_cor_loss.csv')
         files.sort()
         colors = ['green', 'red', 'blue', 'black', 'purple']
-        ends = [100, 200, 200, 200, 300]
+        ends = [200, 200, 200, 200, 300]
         ax, handles = self.new_figure(), []
         labels = ['DarkNet-53', 'Resnet-50', 'VGG-16', 'VGG-19', 'XceptionV3']
         for i, f in enumerate(files):
@@ -214,8 +214,8 @@ if __name__ == '__main__':
     #             yt2=np.arange(0.850, 0.9425, 0.01),
     #             zorders=[100, 0, 200])
 
-    # viewer.plot_cor_loss_val()
-    viewer.plot_obj_loss_val()
+    viewer.plot_cor_loss_val()
+    # viewer.plot_obj_loss_val()
     # viewer.plot_cor_loss()
     # viewer.plot_obj_loss()
     # plt.show()
