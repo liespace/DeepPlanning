@@ -187,6 +187,11 @@ def calculate_pr_and_ap(predictor):
     precision, recall, thresholds = precision_recall_curve(ground_truth, prediction)
     tri_precision, tri_recall, tri_thresholds = precision_recall_curve(trimmed_ground_truth, trimmed_prediction)
 
+    balance = np.abs(precision - recall).argmin()
+    print(balance, precision[balance], recall[balance], thresholds[balance])
+    tri_balance = np.abs(tri_precision - tri_recall).argmin()
+    print(tri_balance, tri_precision[tri_balance], tri_recall[tri_balance], tri_thresholds[tri_balance])
+
     fontsize = 36
     ax = new_figure(fontsize=fontsize)
     ax.set_ylim([0., 1.01])
@@ -327,7 +332,7 @@ if __name__ == '__main__':
         'rgous-svg16v1PC-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr1000_steps10[75, 95, 135]_wp0o0e+00)-checkpoint-200',
         'rgous-vgg19v2C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr75_steps10[75, 105, 135]_wp0o0e+00)-checkpoint-200']
 
-    target = predictors[-2]
+    target = predictors[2]
     print "Evaluate {}".format(target)
     # extract_prediction_and_ground_truth(
     #     dataset_folder='../../DataMaker/dataset',
@@ -335,6 +340,6 @@ if __name__ == '__main__':
     #     predictor=target,
     #     folder='predictions/valid')
     # print('Evaluate Predictor: {}'.format(target))
-    # calculate_pr_and_ap(predictor=target)
+    calculate_pr_and_ap(predictor=target)
     # calculate_free_pr_and_ap(predictor=target, dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv')
-    calculate_length_pr_and_ap(predictor=target, dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv')
+    # calculate_length_pr_and_ap(predictor=target, dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv')
