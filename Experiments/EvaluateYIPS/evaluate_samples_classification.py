@@ -187,6 +187,11 @@ def calculate_pr_and_ap(predictor):
     precision, recall, thresholds = precision_recall_curve(ground_truth, prediction)
     tri_precision, tri_recall, tri_thresholds = precision_recall_curve(trimmed_ground_truth, trimmed_prediction)
 
+    specific = np.abs(thresholds - 0.71).argmin()
+    print(precision[specific], recall[specific], thresholds[specific])
+    tri_specific = np.abs(tri_thresholds - 0.71).argmin()
+    print(tri_precision[tri_specific], tri_recall[tri_specific], tri_thresholds[tri_specific])
+
     balance = np.abs(precision - recall).argmin()
     print(balance, precision[balance], recall[balance], thresholds[balance])
     tri_balance = np.abs(tri_precision - tri_recall).argmin()
@@ -199,8 +204,30 @@ def calculate_pr_and_ap(predictor):
     ax.set_yticks(np.arange(0., 1.01, 0.2))
     ax.set_xticks(np.arange(0., 1.01, 0.2))
     ax.xaxis.get_major_ticks()[0].set_visible(False)
-    pr, = ax.plot(recall, precision, linewidth=4)
-    tri_pr, = ax.plot(tri_recall, tri_precision, linewidth=4)
+    ax.xaxis.get_major_ticks()[3].set_visible(False)
+    ax.xaxis.get_major_ticks()[4].set_visible(False)
+    ax.xaxis.get_major_ticks()[5].set_visible(False)
+    ax.yaxis.get_major_ticks()[3].set_visible(False)
+    ax.yaxis.get_major_ticks()[4].set_visible(False)
+    ax.yaxis.get_major_ticks()[5].set_visible(False)
+    pr, = ax.plot(recall, precision, linewidth=6)
+    tri_pr, = ax.plot(tri_recall, tri_precision, linewidth=6)
+
+    ax.scatter([recall[balance]], [precision[balance]], s=300, color='C3', zorder=100)
+    ax.scatter([tri_recall[tri_balance]], [tri_precision[tri_balance]], s=300, color='C3', zorder=100)
+    ax.vlines(recall[balance], -0.01, precision[balance], linestyles='dashed', linewidth=4, color='C3', zorder=100)
+    ax.hlines(precision[balance], -0.01, recall[balance], linestyles='dashed', linewidth=4, color='C3', zorder=100)
+    ax.vlines(tri_recall[tri_balance], -0.01, tri_precision[tri_balance], linestyles='dashed', linewidth=4, color='C3', zorder=100)
+    ax.hlines(tri_precision[tri_balance], -0.01, tri_recall[tri_balance], linestyles='dashed', linewidth=4, color='C3', zorder=100)
+    plt.xticks(list(plt.xticks()[0]) + [recall[balance], tri_recall[tri_balance]])
+    plt.yticks(list(plt.yticks()[0]) + [precision[balance], tri_precision[tri_balance]])
+    ax.xaxis.set_major_formatter(FormatStrFormatter('%0.2f'))
+    ax.yaxis.set_major_formatter(FormatStrFormatter('%0.2f'))
+    ax.annotate('[%.2f]' % thresholds[balance],
+                (recall[balance], precision[balance]), fontsize=fontsize - 6)
+    ax.annotate('[%.2f]'%tri_thresholds[tri_balance],
+                (tri_recall[tri_balance], tri_precision[tri_balance]), fontsize=fontsize-6)
+
     ax.legend([pr, tri_pr], ['$AP=97.0$', '$AP_{WFS}=78.5$'], prop={'size': fontsize}, frameon=False)
     ax.set_aspect('equal', adjustable='box')
     plt.show()
@@ -274,7 +301,7 @@ def calculate_length_pr_and_ap(predictor, dataset_folder, inputs_filename):
     ax.xaxis.set_major_formatter(FormatStrFormatter('%0.2f'))
     ax.yaxis.set_major_formatter(FormatStrFormatter('%0.2f'))
     ax.set_aspect('equal', adjustable='box')
-    # plt.show()
+    plt.show()
 
 
 def calculate_free_pr_and_ap(predictor, dataset_folder, inputs_filename):
@@ -298,10 +325,18 @@ def calculate_free_pr_and_ap(predictor, dataset_folder, inputs_filename):
 
     precision_ioc, recall_ioc, thresholds_ioc = precision_recall_curve(ground_truth, pro_prediction)
     tri_precision_ioc, tri_recall_ioc, tri_thresholds_ioc = precision_recall_curve(tri_ground_truth, tri_pro_prediction)
-    print precision_ioc[0:5], recall_ioc[0:5], thresholds_ioc[0:5]
-    print tri_precision_ioc[0:5], tri_recall_ioc[0:5], tri_thresholds_ioc[:5]
+
     precision, recall, thresholds = precision_recall_curve(ground_truth, prediction)
     tri_precision, tri_recall, tri_thresholds = precision_recall_curve(tri_ground_truth, tri_prediction)
+
+    balance = np.abs(precision - recall).argmin()
+    print(balance, precision[balance], recall[balance], thresholds[balance])
+    tri_balance = np.abs(tri_precision - tri_recall).argmin()
+    print(tri_balance, tri_precision[tri_balance], tri_recall[tri_balance], tri_thresholds[tri_balance])
+    balance_ioc = np.abs(precision_ioc - recall_ioc).argmin()
+    print(balance_ioc, precision_ioc[balance_ioc], recall_ioc[balance_ioc], thresholds_ioc[balance_ioc])
+    tri_balance_ioc = np.abs(tri_precision_ioc - tri_recall_ioc).argmin()
+    print(tri_balance_ioc, tri_precision_ioc[tri_balance_ioc], tri_recall_ioc[tri_balance_ioc], tri_thresholds_ioc[tri_balance_ioc])
 
     fontsize = 36
     ax = new_figure(fontsize=fontsize)
@@ -310,15 +345,32 @@ def calculate_free_pr_and_ap(predictor, dataset_folder, inputs_filename):
     ax.set_yticks(np.arange(0., 1.01, 0.2))
     ax.set_xticks(np.arange(0., 1.01, 0.2))
     ax.xaxis.get_major_ticks()[0].set_visible(False)
-    pr, = ax.plot(recall, precision, linewidth=4)
-    tri_pr, = ax.plot(tri_recall, tri_precision, linewidth=4)
-    pr_ioc, = ax.plot(recall_ioc[1:], precision_ioc[1:], linewidth=4)
-    tri_pr_ioc, = ax.plot(tri_recall_ioc[1:], tri_precision_ioc[1:], linewidth=4)
+    pr, = ax.plot(recall, precision, linewidth=6)
+    tri_pr, = ax.plot(tri_recall, tri_precision, linewidth=6)
+    pr_ioc, = ax.plot(recall_ioc[1:], precision_ioc[1:], linewidth=6)
+    tri_pr_ioc, = ax.plot(tri_recall_ioc[1:], tri_precision_ioc[1:], linewidth=6)
     ax.legend([pr, pr_ioc, tri_pr, tri_pr_ioc],
               ['$AP=97.0$', '$AP_{IOV.0}=75.1$', '$AP_{WFS}=78.5$', '$AP_{WFS+IOV.0}=55.5$'],
               prop={'size': fontsize}, loc=3, frameon=False)
+
+    ax.scatter([recall[balance]], [precision[balance]], s=300, color='C3', zorder=100)
+    ax.scatter([tri_recall[tri_balance]], [tri_precision[tri_balance]], s=300, color='C3', zorder=100)
+    ax.scatter([recall_ioc[balance_ioc]], [precision_ioc[balance_ioc]], s=300, color='C3', zorder=100)
+    ax.scatter([tri_recall_ioc[tri_balance_ioc]], [tri_precision_ioc[tri_balance_ioc]], s=300, color='C3', zorder=100)
+    ax.annotate('[%.2f]' % thresholds[balance],
+                (recall[balance], precision[balance]), fontsize=fontsize - 6)
+    ax.annotate('[%.2f]' % tri_thresholds[tri_balance],
+                (tri_recall[tri_balance], tri_precision[tri_balance]), fontsize=fontsize - 6)
+    ax.annotate('[%.2f]' % thresholds_ioc[balance_ioc],
+                (recall_ioc[balance_ioc], precision_ioc[balance_ioc]), fontsize=fontsize - 6)
+    ax.annotate('[%.2f]' % tri_thresholds_ioc[tri_balance_ioc],
+                (tri_recall_ioc[tri_balance_ioc], tri_precision_ioc[tri_balance_ioc]), fontsize=fontsize - 6)
+
+    ax.xaxis.get_major_ticks()[5].set_visible(False)
+    ax.yaxis.get_major_ticks()[5].set_visible(False)
+
     ax.set_aspect('equal', adjustable='box')
-    # plt.show()
+    plt.show()
 
 
 if __name__ == '__main__':
@@ -340,6 +392,6 @@ if __name__ == '__main__':
     #     predictor=target,
     #     folder='predictions/valid')
     # print('Evaluate Predictor: {}'.format(target))
-    calculate_pr_and_ap(predictor=target)
+    # calculate_pr_and_ap(predictor=target)
     # calculate_free_pr_and_ap(predictor=target, dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv')
-    # calculate_length_pr_and_ap(predictor=target, dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv')
+    calculate_length_pr_and_ap(predictor=target, dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv')
