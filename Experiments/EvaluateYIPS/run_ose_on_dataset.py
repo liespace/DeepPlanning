@@ -113,4 +113,4 @@ def main(dataset_folder, inputs_filename, outputs_tag, rounds):
 
 
 if __name__ == '__main__':
-    main(dataset_folder='../../DataMaker/dataset', inputs_filename='inputs', outputs_tag='valid', rounds=3)
+    main(dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv', outputs_tag='valid', rounds=3)
