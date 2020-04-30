@@ -192,7 +192,7 @@ def main(dataset_folder, inputs_filename, heuristic_name, folder):
     # iov == 0: [6823, 2384, 10902, 11210, 13500, 164]
     # iov <= 0.125: [13269, 1120, 2724, 9485]
     # iov > 0.125: [1000, 8157, 6025]
-    for i, seq in enumerate([9721, 8737, 12470, 6045, 873]):  # enumerate(seqs)
+    for i, seq in enumerate([11036]):  # enumerate(seqs)
         print('Processing Scene: {} ({} of {})'.format(seq, i+1, len(seqs)))
         heuristic = read_heuristic(folder, seq, heuristic_name)
         source, target = read_task(dataset_folder+os.sep+'scenes', seq)

@@ -364,7 +364,7 @@ def calculate_ose_inference_time(prediction_folder):
 
 
 def calculate_performance(predictor, dataset_folder, inputs_filename, prediction_folder, planning_folder):
-    set_plot()
+    # set_plot()
     yips_inference_time = calculate_inference_time(predictor, prediction_folder)
     ose_inference_time = calculate_ose_inference_time(prediction_folder)
     print('YIPS Mean Inference Time: {}, OSE Mean Inference Time: {}'.format(
@@ -405,9 +405,9 @@ def calculate_performance(predictor, dataset_folder, inputs_filename, prediction
             fails.append(seq)
         all_fts.append(ft.min() if ft.shape[0] else 500)
         all_frts.append(times[ft.min()] if ft.shape[0] else 5)
-        all_ftl.append(optimal_length / lens[ft.min()] if ft.shape[0] else 0.)
-        all_ltl.append(optimal_length / lens[-1] if ft.shape[0] else 0.)
-        all_ltln.append(optimal_length / lens[ft.min()+100 if ft.min()+100<500 else 499] if ft.shape[0] else 0.)
+        all_ftl.append(lens[ft.min()] if ft.shape[0] else 0.)
+        all_ltl.append(lens[-1] if ft.shape[0] else 0.)
+        all_ltln.append(lens[ft.min()+100 if ft.min()+100<500 else 499] if ft.shape[0] else 0.)
         all_true_path_lens.append(true_length)
         all_pred_path_lens.append(pred_length)
         all_optimal_path_lens.append(optimal_length)
@@ -423,15 +423,46 @@ def calculate_performance(predictor, dataset_folder, inputs_filename, prediction
         np.array(pred_path_lens).mean(), np.array(true_path_lens).mean(), np.array(optimal_path_lens).mean()))
     print('SR: {}@{}'.format(1. - 1.*len(fails)/len(seqs), len(fails)))
     print('Fails Scenes: {}'.format(fails))
-    plt.figure()
-    plt.hist(fts, bins=20, density=0, histtype='bar', facecolor='C1', alpha=1.0,
-             cumulative=False, rwidth=0.8, linewidth=12, color='C1', label='Data')
+    # plt.figure()
+    # plt.hist(fts, bins=20, density=0, histtype='bar', facecolor='C1', alpha=1.0,
+    #          cumulative=False, rwidth=0.8, linewidth=12, color='C1', label='Data')
     # plt.hist(fts, bins=100, density=1, histtype='bar', facecolor='C1', alpha=1.0,
     #          cumulative=True, rwidth=0.8, linewidth=12, color='C1', label='Data')
-    fg1 = plt.figure()
-    ax1 = fg1.gca()
-    ax1.plot(np.array(seqs), all_optimal_path_lens)
+    data = zip(np.divide(all_true_path_lens, all_optimal_path_lens),
+               np.divide(all_ltl, all_optimal_path_lens),
+               np.divide(all_pred_path_lens, all_optimal_path_lens),
+               np.divide(all_optimal_path_lens, all_optimal_path_lens),
+               np.divide(all_ltln, all_optimal_path_lens))
+    data.sort()
+    data = np.array(data)
+    fontsize = 40
+    ax1 = new_figure(y_label='LOP/LOOP', x_label='', fontsize=fontsize)
+    ax1.set_ylim([-0.05, 2.5])
+    ax1.set_xlim([0, 2750])
+    ax1.set_yticks(np.arange(0., 2.5, 0.5))
+    ax1.set_xticks([0, 1000, 2000])
+    ax1.plot(data[:, 0], lw=6, c='r', zorder=100, label='LOOP')
+    ax1.plot(data[:, 1], lw=4, c='b', zorder=50, label='LOLP')
+    ax1.plot(data[:, 4], lw=4, c='C1', zorder=25, label='LOFP')
+    # ax1.plot(data[:, 2])
+    ax1.plot(data[:, 3], lw=6, c='g', label='LOGP')
+
+    fail_points = np.argwhere(data[:, 1] == 0)
+    ax1.scatter(fail_points, [0.]*fail_points.shape[0], s=200, c='r')
+    gaps = data[:, 0] - data[:, 1]
+    tars = filter(lambda x: 0.1 < x < 1, gaps)
+    print tars
+    index = np.argwhere(gaps == tars[0])[0, 0]
+    print index
+    ax1.scatter(index, data[index, 1], s=300, c='r', zorder=100, marker='x', lw=6)
+    ax1.legend(prop={'size': fontsize}, loc=2, frameon=True, ncol=2)
+
+    gaps = np.divide(all_true_path_lens, all_optimal_path_lens) - np.divide(all_ltl, all_optimal_path_lens)
+    tars = filter(lambda x: 0.1 < x < 1, gaps)
+    print tars, seqs[np.argwhere(gaps == tars[0])[0, 0]]
+    plt.draw()
     plt.show()
+
     Debugger.breaker('')
 
 
