@@ -363,6 +363,30 @@ def calculate_ose_inference_time(prediction_folder):
     return inference_times
 
 
+def compare_inference_time(predictor, prediction_folder):
+    ose_summary = read_ose_summary(prediction_folder)
+    ose_inference_times = ose_summary[:, 0]
+    yips_summary = read_summary(prediction_folder, predictor)
+    yips_infer_times = [float(row[1]) for row in yips_summary]
+
+    print min(ose_inference_times), min(yips_infer_times)
+
+    data = zip(ose_inference_times, yips_infer_times)
+    # data.sort()
+    data = np.array(data)
+    fontsize = 40
+    ax1 = new_figure(y_label='Inference Time (IT)', x_label='', fontsize=fontsize)
+    ax1.set_yscale('log')
+    # ax1.set_ylim([-0.05, 2.5])
+    # ax1.set_xlim([0, 2750])
+    # ax1.set_yticks(np.arange(0., 2.5, 0.5))
+    # ax1.set_xticks([0, 1000, 2000])
+    ax1.plot(data[:, 0], lw=4, c='C2', zorder=50, label='OSE')
+    ax1.plot(data[:, 1], lw=4, c='r', zorder=100, label='YIPS')
+    ax1.legend(prop={'size': fontsize}, loc=0, frameon=True, ncol=2, framealpha=1).set_zorder(102)
+    plt.show()
+
+
 def calculate_performance(predictor, dataset_folder, inputs_filename, prediction_folder, planning_folder):
     # set_plot()
     yips_inference_time = calculate_inference_time(predictor, prediction_folder)
@@ -487,9 +511,9 @@ if __name__ == '__main__':
     #     folder='predictions/valid')
     # print('Evaluate Predictor: {}'.format(target))
 
-    for planner in predictors[1:2]:
-        calculate_performance(predictor=planner, dataset_folder='../../DataMaker/dataset',
-                              inputs_filename='valid.csv', prediction_folder='predictions/valid',
-                              planning_folder='planned_paths/valid')
+    # for planner in predictors[1:2]:
+    #     calculate_performance(predictor=planner, dataset_folder='../../DataMaker/dataset',
+    #                           inputs_filename='valid.csv', prediction_folder='predictions/valid',
+    #                           planning_folder='planned_paths/valid')
 
-    # calculate_ose_inference_time(prediction_folder='predictions/valid')
+    compare_inference_time(predictor=planner, prediction_folder='predictions/valid')
