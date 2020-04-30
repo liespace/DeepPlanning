@@ -7,8 +7,8 @@ import cv2
 import os
 import re
 from matplotlib.patches import Polygon
-from rrts.planner import RRTStar, BiRRTStar
-from rrts.debugger import Debugger
+from planner import RRTStar, BiRRTStar
+from debugger import Debugger
 import logging
 
 

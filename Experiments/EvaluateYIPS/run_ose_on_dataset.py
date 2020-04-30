@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from pySEA.explorers import OrientationSpaceExplorer as OSExplorer
+from explorers import OrientationSpaceExplorer as OSExplorer
 from copy import deepcopy
 import time
 import os

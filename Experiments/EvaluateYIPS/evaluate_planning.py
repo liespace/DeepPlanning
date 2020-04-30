@@ -9,8 +9,8 @@ import os
 import re
 from matplotlib.patches import Polygon
 import matplotlib.lines as mlines
-from rrts.planner import RRTStar, BiRRTStar
-from rrts.debugger import Debugger
+from planner import RRTStar, BiRRTStar
+from debugger import Debugger
 import reeds_shepp
 import logging
 from sklearn.metrics import average_precision_score
@@ -375,6 +375,8 @@ def calculate_performance(predictor, dataset_folder, inputs_filename, prediction
     rho = 5.0
     fts, ftl, ltl, frts, fails, ltln = [], [], [], [], [], []
     pred_path_lens, true_path_lens, optimal_path_lens = [], [], []
+    all_fts, all_ftl, all_ltl, all_frts, all_ltln = [], [], [], [], []
+    all_pred_path_lens, all_true_path_lens, all_optimal_path_lens = [], [], []
     for i, seq in enumerate(seqs):  # enumerate(seqs)
         # print('Evaluate Scene: {} ({} of {})'.format(seq, i + 1, len(seqs)))
         inference = read_inference(prediction_folder, seq, predictor)
@@ -401,6 +403,14 @@ def calculate_performance(predictor, dataset_folder, inputs_filename, prediction
             optimal_path_lens.append(optimal_length)
         else:
             fails.append(seq)
+        all_fts.append(ft.min() if ft.shape[0] else 500)
+        all_frts.append(times[ft.min()] if ft.shape[0] else 5)
+        all_ftl.append(optimal_length / lens[ft.min()] if ft.shape[0] else 0.)
+        all_ltl.append(optimal_length / lens[-1] if ft.shape[0] else 0.)
+        all_ltln.append(optimal_length / lens[ft.min()+100 if ft.min()+100<500 else 499] if ft.shape[0] else 0.)
+        all_true_path_lens.append(true_length)
+        all_pred_path_lens.append(pred_length)
+        all_optimal_path_lens.append(optimal_length)
 
     print('Mean STFP: {}, Max STFS: {}@{}, Min STFS: {}, STFS<100: {}@{}'.format(
         np.array(fts).mean(), np.array(fts).max(), seqs[np.array(fts).argmax()], np.array(fts).min(),
@@ -418,6 +428,9 @@ def calculate_performance(predictor, dataset_folder, inputs_filename, prediction
              cumulative=False, rwidth=0.8, linewidth=12, color='C1', label='Data')
     # plt.hist(fts, bins=100, density=1, histtype='bar', facecolor='C1', alpha=1.0,
     #          cumulative=True, rwidth=0.8, linewidth=12, color='C1', label='Data')
+    fg1 = plt.figure()
+    ax1 = fg1.gca()
+    ax1.plot(np.array(seqs), all_optimal_path_lens)
     plt.show()
     Debugger.breaker('')
 
