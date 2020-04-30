@@ -336,7 +336,7 @@ if __name__ == '__main__':
         #'rgous-vgg19v2C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr75_steps10[75, 105, 135]_wp0o0e+00)-checkpoint-200'
     ]
 
-    target = predictors[0]
+    target = predictors[2]
     print "Evaluate {}".format(target)
     # extract_prediction_and_ground_truth(
     #     dataset_folder='../../DataMaker/dataset',

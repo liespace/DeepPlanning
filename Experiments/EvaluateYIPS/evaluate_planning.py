@@ -197,6 +197,15 @@ def read_summary(filepath, folder='vgg19_comp_free200_check300'):
             summary.append(row)
     return summary
 
+def read_ose_summary(filepath):
+    summary = np.loadtxt('{}/{}/summary.txt'.format(filepath, 'ose'), delimiter=',')
+    return summary
+
+
+def read_yips_planning_summary(filepath, seq, folder='vgg19_comp_free200_check300'):
+    summary = np.loadtxt('{}/{}/{}_summary.txt'.format(filepath, folder, seq), delimiter=',')
+    return summary
+
 
 def read_seqs(dataset_folder, inputs_filename):
     inputs_filepath = dataset_folder + os.sep + inputs_filename
@@ -291,7 +300,7 @@ def new_figure(y_label='Precision[-]', x_label='Recall[-]', fontsize=55):
 def calculate_inference_time(predictor, prediction_folder):
     summary = read_summary(prediction_folder, predictor)
     infer_times = [float(row[1]) for row in summary]
-    return np.mean(infer_times)*1000
+    return np.mean(infer_times)
 
 
 def build_path(start, sequence, goal, threshold):
@@ -348,61 +357,70 @@ def calculate_path_length(path, rho):
     return length
 
 
-def calculate_performance(predictor, dataset_folder, inputs_filename, prediction_folder):
+def calculate_ose_inference_time(prediction_folder):
+    summary = read_ose_summary(prediction_folder)
+    inference_times = summary[:, 0].mean()
+    return inference_times
+
+
+def calculate_performance(predictor, dataset_folder, inputs_filename, prediction_folder, planning_folder):
     set_plot()
-    inference_time = calculate_inference_time(predictor, prediction_folder)
+    yips_inference_time = calculate_inference_time(predictor, prediction_folder)
+    ose_inference_time = calculate_ose_inference_time(prediction_folder)
+    print('YIPS Mean Inference Time: {}, OSE Mean Inference Time: {}'.format(
+        yips_inference_time, ose_inference_time))
     seqs = read_seqs(dataset_folder, inputs_filename)
     seqs.sort()
     threshold = 0.5
-    iov_threshold = 0.125*0
     rho = 5.0
-    pred_path_lens, true_path_lens, optimal_path_lens, collision_check_results, iovs = [], [], [], [], []
+    fts, ftl, ltl, frts, fails, ltln = [], [], [], [], [], []
+    pred_path_lens, true_path_lens, optimal_path_lens = [], [], []
     for i, seq in enumerate(seqs):  # enumerate(seqs)
         # print('Evaluate Scene: {} ({} of {})'.format(seq, i + 1, len(seqs)))
         inference = read_inference(prediction_folder, seq, predictor)
         label = read_label(dataset_folder, seq)
         start, goal = read_task(dataset_folder, seq)
-        grid_map, grid_res = read_grid(dataset_folder, seq), 0.1
         pred = build_path(start, inference, goal, threshold)
         true = build_path(start, label, goal, threshold)
-
         pred_length = calculate_path_length(pred, rho=rho)
         true_length = calculate_path_length(true, rho=rho)
         optimal_length = calculate_path_length([start, goal], rho=rho)
-        result, iov = collision_check(pred, rho, grid_map, iov_threshold=iov_threshold)
-        pred_path_lens.append(pred_length)
-        true_path_lens.append(true_length)
-        optimal_path_lens.append(optimal_length)
-        collision_check_results.append(result)
-        iovs.append(iov)
-        # plot_task(grid_map, grid_res, start, goal)
-        # plot_path(pred, color='C3')
-        # plot_path(true, color='C0')
-        # plt.show()
-        # Debugger.breaker('')
-    print "Evaluate {}".format(predictor)
-    print ('mIT: {:.2f} ms'.format(inference_time))
-    print 'mPL: {} /{} /{}'.format(np.mean(pred_path_lens), np.mean(true_path_lens), np.mean(optimal_path_lens))
-    print 'CFR: {} of {}'.format(1. * np.sum(collision_check_results) / len(collision_check_results), iov_threshold)
-    print 'IOV max: {}/ {}, mean: {}'.format(max(iovs), seqs[np.array(iovs).argmax()], np.array(iovs).mean())
-    seqs_iov = [[], [], [], []]
-    for i, iov in enumerate(iovs):
-        if iov <= 0.:
-            seqs_iov[0].append(seqs[i])
-        if 0 < iov <= 0.125:
-            seqs_iov[1].append(seqs[i])
-        if 0.125 < iov <= 0.5:
-            seqs_iov[2].append(seqs[i])
-        if 0.5 < iov:
-            seqs_iov[3].append(seqs[i])
-    print 'IOV equal 0'
-    print seqs_iov[0]
-    print 'IOV in (0, 0.125]'
-    print seqs_iov[1]
-    print 'IOV in (0.125, 0.5]'
-    print seqs_iov[2]
-    print 'IOV in (0.5, max]'
-    print seqs_iov[3]
+
+        summary = read_yips_planning_summary(planning_folder, seq, predictor)
+        lens = summary[:, 2]
+        times = summary[:, 1]
+        ft = np.argwhere(lens > 0.)
+        if ft.shape[0] > 0:
+            fts.append(ft.min())
+            frts.append(times[ft.min()])
+            ftl.append(lens[ft.min()])
+            ltl.append(lens[-1])
+            ltln.append(lens[ft.min()+100 if ft.min()+100<500 else 499])
+            true_path_lens.append(true_length)
+            pred_path_lens.append(pred_length)
+            optimal_path_lens.append(optimal_length)
+        else:
+            fails.append(seq)
+
+    print('Mean STFP: {}, Max STFS: {}@{}, Min STFS: {}, STFS<100: {}@{}'.format(
+        np.array(fts).mean(), np.array(fts).max(), seqs[np.array(fts).argmax()], np.array(fts).min(),
+        (np.array(fts) < 100).sum(), 1.*(np.array(fts) < 100).sum()/len(seqs)))
+    print('Mean TTFP: {}, Max TTFS: {}@{}, Min TTFS: {}, TTFS<0.1: {}@{}'.format(
+        np.array(frts).mean(), np.array(frts).max(), seqs[np.array(frts).argmax()], np.array(frts).min(),
+        (np.array(frts) < 0.1).sum(), 1.*(np.array(frts) < 0.1).sum()/len(frts)))
+    print('Mean LOFP: {}, Mean LOLP: {}, Mean LOLP_n: {}, Mean LOYP: {}, Mean LOOP: {}, Mean LOGP: {}'.format(
+        np.array(ftl).mean(), np.array(ltl).mean(), np.array(ltln).mean(),
+        np.array(pred_path_lens).mean(), np.array(true_path_lens).mean(), np.array(optimal_path_lens).mean()))
+    print('SR: {}@{}'.format(1. - 1.*len(fails)/len(seqs), len(fails)))
+    print('Fails Scenes: {}'.format(fails))
+    plt.figure()
+    plt.hist(fts, bins=20, density=0, histtype='bar', facecolor='C1', alpha=1.0,
+             cumulative=False, rwidth=0.8, linewidth=12, color='C1', label='Data')
+    # plt.hist(fts, bins=100, density=1, histtype='bar', facecolor='C1', alpha=1.0,
+    #          cumulative=True, rwidth=0.8, linewidth=12, color='C1', label='Data')
+    plt.show()
+    Debugger.breaker('')
+
 
 
 if __name__ == '__main__':
@@ -424,6 +442,10 @@ if __name__ == '__main__':
     #     predictor=target,
     #     folder='predictions/valid')
     # print('Evaluate Predictor: {}'.format(target))
+
     for planner in predictors[1:2]:
         calculate_performance(predictor=planner, dataset_folder='../../DataMaker/dataset',
-                              inputs_filename='valid.csv', prediction_folder='predictions/valid')
+                              inputs_filename='valid.csv', prediction_folder='predictions/valid',
+                              planning_folder='planned_paths/valid')
+
+    # calculate_ose_inference_time(prediction_folder='predictions/valid')
