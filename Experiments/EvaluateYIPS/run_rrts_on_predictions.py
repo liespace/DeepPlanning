@@ -153,4 +153,4 @@ if __name__ == '__main__':
          heuristic_name=yips,  # ose, none, yips
          outputs_folder='./planned_paths',
          outputs_tag='valid',
-         times=500, rounds=3, debug=False, optimize=False)  # test
+         times=500, rounds=1, debug=False, optimize=False)  # test
