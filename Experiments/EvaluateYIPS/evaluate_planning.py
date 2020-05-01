@@ -486,7 +486,7 @@ def extract_ose_summary(dataset_folder, inputs_filename, planning_folder, predic
         all_true_path_lens.append(true_length)
         all_optimal_path_lens.append(optimal_length)
     print('=========================================================')
-    print('Planner: OSE')
+    print('Planner: {}'.format(predictor))
     print('Mean STFP: {}, Max STFS: {}@{}, Min STFS: {}, STFS<100: {}@{}'.format(
         np.array(STFPs).mean(), np.array(STFPs).max(), seqs[np.array(STFPs).argmax()], np.array(STFPs).min(),
         (np.array(STFPs) < 100).sum(), 1.*(np.array(STFPs) < 100).sum()/len(seqs)))
@@ -619,6 +619,11 @@ def calculate_performance(predictor, dataset_folder, inputs_filename, prediction
         dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv',
         planning_folder='planned_paths/valid')
 
+    (GAUwSTFPs, GAUwTTFPs, GAUwLOFPs, GAUwLOLPs, GAUwLOnPs, GAUFails,
+     all_true_path_lens, all_optimal_path_lens) = extract_ose_summary(
+        dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv',
+        planning_folder='planned_paths/valid', predictor='none')
+
     # plt.figure()
     # plt.hist(fts, bins=20, density=0, histtype='bar', facecolor='C1', alpha=1.0,
     #          cumulative=False, rwidth=0.8, linewidth=12, color='C1', label='Data')
@@ -628,13 +633,13 @@ def calculate_performance(predictor, dataset_folder, inputs_filename, prediction
     # plot_sorrt_optimization_on_yips(YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSFails,
     #                                 all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs)
 
-    # plot_ose_and_yips_and_gau_comparison_length(YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSFails,
-    #                                             OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEFails,
-    #                                             all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs)
-
-    plot_ose_and_yips_and_gau_comparison_times(YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSFails,
+    plot_ose_and_yips_and_gau_comparison_length(YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSFails,
                                                 OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEFails,
                                                 all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs)
+
+    # plot_ose_and_yips_and_gau_comparison_times(YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSFails,
+    #                                             OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEFails,
+    #                                             all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs)
 
     Debugger.breaker('')
 

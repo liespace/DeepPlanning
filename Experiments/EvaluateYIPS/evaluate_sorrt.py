@@ -198,6 +198,7 @@ def new_figure(y_label='Precision[-]', x_label='Recall[-]', fontsize=55):
     ax.tick_params(labelsize=fontsize)
     return ax
 
+
 def read_task2(filepath, seq=0):
     """
     read source(start) and target(goal), and transform to right-hand and local coordinate system centered in source
@@ -239,7 +240,7 @@ def calculate_performance(seqs, predictor, dataset_folder, inputs_filename, pred
 
         labels = ['SO-RRT', 'SO-RRT-OP', 'SO-RRT-GR']
         colors = ['r', 'b', 'g']
-        for j, version in enumerate(['normal', 'optimal', 'greedy']):
+        for j, version in enumerate(['optimal_wqs', 'optimal', 'greedy']):
             summary = read_yips_planning_summary(planning_folder, seq, predictor + os.sep + version)
             summaries = np.split(summary, 100)
             summary = np.mean(summaries, axis=0)
@@ -270,7 +271,7 @@ if __name__ == '__main__':
     #      heuristic_name=yips,  # ose, none, yips
     #      outputs_folder='./sorrt_evaluation',
     #      outputs_tag='valid',
-    #      version='greedy',
+    #      version='normal',
     #      times=500, rounds=100, debug=False, optimize=True)  # test
 
     calculate_performance(seqs=sequences,
