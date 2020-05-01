@@ -150,7 +150,7 @@ if __name__ == '__main__':
     yips = 'rgous-vgg16C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr70_steps10[70, 95, 110]_wp0o0e+00)-checkpoint-200'
     main(dataset_folder='../../DataMaker/dataset',  # ./Dataset
          inputs_filename='valid.csv',  # test.csv
-         heuristic_name='none',  # ose, none, yips
+         heuristic_name=yips,  # ose, none, yips
          outputs_folder='./planned_paths',
          outputs_tag='valid',
-         times=500, rounds=1, debug=False, optimize=False)  # test
+         times=250, rounds=1, debug=False, optimize=True)  # test
