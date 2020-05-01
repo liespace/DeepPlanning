@@ -210,7 +210,7 @@ def main(dataset_folder, inputs_filename, heuristic_name, folder):
         print('Predicted Samples: {}'.format([list(p) for p in predicted_path[1:-1]]))
         set_plot()
         plot_task(grid_map, grid_res, heuristic, start, goal)
-        # plot_path(path, rho=5., real=True, lw=3., curve_color='C3', contour_color='C0')
+        plot_path(path, rho=5., real=True, lw=3., curve_color='C3', contour_color='C0')
         plot_path(predicted_path, rho=5., real=True, lw=5*2, curve_color='b', contour_color='g', zorder=50)
         # [plot_state(p) for p in predicted_path[1:-1]]
         [plot_config(p, color='C3', lw=5.*1.5, zorder=150) for p in predicted_path[1:-1]]
