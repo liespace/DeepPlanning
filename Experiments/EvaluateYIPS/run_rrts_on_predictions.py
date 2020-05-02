@@ -71,7 +71,7 @@ def read_yips(filepath, seq, folder='vgg19_comp_free200_check300', discriminatio
     yips = np.loadtxt('{}/{}/{}_inference.txt'.format(filepath, folder, seq), delimiter=',')
     yips = filter(lambda x: x[-1] > discrimination, yips)
     # yips = map(center2rear, yips)
-    yips = [((yip[0], yip[1], yip[2]), ((0.0, 1.0), (0.0, 1.0), (0.0, 0.523/2.))) for yip in yips]
+    yips = [((yip[0], yip[1], yip[2]), ((0.047, 2.442), (0.074, 1.723), (-0.011, 0.512))) for yip in yips]
     return yips
 
 
@@ -147,7 +147,10 @@ def main(dataset_folder, inputs_filename, heuristic_name, outputs_folder, output
 
 
 if __name__ == '__main__':
-    yips = 'rgous-vgg16C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr70_steps10[70, 95, 110]_wp0o0e+00)-checkpoint-200'
+    # yips = 'rgous-vgg16C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr70_steps10[70, 95, 110]_wp0o0e+00)-checkpoint-200'
+    # yips = 'rgous-vgg19v2C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr75_steps10[75, 105, 135]_wp0o0e+00)-checkpoint-200'
+    # yips = 'rgous-res50PC-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr30_steps10[30, 140, 170]_wp0o0e+00)-checkpoint-200'
+    yips = 'rgous-svg16C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr1000_steps10[70, 95, 110]_wp0o0e+00)-checkpoint-150'
     main(dataset_folder='../../DataMaker/dataset',  # ./Dataset
          inputs_filename='valid.csv',  # test.csv
          heuristic_name=yips,  # ose, none, yips
