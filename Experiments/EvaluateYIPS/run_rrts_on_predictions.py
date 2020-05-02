@@ -71,7 +71,7 @@ def read_yips(filepath, seq, folder='vgg19_comp_free200_check300', discriminatio
     yips = np.loadtxt('{}/{}/{}_inference.txt'.format(filepath, folder, seq), delimiter=',')
     yips = filter(lambda x: x[-1] > discrimination, yips)
     # yips = map(center2rear, yips)
-    yips = [((yip[0], yip[1], yip[2]), ((0.0, 4.0), (0.0, 4.0), (0.0, 1.047))) for yip in yips]
+    yips = [((yip[0], yip[1], yip[2]), ((0.0, 2.0), (0.0, 2.0), (0.0, 0.523))) for yip in yips]
     return yips
 
 
