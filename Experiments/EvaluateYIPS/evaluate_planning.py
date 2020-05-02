@@ -387,12 +387,13 @@ def compare_inference_time(predictor, prediction_folder):
     plt.show()
 
 
-def extract_yips_summary(predictor, dataset_folder, inputs_filename, prediction_folder, planning_folder):
+def extract_yips_summary(predictor, dataset_folder, inputs_filename, prediction_folder, planning_folder, max_samples=500):
     seqs = read_seqs(dataset_folder, inputs_filename)
     seqs.sort()
     threshold, rho = 0.5, 5.0
-    STFPs, LOFPs, LOLPs, TTFP, Fails, LOnPs = [], [], [], [], [], []
-    wSTFPs, wLOFPs, wLOLPs, wTTFPs, wLOnPs = [], [], [], [], []
+    SPIT = 0.
+    STFPs, LOFPs, LOLPs, TTFP, Fails, LOnPs, LOtPs = [], [], [], [], [], [], []
+    wSTFPs, wLOFPs, wLOLPs, wTTFPs, wLOnPs, wLOtPs = [], [], [], [], [], []
     pred_path_lens, true_path_lens, optimal_path_lens = [], [], []
     all_pred_path_lens, all_true_path_lens, all_optimal_path_lens = [], [], []
     for i, seq in enumerate(seqs):  # enumerate(seqs)
@@ -414,46 +415,65 @@ def extract_yips_summary(predictor, dataset_folder, inputs_filename, prediction_
             TTFP.append(times[ft.min()])
             LOFPs.append(lens[ft.min()])
             LOLPs.append(lens[-1])
-            LOnPs.append(lens[ft.min()+100 if ft.min()+100<500 else 499])
+            LOnPs.append(lens[ft.min()+100 if ft.min()+100<max_samples else max_samples-1])
+
+            time_threshold = times[ft.min()] + 1. if times[ft.min()] + 1. <= times.max() else times.max()
+            lotp = np.argwhere(times <= time_threshold).max()
+            LOtPs.append(lens[lotp])
+
             true_path_lens.append(true_length)
             pred_path_lens.append(pred_length)
             optimal_path_lens.append(optimal_length)
         else:
             Fails.append(seq)
 
+        if ft.shape[0] > 0:
+            if times[ft.min()] < .1:
+                SPIT += 1.
+
         wSTFPs.append(ft.min() if ft.shape[0] else 500)
         wTTFPs.append(times[ft.min()] if ft.shape[0] else 5)
         wLOFPs.append(lens[ft.min()] if ft.shape[0] else 0.)
         wLOLPs.append(lens[-1] if ft.shape[0] else 0.)
-        wLOnPs.append(lens[ft.min()+100 if ft.min()+100<500 else 499] if ft.shape[0] else 0.)
+        wLOnPs.append(lens[ft.min()+100 if ft.min()+100 < max_samples else max_samples-1] if ft.shape[0] else 0.)
+
+        if ft.shape[0]:
+            time_threshold = times[ft.min()] + 1. if times[ft.min()] + 1. <= times.max() else times.max()
+            lotp = np.argwhere(times <= time_threshold).max()
+            wLOtPs.append(lens[lotp])
+        else:
+            wLOtPs.append(0)
+
         all_true_path_lens.append(true_length)
         all_pred_path_lens.append(pred_length)
         all_optimal_path_lens.append(optimal_length)
 
     print('=========================================================')
     print('Planner: {}'.format(predictor))
+    print 'SPIT: {}/{}'.format(SPIT, SPIT / len(seqs))
     print('Mean STFP: {}, Max STFS: {}@{}, Min STFS: {}, STFS<100: {}@{}'.format(
         np.array(STFPs).mean(), np.array(STFPs).max(), seqs[np.array(STFPs).argmax()], np.array(STFPs).min(),
         (np.array(STFPs) < 100).sum(), 1.*(np.array(STFPs) < 100).sum()/len(seqs)))
     print('Mean TTFP: {}, Max TTFS: {}@{}, Min TTFS: {}, TTFS<0.1: {}@{}'.format(
         np.array(TTFP).mean(), np.array(TTFP).max(), seqs[np.array(TTFP).argmax()], np.array(TTFP).min(),
         (np.array(TTFP) < 0.1).sum(), 1.*(np.array(TTFP) < 0.1).sum()/len(TTFP)))
-    print('Mean LOFP: {}, Mean LOLP: {}, Mean LOLP_n: {}, Mean LOYP: {}, Mean LOOP: {}, Mean LOGP: {}'.format(
-        np.array(LOFPs).mean(), np.array(LOLPs).mean(), np.array(LOnPs).mean(),
+    print('Mean LOFP: {}, Mean LOLP: {}, Mean LOnP: {}, Mean LOtP: {}, Mean LOYP: {}, Mean LOOP: {}, Mean LOGP: {}'.format(
+        np.array(LOFPs).mean(), np.array(LOLPs).mean(), np.array(LOnPs).mean(), np.array(LOtPs).mean(),
         np.array(pred_path_lens).mean(), np.array(true_path_lens).mean(), np.array(optimal_path_lens).mean()))
     print('SR: {}@{}'.format(1. - 1.*len(Fails)/len(seqs), len(Fails)))
     print('Fails Scenes: {}'.format(Fails))
     print('=========================================================')
 
-    return wSTFPs, wTTFPs, wLOFPs, wLOLPs, wLOnPs, Fails, all_pred_path_lens, all_true_path_lens, all_optimal_path_lens
+    return wSTFPs, wTTFPs, wLOFPs, wLOLPs, wLOnPs, wLOtPs, Fails, all_pred_path_lens, all_true_path_lens, all_optimal_path_lens
 
 
-def extract_ose_summary(dataset_folder, inputs_filename, planning_folder, predictor='ose'):
+def extract_ose_summary(dataset_folder, inputs_filename, planning_folder, predictor='ose', max_samples=500):
     seqs = read_seqs(dataset_folder, inputs_filename)
     seqs.sort()
     threshold, rho = 0.5, 5.0
-    STFPs, LOFPs, LOLPs, TTFP, Fails, LOnPs = [], [], [], [], [], []
-    wSTFPs, wLOFPs, wLOLPs, wTTFPs, wLOnPs = [], [], [], [], []
+    SPIT = 0.
+    STFPs, LOFPs, LOLPs, TTFP, Fails, LOnPs, LOtPs = [], [], [], [], [], [], []
+    wSTFPs, wLOFPs, wLOLPs, wTTFPs, wLOnPs, wLOtPs = [], [], [], [], [], []
     true_path_lens, optimal_path_lens = [], []
     all_true_path_lens, all_optimal_path_lens = [], []
     for i, seq in enumerate(seqs):  # enumerate(seqs)
@@ -472,34 +492,52 @@ def extract_ose_summary(dataset_folder, inputs_filename, planning_folder, predic
             TTFP.append(times[ft.min()])
             LOFPs.append(lens[ft.min()])
             LOLPs.append(lens[-1])
-            LOnPs.append(lens[ft.min()+100 if ft.min()+100<500 else 499])
+            LOnPs.append(lens[ft.min()+100 if ft.min()+100 < max_samples else max_samples-1])
+
+            time_threshold = times[ft.min()] + 1. if times[ft.min()] + 1. <= times.max() else times.max()
+            lotp = np.argwhere(times <= time_threshold).max()
+            LOtPs.append(lens[lotp])
+
             true_path_lens.append(true_length)
             optimal_path_lens.append(optimal_length)
         else:
             Fails.append(seq)
 
+        if ft.shape[0] > 0:
+            if times[ft.min()] < .1:
+                SPIT += 1.
+
         wSTFPs.append(ft.min() if ft.shape[0] else 500)
         wTTFPs.append(times[ft.min()] if ft.shape[0] else 5)
         wLOFPs.append(lens[ft.min()] if ft.shape[0] else 0.)
         wLOLPs.append(lens[-1] if ft.shape[0] else 0.)
-        wLOnPs.append(lens[ft.min()+100 if ft.min()+100<500 else 499] if ft.shape[0] else 0.)
+        wLOnPs.append(lens[ft.min()+100 if ft.min()+100<max_samples else max_samples-1] if ft.shape[0] else 0.)
+
+        if ft.shape[0]:
+            time_threshold = times[ft.min()] + 1. if times[ft.min()] + 1. <= times.max() else times.max()
+            lotp = np.argwhere(times <= time_threshold).max()
+            wLOtPs.append(lens[lotp])
+        else:
+            wLOtPs.append(0)
+
         all_true_path_lens.append(true_length)
         all_optimal_path_lens.append(optimal_length)
     print('=========================================================')
     print('Planner: {}'.format(predictor))
+    print 'SPIT: {}/{}'.format(SPIT, SPIT / len(seqs))
     print('Mean STFP: {}, Max STFS: {}@{}, Min STFS: {}, STFS<100: {}@{}'.format(
         np.array(STFPs).mean(), np.array(STFPs).max(), seqs[np.array(STFPs).argmax()], np.array(STFPs).min(),
         (np.array(STFPs) < 100).sum(), 1.*(np.array(STFPs) < 100).sum()/len(seqs)))
     print('Mean TTFP: {}, Max TTFS: {}@{}, Min TTFS: {}, TTFS<0.1: {}@{}'.format(
         np.array(TTFP).mean(), np.array(TTFP).max(), seqs[np.array(TTFP).argmax()], np.array(TTFP).min(),
         (np.array(TTFP) < 0.1).sum(), 1.*(np.array(TTFP) < 0.1).sum()/len(TTFP)))
-    print('Mean LOFP: {}, Mean LOLP: {}, Mean LOLP_n: {}, Mean LOOP: {}, Mean LOGP: {}'.format(
-        np.array(LOFPs).mean(), np.array(LOLPs).mean(), np.array(LOnPs).mean(),
+    print('Mean LOFP: {}, Mean LOLP: {}, Mean LOnP: {}, Mean LOtP: {}, Mean LOOP: {}, Mean LOGP: {}'.format(
+        np.array(LOFPs).mean(), np.array(LOLPs).mean(), np.array(LOnPs).mean(), np.array(LOtPs).mean(),
         np.array(true_path_lens).mean(), np.array(optimal_path_lens).mean()))
     print('SR: {}@{}'.format(1. - 1.*len(Fails)/len(seqs), len(Fails)))
     print('Fails Scenes: {}'.format(Fails))
     print('=========================================================')
-    return wSTFPs, wTTFPs, wLOFPs, wLOLPs, wLOnPs, Fails, all_true_path_lens, all_optimal_path_lens
+    return wSTFPs, wTTFPs, wLOFPs, wLOLPs, wLOnPs, wLOtPs, Fails, all_true_path_lens, all_optimal_path_lens
 
 
 def plot_sorrt_optimization_on_yips(YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSFails,
@@ -540,14 +578,17 @@ def plot_sorrt_optimization_on_yips(YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOL
     plt.show()
 
 
-def plot_ose_and_yips_and_gau_comparison_length(YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSFails,
-                                                OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEFails,
-                                                all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs):
+def plot_ose_and_yips_and_gau_comparison_length(
+        YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSwLOtPs, YIPSFails,
+        OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEwLOtPs, OSEFails,
+        GAUwSTFPs, GAUwTTFPs, GAUwLOFPs, GAUwLOLPs, GAUwLOnPs, GAUwLOtPs, GAUFails,
+        all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs):
+
     data = zip(np.divide(all_true_path_lens, all_optimal_path_lens),
-               np.divide(YIPSwLOnPs, all_optimal_path_lens),
+               np.divide(YIPSwLOtPs, all_optimal_path_lens),
                np.divide(all_pred_path_lens, all_optimal_path_lens),
                np.divide(all_optimal_path_lens, all_optimal_path_lens),
-               np.divide(OSEwLOnPs, all_optimal_path_lens))
+               np.divide(OSEwLOtPs, all_optimal_path_lens))
     data.sort()
     data = np.array(data)
     fontsize = 40
@@ -566,16 +607,18 @@ def plot_ose_and_yips_and_gau_comparison_length(YIPSwSTFPs, YIPSwTTFPs, YIPSwLOF
     ax1.scatter(fail_points, [0.] * fail_points.shape[0], s=200, c='r')
     fail_points = np.argwhere(data[:, 4] == 0)
     ax1.scatter(fail_points, [0.] * fail_points.shape[0], s=200, c='r')
-    ax1.legend(prop={'size': fontsize}, loc=2, frameon=True, ncol=2)
+    ax1.legend(prop={'size': fontsize}, loc=2, frameon=True, ncol=2).set_zorder(102)
     plt.draw()
     plt.show()
 
 
-def plot_ose_and_yips_and_gau_comparison_times(YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSFails,
-                                               OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEFails,
-                                               all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs):
-    fontsize = 40
+def plot_ose_and_yips_and_gau_comparison_times(
+        YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSwLOtPs, YIPSFails,
+        OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEwLOtPs, OSEFails,
+        GAUwSTFPs, GAUwTTFPs, GAUwLOFPs, GAUwLOLPs, GAUwLOnPs, GAUwLOtPs, GAUFails,
+        all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs):
 
+    fontsize = 40
     # TTFP
     ax1 = new_figure(y_label='$\sqrt[4]{\mathrm{TTFP}}$', x_label='', fontsize=fontsize)
     data = np.array(YIPSwTTFPs) - np.array(OSEwTTFPs)
@@ -609,17 +652,17 @@ def calculate_performance(predictor, dataset_folder, inputs_filename, prediction
     threshold = 0.5
     rho = 5.0
 
-    (YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSFails,
+    (YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSwLOtPs, YIPSFails,
      all_pred_path_lens, all_true_path_lens, all_optimal_path_lens) = extract_yips_summary(
             predictor=predictor, dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv',
-            prediction_folder='predictions/valid', planning_folder='planned_paths/valid')
+            prediction_folder='predictions/valid', planning_folder='planned_paths/valid', max_samples=500)
 
-    (OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEFails,
+    (OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEwLOtPs, OSEFails,
      all_true_path_lens, all_optimal_path_lens) = extract_ose_summary(
         dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv',
         planning_folder='planned_paths/valid')
 
-    (GAUwSTFPs, GAUwTTFPs, GAUwLOFPs, GAUwLOLPs, GAUwLOnPs, GAUFails,
+    (GAUwSTFPs, GAUwTTFPs, GAUwLOFPs, GAUwLOLPs, GAUwLOnPs, GAUwLOtPs, GAUFails,
      all_true_path_lens, all_optimal_path_lens) = extract_ose_summary(
         dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv',
         planning_folder='planned_paths/valid', predictor='none')
@@ -633,16 +676,19 @@ def calculate_performance(predictor, dataset_folder, inputs_filename, prediction
     # plot_sorrt_optimization_on_yips(YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSFails,
     #                                 all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs)
 
-    plot_ose_and_yips_and_gau_comparison_length(YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSFails,
-                                                OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEFails,
-                                                all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs)
+    plot_ose_and_yips_and_gau_comparison_length(
+        YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSwLOtPs, YIPSFails,
+        OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEwLOtPs, OSEFails,
+        GAUwSTFPs, GAUwTTFPs, GAUwLOFPs, GAUwLOLPs, GAUwLOnPs, GAUwLOtPs, GAUFails,
+        all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs)
 
-    # plot_ose_and_yips_and_gau_comparison_times(YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSFails,
-    #                                             OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEFails,
-    #                                             all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs)
+    plot_ose_and_yips_and_gau_comparison_times(
+        YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSwLOtPs, YIPSFails,
+        OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEwLOtPs, OSEFails,
+        GAUwSTFPs, GAUwTTFPs, GAUwLOFPs, GAUwLOLPs, GAUwLOnPs, GAUwLOtPs, GAUFails,
+        all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs)
 
     Debugger.breaker('')
-
 
 
 if __name__ == '__main__':

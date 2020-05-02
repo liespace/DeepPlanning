@@ -320,7 +320,7 @@ def collision_check(path, rho, grid_map, iov_threshold=0.125):
     sequence = zip(sequence[:-1], sequence[1:])
     free, intersection_area = True, 0
     for x_from, x_to in sequence:
-        states = reeds_shepp.path_sample(x_from, x_to, rho, 0.3)
+        states = reeds_shepp.path_sample(x_from, x_to, rho, 0.1)
         cons = [transform(contour(), state) for state in states]
         cons = [np.floor(con / 0.1 + 600 / 2.).astype(int) for con in cons]
         mask = np.zeros_like(grid_map, dtype=np.uint8)
@@ -357,7 +357,7 @@ def calculate_performance(predictor, dataset_folder, inputs_filename, prediction
     iov_threshold = 0.125*0
     rho = 5.0
     pred_path_lens, true_path_lens, optimal_path_lens, collision_check_results, iovs = [], [], [], [], []
-    for i, seq in enumerate(seqs):  # enumerate(seqs)
+    for i, seq in enumerate([11036]):  # enumerate(seqs)
         # print('Evaluate Scene: {} ({} of {})'.format(seq, i + 1, len(seqs)))
         inference = read_inference(prediction_folder, seq, predictor)
         label = read_label(dataset_folder, seq)
@@ -370,6 +370,7 @@ def calculate_performance(predictor, dataset_folder, inputs_filename, prediction
         true_length = calculate_path_length(true, rho=rho)
         optimal_length = calculate_path_length([start, goal], rho=rho)
         result, iov = collision_check(pred, rho, grid_map, iov_threshold=iov_threshold)
+        print('IOV={}'.format(iov))
         pred_path_lens.append(pred_length)
         true_path_lens.append(true_length)
         optimal_path_lens.append(optimal_length)

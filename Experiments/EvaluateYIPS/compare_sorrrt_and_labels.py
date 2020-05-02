@@ -192,7 +192,7 @@ def main(dataset_folder, inputs_filename, heuristic_name, folder):
     # iov == 0: [6823, 2384, 10902, 11210, 13500, 164]
     # iov <= 0.125: [13269, 1120, 2724, 9485]
     # iov > 0.125: [1000, 8157, 6025]
-    for i, seq in enumerate([2384, 13269, 11036, 10955, 6045, 6025]):  # enumerate(seqs)
+    for i, seq in enumerate([6045]):  # enumerate(seqs)
         print('Processing Scene: {} ({} of {})'.format(seq, i+1, len(seqs)))
         heuristic = read_heuristic(folder, seq, heuristic_name)
         source, target = read_task(dataset_folder+os.sep+'scenes', seq)
@@ -208,17 +208,17 @@ def main(dataset_folder, inputs_filename, heuristic_name, folder):
         predicted_path.append(list(path[-1]))
         predicted_path.insert(0, list(path[0]))
         print('Predicted Samples: {}'.format([list(p) for p in predicted_path[1:-1]]))
-        planned_path = np.loadtxt('./sorrt_evaluation/valid/{}/{}_path.txt'.format(heuristic_name, seq), delimiter=',')
+        planned_path = np.loadtxt('./sorrt_evaluation/valid/{}/optimal/{}_path.txt'.format(heuristic_name, seq), delimiter=',')
         print('Planned Samples: {}'.format([list(p) for p in path[1:-1]]))
 
         set_plot()
         plot_task(grid_map, grid_res, heuristic, start, goal)
-        plot_path(path, rho=5., real=False, lw=10., curve_color='b', contour_color='C0', zorder=50)
-        plot_path(planned_path, rho=5., real=False, lw=10., curve_color='r', contour_color='C0', zorder=100)
-        plot_path(predicted_path, rho=5., real=False, lw=5*2, curve_color='g', contour_color='g', zorder=20)
+        plot_path(path, rho=5., real=False, lw=15., curve_color='g', contour_color='C0', zorder=50)
+        plot_path(planned_path, rho=5., real=False, lw=15., curve_color='r', contour_color='C0', zorder=200)
+        plot_path(predicted_path, rho=5., real=False, lw=15, curve_color='b', contour_color='g', zorder=20)
         # [plot_state(p) for p in predicted_path[1:-1]]
-        [plot_config(p, color='r', lw=5.*1.5, zorder=200) for p in planned_path[1:-1]]
-        # [plot_config(p, color='g', lw=5.*1.5, zorder=150) for p in predicted_path[1:-1]]
+        # [plot_config(p, color='r', lw=5.*1.5, zorder=200) for p in planned_path[1:-1]]
+        # [plot_config(p, color='g', lw=5.*1.5, zorder=20) for p in predicted_path[1:-1]]
         plot_config(start.state, color='y', lw=5.*1.5, zorder=10)
         plot_config(goal.state, color='y', lw=5.*1.5, zorder=10)
         Debugger.breaker('Plotting')

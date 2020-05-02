@@ -191,6 +191,7 @@ def read_yips_planning_summary(filepath, seq, folder='vgg19_comp_free200_check30
 
 
 def new_figure(y_label='Precision[-]', x_label='Recall[-]', fontsize=55):
+    plt.rcParams["font.family"] = "Times New Roman"
     fig = plt.figure()
     ax = fig.gca()
     ax.set_ylabel(y_label, fontsize=fontsize)
@@ -231,16 +232,12 @@ def calculate_performance(seqs, predictor, dataset_folder, inputs_filename, pred
         true_length = calculate_path_length(true, rho=rho)
         optimal_length = calculate_path_length([start, goal], rho=rho)
 
-        fontsize = 40
-        ax1 = new_figure(y_label='mLOP/LOOP', x_label='', fontsize=fontsize)
-        # ax1.set_ylim([-0.05, 2.5])
-        # ax1.set_xlim([0, 2750])
-        # ax1.set_yticks(np.arange(0., 2.5, 0.5))
-        # ax1.set_xticks([0, 1000, 2000])
+        fontsize = 70
+        ax1 = new_figure(y_label='mLOP/LOGP', x_label='time[s]', fontsize=fontsize)
 
-        labels = ['SO-RRT', 'SO-RRT-OP', 'SO-RRT-GR']
+        labels = ['Optimal', 'Greedy', 'Normal']
         colors = ['r', 'b', 'g']
-        for j, version in enumerate(['optimal_wqs', 'optimal', 'greedy']):
+        for j, version in enumerate(['optimal', 'greedy']):
             summary = read_yips_planning_summary(planning_folder, seq, predictor + os.sep + version)
             summaries = np.split(summary, 100)
             summary = np.mean(summaries, axis=0)
@@ -249,12 +246,16 @@ def calculate_performance(seqs, predictor, dataset_folder, inputs_filename, pred
             times = summary[:, 1]
             samples = summary[:, 0]
             normalized_lens = lens / optimal_length
-            ax1.plot(times, normalized_lens, lw=6, c=colors[j], zorder=100 - j, label=labels[j])
+            ax1.plot(times, normalized_lens, lw=12, c=colors[j], zorder=100 - j, label=labels[j])
             print true_length, optimal_length
 
-        # ax1.hlines(true_length/optimal_length, 0, 500, lw=6, color='g', zorder=200, linestyles='dashed', label='Label')
-        # ax1.hlines(optimal_length / optimal_length, 0, 500, lw=6, color='b', zorder=150, linestyles='dotted', label='Geodesic')
-        ax1.legend(prop={'size': fontsize}, loc=4, frameon=True, ncol=2)
+        # ax1.set_ylim([0., 1.1])
+        # ax1.set_yticks([0.5, 1.0])
+        ax1.set_xlim([0, .53])
+        # ax1.set_xticks([0, .4, 0.8])
+        ax1.hlines(true_length/optimal_length, 0, 2, lw=12, color='b', zorder=20, linestyles='dashed', label='Label')
+        ax1.hlines(optimal_length / optimal_length, 0, 2, lw=12, color='r', zorder=15, linestyles='dashed', label='Geodesic')
+        ax1.legend(prop={'size': fontsize-12}, loc=4, frameon=True, ncol=2, handlelength=1.5)
         plt.draw()
         plt.show()
         Debugger.breaker('')
@@ -263,8 +264,10 @@ def calculate_performance(seqs, predictor, dataset_folder, inputs_filename, pred
 if __name__ == '__main__':
     yips = 'rgous-vgg16C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr70_steps10[70, 95, 110]_wp0o0e+00)-checkpoint-200'
 
-    # seqs = [2384, 13269, 11036, 13590, 1095, 7412, 10930, 10955, 6045]
-    sequences = [2384, 13269, 11036, 10955, 6045, 6025, 1000]
+    # seqs = [2384, 13269, 11036, 13590, 1095, 7412, 10930, 10955, 6045], 6025
+    # [2384, 13269, 11036, 10955, 6045, 1000]
+    # [2384, 13269, 6025, 10955, 6045, 1000]
+    sequences = [11036]
     # main(seqs=sequences,
     #      dataset_folder='../../DataMaker/dataset',  # ./Dataset
     #      inputs_filename='valid.csv',  # test.csv

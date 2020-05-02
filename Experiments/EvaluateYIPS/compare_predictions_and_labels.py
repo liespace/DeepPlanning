@@ -122,7 +122,7 @@ def plot_config(state, color='y', lw=3., zorder=10):
 
 
 def plot_task(grid_map, grid_res, heuristic, start, goal):
-    plot_grid(grid_map, grid_res, color='C1')
+    plot_grid(grid_map, grid_res, color='y')
     # Debugger.plot_heuristic(heuristic) if heuristic else None
     plt.draw()
 
@@ -192,6 +192,7 @@ def main(dataset_folder, inputs_filename, heuristic_name, folder):
     # iov == 0: [6823, 2384, 10902, 11210, 13500, 164]
     # iov <= 0.125: [13269, 1120, 2724, 9485]
     # iov > 0.125: [1000, 8157, 6025]
+    # [2384, 13269, 10955, 6045, 1000, 6025]
     for i, seq in enumerate([11036]):  # enumerate(seqs)
         print('Processing Scene: {} ({} of {})'.format(seq, i+1, len(seqs)))
         heuristic = read_heuristic(folder, seq, heuristic_name)
@@ -210,12 +211,12 @@ def main(dataset_folder, inputs_filename, heuristic_name, folder):
         print('Predicted Samples: {}'.format([list(p) for p in predicted_path[1:-1]]))
         set_plot()
         plot_task(grid_map, grid_res, heuristic, start, goal)
-        plot_path(path, rho=5., real=True, lw=3., curve_color='C3', contour_color='C0')
+        # plot_path(path, rho=5., real=True, lw=3., curve_color='C3', contour_color='C0')
         plot_path(predicted_path, rho=5., real=True, lw=5*2, curve_color='b', contour_color='g', zorder=50)
         # [plot_state(p) for p in predicted_path[1:-1]]
         [plot_config(p, color='C3', lw=5.*1.5, zorder=150) for p in predicted_path[1:-1]]
-        plot_config(start.state, color='y', lw=5.*1.5, zorder=100)
-        plot_config(goal.state, color='y', lw=5.*1.5, zorder=100)
+        plot_config(start.state, color='C1', lw=5.*1.5, zorder=100)
+        plot_config(goal.state, color='C1', lw=5.*1.5, zorder=100)
         Debugger.breaker('Plotting')
 
 
