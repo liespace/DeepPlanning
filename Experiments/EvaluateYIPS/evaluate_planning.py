@@ -577,6 +577,18 @@ def plot_sorrt_optimization_on_yips(
     # gaps = np.divide(all_true_path_lens, all_optimal_path_lens) - np.divide(YIPSwLOLPs, all_optimal_path_lens)
     # tars = filter(lambda x: 0.1 < x < 1, gaps)
     # print tars, seqs[np.argwhere(gaps == tars[0])[0, 0]]
+
+    fontsize = 40
+    ax2 = new_figure(y_label='', x_label='proportion', fontsize=fontsize)
+    ax2.set_xlim(0, 1.)
+    ax2.set_xticks([0, 0.2, 0.4, 0.6, 0.8])
+    h = np.histogram(YIPSwTTFPs, bins=(0, 0.05, 0.1, 0.5, 1., max(YIPSwTTFPs)))
+    xlab = ['(0.00, 0.05]', '(0.05, 0.10]', '(0.10, 0.50]', '(0.50, 1.00]', '(1.00, 9.00]']
+    ax2.barh(range(5), 1. * h[0] / len(seqs), tick_label=xlab, height=0.6, color='g')
+    print 1. * h[0] / len(seqs)
+    for i, v in enumerate(1. * h[0] / len(seqs)):
+        ax2.text(v + 0.01, i, '{:.2f}'.format(v), color='k', fontdict={'size': fontsize})
+
     plt.draw()
     plt.show()
 
@@ -660,38 +672,20 @@ def calculate_performance(predictor, dataset_folder, inputs_filename, prediction
             predictor=predictor, dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv',
             prediction_folder='predictions/valid', planning_folder='planned_paths/valid', max_samples=500)
 
-    fontsize = 40
-    ax1 = new_figure(y_label='', x_label='proportion', fontsize=fontsize)
-    ax1.set_xlim(0, 1.)
-    ax1.set_xticks([0, 0.2, 0.4, 0.6, 0.8])
-    # ax1.hist(YIPSwTTFPs, bins=20, density=1, histtype='step', facecolor='C1', alpha=1.0,
-    #          cumulative=False, rwidth=0.8, linewidth=12, color='C1', label='Data')
-    # ax1.hist(YIPSwTTFPs, bins=[0, 0.05, 0.1, 0.5, 1., max(YIPSwTTFPs)], density=0, histtype='bar', facecolor='C1', alpha=1.0,
-    #          cumulative=False, rwidth=0.8, linewidth=12, color='C1', label='Data', orientation='horizontal')
+    # plot_sorrt_optimization_on_yips(
+    #     YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSwLOtPs, YIPSFails,
+    #     all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs)
 
-    h = np.histogram(YIPSwTTFPs, bins=(0, 0.05, 0.1, 0.5, 1., max(YIPSwTTFPs)))
-    # xlab = ['$t\\leq 0.05$', '$0.05<t\\leq 0.1$', '$0.1<t\\leq 0.5$', '$0.5<t\\leq 1$', '$t>1$']
-    xlab = ['(0.00, 0.05]', '(0.05, 0.10]', '(0.10, 0.50]', '(0.50, 1.00]', '(1.00, 9.00]']
-    ax1.barh(range(5), 1.*h[0]/len(seqs), tick_label=xlab, height=0.6, color='g')
-    print 1.*h[0]/len(seqs)
-    for i, v in enumerate(1.*h[0]/len(seqs)):
-        ax1.text(v + 0.01, i, '{:.2f}'.format(v), color='k', fontdict={'size': fontsize})
-    # plt.xticks(np.arange(0.5, 3.5, 1), xlab)
+    (OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEwLOtPs, OSEFails,
+     all_true_path_lens, all_optimal_path_lens) = extract_ose_summary(
+        dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv',
+        planning_folder='planned_paths/valid')
 
-    plot_sorrt_optimization_on_yips(
-        YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSwLOtPs, YIPSFails,
-        all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs)
+    (GAUwSTFPs, GAUwTTFPs, GAUwLOFPs, GAUwLOLPs, GAUwLOnPs, GAUwLOtPs, GAUFails,
+     all_true_path_lens, all_optimal_path_lens) = extract_ose_summary(
+        dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv',
+        planning_folder='planned_paths/valid', predictor='none')
 
-    # (OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEwLOtPs, OSEFails,
-    #  all_true_path_lens, all_optimal_path_lens) = extract_ose_summary(
-    #     dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv',
-    #     planning_folder='planned_paths/valid')
-    #
-    # (GAUwSTFPs, GAUwTTFPs, GAUwLOFPs, GAUwLOLPs, GAUwLOnPs, GAUwLOtPs, GAUFails,
-    #  all_true_path_lens, all_optimal_path_lens) = extract_ose_summary(
-    #     dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv',
-    #     planning_folder='planned_paths/valid', predictor='none')
-    #
     # plot_ose_and_yips_and_gau_comparison_length(
     #     YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSwLOtPs, YIPSFails,
     #     OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEwLOtPs, OSEFails,
@@ -727,7 +721,7 @@ if __name__ == '__main__':
     #     folder='predictions/valid')
     # print('Evaluate Predictor: {}'.format(target))
 
-    for planner in [predictors[-1]]:
+    for planner in [predictors[1]]:
         calculate_performance(predictor=planner, dataset_folder='../../DataMaker/dataset',
                               inputs_filename='valid.csv', prediction_folder='predictions/valid',
                               planning_folder='planned_paths/valid')
