@@ -193,7 +193,7 @@ def main(dataset_folder, inputs_filename, heuristic_name, folder):
     # iov <= 0.125: [13269, 1120, 2724, 9485]
     # iov > 0.125: [1000, 8157, 6025]
     # [2384, 13269, 10955, 6045, 1000, 6025]
-    for i, seq in enumerate([11036]):  # enumerate(seqs)
+    for i, seq in enumerate([10930, 13299, 5949]):  # enumerate(seqs)
         print('Processing Scene: {} ({} of {})'.format(seq, i+1, len(seqs)))
         heuristic = read_heuristic(folder, seq, heuristic_name)
         source, target = read_task(dataset_folder+os.sep+'scenes', seq)
@@ -215,8 +215,8 @@ def main(dataset_folder, inputs_filename, heuristic_name, folder):
         plot_path(predicted_path, rho=5., real=True, lw=5*2, curve_color='b', contour_color='g', zorder=50)
         # [plot_state(p) for p in predicted_path[1:-1]]
         [plot_config(p, color='C3', lw=5.*1.5, zorder=150) for p in predicted_path[1:-1]]
-        plot_config(start.state, color='C1', lw=5.*1.5, zorder=100)
-        plot_config(goal.state, color='C1', lw=5.*1.5, zorder=100)
+        plot_config(start.state, color='b', lw=5.*2, zorder=100)
+        plot_config(goal.state, color='C1', lw=5.*2, zorder=100)
         Debugger.breaker('Plotting')
 
 

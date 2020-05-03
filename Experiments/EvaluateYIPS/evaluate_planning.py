@@ -417,7 +417,7 @@ def extract_yips_summary(predictor, dataset_folder, inputs_filename, prediction_
             LOLPs.append(lens[-1])
             LOnPs.append(lens[ft.min()+100 if ft.min()+100<max_samples else max_samples-1])
 
-            time_threshold = times[ft.min()] + 1. if times[ft.min()] + 1. <= times.max() else times.max()
+            time_threshold = times[ft.min()] + .1 if times[ft.min()] + .1 <= times.max() else times.max()
             lotp = np.argwhere(times <= time_threshold).max()
             LOtPs.append(lens[lotp])
 
@@ -438,7 +438,7 @@ def extract_yips_summary(predictor, dataset_folder, inputs_filename, prediction_
         wLOnPs.append(lens[ft.min()+100 if ft.min()+100 < max_samples else max_samples-1] if ft.shape[0] else 0.)
 
         if ft.shape[0]:
-            time_threshold = times[ft.min()] + 1. if times[ft.min()] + 1. <= times.max() else times.max()
+            time_threshold = times[ft.min()] + .1 if times[ft.min()] + .1 <= times.max() else times.max()
             lotp = np.argwhere(times <= time_threshold).max()
             wLOtPs.append(lens[lotp])
         else:
@@ -494,7 +494,7 @@ def extract_ose_summary(dataset_folder, inputs_filename, planning_folder, predic
             LOLPs.append(lens[-1])
             LOnPs.append(lens[ft.min()+100 if ft.min()+100 < max_samples else max_samples-1])
 
-            time_threshold = times[ft.min()] + 1. if times[ft.min()] + 1. <= times.max() else times.max()
+            time_threshold = times[ft.min()] + .1 if times[ft.min()] + .1 <= times.max() else times.max()
             lotp = np.argwhere(times <= time_threshold).max()
             LOtPs.append(lens[lotp])
 
@@ -514,7 +514,7 @@ def extract_ose_summary(dataset_folder, inputs_filename, planning_folder, predic
         wLOnPs.append(lens[ft.min()+100 if ft.min()+100<max_samples else max_samples-1] if ft.shape[0] else 0.)
 
         if ft.shape[0]:
-            time_threshold = times[ft.min()] + 1. if times[ft.min()] + 1. <= times.max() else times.max()
+            time_threshold = times[ft.min()] + .1 if times[ft.min()] + .1 <= times.max() else times.max()
             lotp = np.argwhere(times <= time_threshold).max()
             wLOtPs.append(lens[lotp])
         else:
@@ -540,40 +540,43 @@ def extract_ose_summary(dataset_folder, inputs_filename, planning_folder, predic
     return wSTFPs, wTTFPs, wLOFPs, wLOLPs, wLOnPs, wLOtPs, Fails, all_true_path_lens, all_optimal_path_lens
 
 
-def plot_sorrt_optimization_on_yips(YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSFails,
-                                    all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs):
+def plot_sorrt_optimization_on_yips(
+        YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSwLOtPs, YIPSFails,
+        all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs):
     data = zip(np.divide(all_true_path_lens, all_optimal_path_lens),
                np.divide(YIPSwLOLPs, all_optimal_path_lens),
                np.divide(all_pred_path_lens, all_optimal_path_lens),
                np.divide(all_optimal_path_lens, all_optimal_path_lens),
-               np.divide(YIPSwLOnPs, all_optimal_path_lens))
+               np.divide(YIPSwLOFPs, all_optimal_path_lens),
+               np.divide(YIPSwLOtPs, all_optimal_path_lens))
     data.sort()
     data = np.array(data)
-    fontsize = 40
-    ax1 = new_figure(y_label='LOP/LOOP', x_label='', fontsize=fontsize)
+    fontsize = 36
+    ax1 = new_figure(y_label='$\\widehat{\\mathrm{LOP}}$', x_label='', fontsize=fontsize)
     ax1.set_ylim([-0.05, 2.5])
     ax1.set_xlim([0, 2750])
     ax1.set_yticks(np.arange(0., 2.5, 0.5))
     ax1.set_xticks([0, 1000, 2000])
-    ax1.plot(data[:, 0], lw=6, c='r', zorder=100, label='LOOP')
-    ax1.plot(data[:, 1], lw=4, c='b', zorder=50, label='LOLP')
-    ax1.plot(data[:, 4], lw=4, c='C1', zorder=25, label='LOFP')
+    ax1.plot(data[:, 0], lw=8, c='r', zorder=100, label='$\\mathrm{LOLP}$')
+    ax1.plot(data[:, 1], lw=6, c='b', zorder=50, label='$\\mathrm{LOP}_{\\mathrm{500}}$')
+    ax1.plot(data[:, 5], lw=6, c='C1', zorder=40, label='$\\mathrm{LOP}_{\\mathrm{TTFP+.1s}}$')
+    ax1.plot(data[:, 4], lw=6, c='y', zorder=25, label='$\\mathrm{LOP}_{\\mathrm{TTFP}}$')
     # ax1.plot(data[:, 2])
-    ax1.plot(data[:, 3], lw=6, c='g', label='LOGP')
+    ax1.plot(data[:, 3], lw=8, c='g', label='$\\mathrm{LOGP}$')
 
     fail_points = np.argwhere(data[:, 1] == 0)
-    ax1.scatter(fail_points, [0.] * fail_points.shape[0], s=200, c='r')
-    gaps = data[:, 0] - data[:, 1]
-    tars = filter(lambda x: 0.1 < x < 1, gaps)
-    print tars
-    index = np.argwhere(gaps == tars[0])[0, 0]
-    print index
-    ax1.scatter(index, data[index, 1], s=300, c='r', zorder=100, marker='x', lw=6)
-    ax1.legend(prop={'size': fontsize}, loc=2, frameon=True, ncol=2)
-
-    gaps = np.divide(all_true_path_lens, all_optimal_path_lens) - np.divide(YIPSwLOLPs, all_optimal_path_lens)
-    tars = filter(lambda x: 0.1 < x < 1, gaps)
-    print tars, seqs[np.argwhere(gaps == tars[0])[0, 0]]
+    ax1.scatter(fail_points, [0.] * fail_points.shape[0], s=400, c='r')
+    # gaps = data[:, 0] - data[:, 1]
+    # tars = filter(lambda x: 0.1 < x < 1, gaps)
+    # print tars
+    # index = np.argwhere(gaps == tars[0])[0, 0]
+    # print index
+    # ax1.scatter(index, data[index, 1], s=300, c='r', zorder=100, marker='x', lw=6)
+    ax1.legend(prop={'size': fontsize-4}, loc=2, frameon=True, ncol=3, framealpha=1).set_zorder(200)
+    #
+    # gaps = np.divide(all_true_path_lens, all_optimal_path_lens) - np.divide(YIPSwLOLPs, all_optimal_path_lens)
+    # tars = filter(lambda x: 0.1 < x < 1, gaps)
+    # print tars, seqs[np.argwhere(gaps == tars[0])[0, 0]]
     plt.draw()
     plt.show()
 
@@ -657,36 +660,49 @@ def calculate_performance(predictor, dataset_folder, inputs_filename, prediction
             predictor=predictor, dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv',
             prediction_folder='predictions/valid', planning_folder='planned_paths/valid', max_samples=500)
 
-    (OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEwLOtPs, OSEFails,
-     all_true_path_lens, all_optimal_path_lens) = extract_ose_summary(
-        dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv',
-        planning_folder='planned_paths/valid')
-
-    (GAUwSTFPs, GAUwTTFPs, GAUwLOFPs, GAUwLOLPs, GAUwLOnPs, GAUwLOtPs, GAUFails,
-     all_true_path_lens, all_optimal_path_lens) = extract_ose_summary(
-        dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv',
-        planning_folder='planned_paths/valid', predictor='none')
-
-    # plt.figure()
-    # plt.hist(fts, bins=20, density=0, histtype='bar', facecolor='C1', alpha=1.0,
+    fontsize = 40
+    ax1 = new_figure(y_label='', x_label='proportion', fontsize=fontsize)
+    ax1.set_xlim(0, 1.)
+    ax1.set_xticks([0, 0.2, 0.4, 0.6, 0.8])
+    # ax1.hist(YIPSwTTFPs, bins=20, density=1, histtype='step', facecolor='C1', alpha=1.0,
     #          cumulative=False, rwidth=0.8, linewidth=12, color='C1', label='Data')
-    # plt.hist(fts, bins=100, density=1, histtype='bar', facecolor='C1', alpha=1.0,
-    #          cumulative=True, rwidth=0.8, linewidth=12, color='C1', label='Data')
+    # ax1.hist(YIPSwTTFPs, bins=[0, 0.05, 0.1, 0.5, 1., max(YIPSwTTFPs)], density=0, histtype='bar', facecolor='C1', alpha=1.0,
+    #          cumulative=False, rwidth=0.8, linewidth=12, color='C1', label='Data', orientation='horizontal')
 
-    # plot_sorrt_optimization_on_yips(YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSFails,
-    #                                 all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs)
+    h = np.histogram(YIPSwTTFPs, bins=(0, 0.05, 0.1, 0.5, 1., max(YIPSwTTFPs)))
+    # xlab = ['$t\\leq 0.05$', '$0.05<t\\leq 0.1$', '$0.1<t\\leq 0.5$', '$0.5<t\\leq 1$', '$t>1$']
+    xlab = ['(0.00, 0.05]', '(0.05, 0.10]', '(0.10, 0.50]', '(0.50, 1.00]', '(1.00, 9.00]']
+    ax1.barh(range(5), 1.*h[0]/len(seqs), tick_label=xlab, height=0.6, color='g')
+    print 1.*h[0]/len(seqs)
+    for i, v in enumerate(1.*h[0]/len(seqs)):
+        ax1.text(v + 0.01, i, '{:.2f}'.format(v), color='k', fontdict={'size': fontsize})
+    # plt.xticks(np.arange(0.5, 3.5, 1), xlab)
 
-    plot_ose_and_yips_and_gau_comparison_length(
+    plot_sorrt_optimization_on_yips(
         YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSwLOtPs, YIPSFails,
-        OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEwLOtPs, OSEFails,
-        GAUwSTFPs, GAUwTTFPs, GAUwLOFPs, GAUwLOLPs, GAUwLOnPs, GAUwLOtPs, GAUFails,
         all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs)
 
-    plot_ose_and_yips_and_gau_comparison_times(
-        YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSwLOtPs, YIPSFails,
-        OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEwLOtPs, OSEFails,
-        GAUwSTFPs, GAUwTTFPs, GAUwLOFPs, GAUwLOLPs, GAUwLOnPs, GAUwLOtPs, GAUFails,
-        all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs)
+    # (OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEwLOtPs, OSEFails,
+    #  all_true_path_lens, all_optimal_path_lens) = extract_ose_summary(
+    #     dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv',
+    #     planning_folder='planned_paths/valid')
+    #
+    # (GAUwSTFPs, GAUwTTFPs, GAUwLOFPs, GAUwLOLPs, GAUwLOnPs, GAUwLOtPs, GAUFails,
+    #  all_true_path_lens, all_optimal_path_lens) = extract_ose_summary(
+    #     dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv',
+    #     planning_folder='planned_paths/valid', predictor='none')
+    #
+    # plot_ose_and_yips_and_gau_comparison_length(
+    #     YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSwLOtPs, YIPSFails,
+    #     OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEwLOtPs, OSEFails,
+    #     GAUwSTFPs, GAUwTTFPs, GAUwLOFPs, GAUwLOLPs, GAUwLOnPs, GAUwLOtPs, GAUFails,
+    #     all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs)
+    #
+    # plot_ose_and_yips_and_gau_comparison_times(
+    #     YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSwLOtPs, YIPSFails,
+    #     OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEwLOtPs, OSEFails,
+    #     GAUwSTFPs, GAUwTTFPs, GAUwLOFPs, GAUwLOLPs, GAUwLOnPs, GAUwLOtPs, GAUFails,
+    #     all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs)
 
     Debugger.breaker('')
 
@@ -702,7 +718,7 @@ if __name__ == '__main__':
         'rgous-svg16v1PC-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr1000_steps10[75, 95, 135]_wp0o0e+00)-checkpoint-200',
         'rgous-vgg19v2C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr75_steps10[75, 105, 135]_wp0o0e+00)-checkpoint-200']
 
-    planner = predictors[1]
+    planner = predictors[3]
     # print "Evaluate {}".format(planner)
     # extract_prediction_and_ground_truth(
     #     dataset_folder='../../DataMaker/dataset',
@@ -711,7 +727,7 @@ if __name__ == '__main__':
     #     folder='predictions/valid')
     # print('Evaluate Predictor: {}'.format(target))
 
-    for planner in predictors[1:2]:
+    for planner in [predictors[-1]]:
         calculate_performance(predictor=planner, dataset_folder='../../DataMaker/dataset',
                               inputs_filename='valid.csv', prediction_folder='predictions/valid',
                               planning_folder='planned_paths/valid')

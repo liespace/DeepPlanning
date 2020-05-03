@@ -357,7 +357,7 @@ def calculate_performance(predictor, dataset_folder, inputs_filename, prediction
     iov_threshold = 0.125*0
     rho = 5.0
     pred_path_lens, true_path_lens, optimal_path_lens, collision_check_results, iovs = [], [], [], [], []
-    for i, seq in enumerate([11036]):  # enumerate(seqs)
+    for i, seq in enumerate([10930, 13299, 5949]):  # enumerate(seqs)
         # print('Evaluate Scene: {} ({} of {})'.format(seq, i + 1, len(seqs)))
         inference = read_inference(prediction_folder, seq, predictor)
         label = read_label(dataset_folder, seq)
