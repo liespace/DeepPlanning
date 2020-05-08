@@ -375,7 +375,7 @@ def compare_inference_time(predictor, prediction_folder):
     # data.sort()
     data = np.array(data)
     fontsize = 40
-    ax1 = new_figure(y_label='Inference Time (IT)', x_label='', fontsize=fontsize)
+    ax1 = new_figure(y_label='Inference Time [ms]', x_label='Scene Number', fontsize=fontsize)
     ax1.set_yscale('log')
     # ax1.set_ylim([-0.05, 2.5])
     # ax1.set_xlim([0, 2750])
@@ -432,7 +432,7 @@ def extract_yips_summary(predictor, dataset_folder, inputs_filename, prediction_
                 SPIT += 1.
 
         wSTFPs.append(ft.min() if ft.shape[0] else 500)
-        wTTFPs.append(times[ft.min()] if ft.shape[0] else 5)
+        wTTFPs.append(times[ft.min()] if ft.shape[0] else 10.)
         wLOFPs.append(lens[ft.min()] if ft.shape[0] else 0.)
         wLOLPs.append(lens[-1] if ft.shape[0] else 0.)
         wLOnPs.append(lens[ft.min()+100 if ft.min()+100 < max_samples else max_samples-1] if ft.shape[0] else 0.)
@@ -508,7 +508,7 @@ def extract_ose_summary(dataset_folder, inputs_filename, planning_folder, predic
                 SPIT += 1.
 
         wSTFPs.append(ft.min() if ft.shape[0] else 500)
-        wTTFPs.append(times[ft.min()] if ft.shape[0] else 5)
+        wTTFPs.append(times[ft.min()] if ft.shape[0] else 10)
         wLOFPs.append(lens[ft.min()] if ft.shape[0] else 0.)
         wLOLPs.append(lens[-1] if ft.shape[0] else 0.)
         wLOnPs.append(lens[ft.min()+100 if ft.min()+100<max_samples else max_samples-1] if ft.shape[0] else 0.)
@@ -552,17 +552,17 @@ def plot_sorrt_optimization_on_yips(
     data.sort()
     data = np.array(data)
     fontsize = 36
-    ax1 = new_figure(y_label='$\\widehat{\\mathrm{LOP}}$', x_label='', fontsize=fontsize)
+    ax1 = new_figure(y_label='$\\widehat{\\mathrm{LOP}}$', x_label='Scene Number', fontsize=fontsize)
     ax1.set_ylim([-0.05, 2.5])
     ax1.set_xlim([0, 2750])
     ax1.set_yticks(np.arange(0., 2.5, 0.5))
     ax1.set_xticks([0, 1000, 2000])
-    ax1.plot(data[:, 0], lw=8, c='r', zorder=100, label='$\\mathrm{LOLP}$')
+    ax1.plot(data[:, 0], lw=8, c='r', zorder=100, label='Label')
     ax1.plot(data[:, 1], lw=6, c='b', zorder=50, label='$\\mathrm{LOP}_{\\mathrm{500}}$')
-    ax1.plot(data[:, 5], lw=6, c='C1', zorder=40, label='$\\mathrm{LOP}_{\\mathrm{TTFP+.1s}}$')
+    ax1.plot(data[:, 5], lw=6, c='C1', zorder=40, label='$\\mathrm{LOP}_{\\mathrm{TTFP.1}}$')
     ax1.plot(data[:, 4], lw=6, c='y', zorder=25, label='$\\mathrm{LOP}_{\\mathrm{TTFP}}$')
     # ax1.plot(data[:, 2])
-    ax1.plot(data[:, 3], lw=8, c='g', label='$\\mathrm{LOGP}$')
+    ax1.plot(data[:, 3], lw=8, c='g', label='Geodesic')
 
     fail_points = np.argwhere(data[:, 1] == 0)
     ax1.scatter(fail_points, [0.] * fail_points.shape[0], s=400, c='r')
@@ -603,26 +603,26 @@ def plot_ose_and_yips_and_gau_comparison_length(
                np.divide(YIPSwLOtPs, all_optimal_path_lens),
                np.divide(all_pred_path_lens, all_optimal_path_lens),
                np.divide(all_optimal_path_lens, all_optimal_path_lens),
-               np.divide(OSEwLOtPs, all_optimal_path_lens))
+               np.divide(GAUwLOtPs, all_optimal_path_lens))
     data.sort()
     data = np.array(data)
-    fontsize = 40
-    ax1 = new_figure(y_label='LOP/LOOP', x_label='', fontsize=fontsize)
-    ax1.set_ylim([-0.05, 2.5])
+    fontsize = 36
+    ax1 = new_figure(y_label='$\\widehat{\\mathrm{LOP}_{\\mathrm{TTFP.1}}}$', x_label='Scene Number', fontsize=fontsize)
+    ax1.set_ylim([-0.05, 2.7])
     ax1.set_xlim([0, 2750])
-    ax1.set_yticks(np.arange(0., 2.5, 0.5))
+    ax1.set_yticks(np.arange(0., 2.7, 0.5))
     ax1.set_xticks([0, 1000, 2000])
-    ax1.plot(data[:, 0], lw=6, c='r', zorder=100, label='Label')
-    ax1.plot(data[:, 1], lw=4, c='b', zorder=50, label='YIPS')
-    ax1.plot(data[:, 4], lw=4, c='C1', zorder=25, label='OSE')
+    ax1.plot(data[:, 0], lw=8, c='r', zorder=100, label='Label')
+    ax1.plot(data[:, 1], lw=6, c='b', zorder=50, label='YIPS+SO-RRT*')
+    ax1.plot(data[:, 4], lw=6, c='C1', zorder=25, label='GBS+Bi-RRT*')
     # ax1.plot(data[:, 2])
-    ax1.plot(data[:, 3], lw=6, c='g', label='Geodesic', zorder=70)
+    ax1.plot(data[:, 3], lw=8, c='g', label='Geodesic', zorder=70)
 
     fail_points = np.argwhere(data[:, 1] == 0)
     ax1.scatter(fail_points, [0.] * fail_points.shape[0], s=200, c='r')
     fail_points = np.argwhere(data[:, 4] == 0)
     ax1.scatter(fail_points, [0.] * fail_points.shape[0], s=200, c='r')
-    ax1.legend(prop={'size': fontsize}, loc=2, frameon=True, ncol=2).set_zorder(102)
+    ax1.legend(prop={'size': fontsize}, loc=2, frameon=True, ncol=2, framealpha=1).set_zorder(102)
     plt.draw()
     plt.show()
 
@@ -631,12 +631,16 @@ def plot_ose_and_yips_and_gau_comparison_times(
         YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSwLOtPs, YIPSFails,
         OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEwLOtPs, OSEFails,
         GAUwSTFPs, GAUwTTFPs, GAUwLOFPs, GAUwLOLPs, GAUwLOnPs, GAUwLOtPs, GAUFails,
-        all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs):
+        all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs,
+        yips_inference_time, ose_inference_time):
 
-    fontsize = 40
+    fontsize = 50
     # TTFP
     ax1 = new_figure(y_label='$\sqrt[4]{\mathrm{TTFP}}$', x_label='', fontsize=fontsize)
-    data = np.array(YIPSwTTFPs) - np.array(OSEwTTFPs)
+    # data = (np.array(YIPSwTTFPs) + np.arange(yips_inference_time)) - (np.array(OSEwTTFPs) + np.array(ose_inference_time))
+    # data = np.array(YIPSwTTFPs) - np.array(OSEwTTFPs)
+    data = (np.array(YIPSwTTFPs) + np.arange(yips_inference_time)) - np.array(GAUwTTFPs)
+    # data = np.array(YIPSwTTFPs) - np.array(GAUwTTFPs)
     data.sort()
     data = np.array(data)
     data = np.multiply(np.sign(data), np.power(np.abs(data), 1 / 4.))
@@ -648,9 +652,9 @@ def plot_ose_and_yips_and_gau_comparison_times(
     # data.sort()
     # data = np.array(data)
 
-    ax1.fill_between(range(data.shape[0]), data, [0] * data.shape[0], facecolors='C3')
-    ax1.plot(data, lw=4, c='b', zorder=50, label='YIPS - OSE')
-    ax1.hlines(0, 0, 2750, lw=6, color='g', zorder=200, linestyles='dashed')
+    ax1.fill_between(range(data.shape[0]), data, [0] * data.shape[0], facecolors='C2')
+    ax1.plot(data, lw=8, c='r', zorder=50, label='mTTFP$^\\Delta$')
+    ax1.hlines(0, 0, 2750, lw=8, color='b', zorder=200, linestyles='dashed')
     ax1.legend(prop={'size': fontsize}, loc=2, frameon=True, ncol=2)
     plt.draw()
     plt.show()
@@ -672,31 +676,32 @@ def calculate_performance(predictor, dataset_folder, inputs_filename, prediction
             predictor=predictor, dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv',
             prediction_folder='predictions/valid', planning_folder='planned_paths/valid', max_samples=500)
 
-    # plot_sorrt_optimization_on_yips(
-    #     YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSwLOtPs, YIPSFails,
-    #     all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs)
+    plot_sorrt_optimization_on_yips(
+        YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSwLOtPs, YIPSFails,
+        all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs)
 
-    (OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEwLOtPs, OSEFails,
-     all_true_path_lens, all_optimal_path_lens) = extract_ose_summary(
-        dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv',
-        planning_folder='planned_paths/valid')
-
-    (GAUwSTFPs, GAUwTTFPs, GAUwLOFPs, GAUwLOLPs, GAUwLOnPs, GAUwLOtPs, GAUFails,
-     all_true_path_lens, all_optimal_path_lens) = extract_ose_summary(
-        dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv',
-        planning_folder='planned_paths/valid', predictor='none')
-
+    # (OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEwLOtPs, OSEFails,
+    #  all_true_path_lens, all_optimal_path_lens) = extract_ose_summary(
+    #     dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv',
+    #     planning_folder='planned_paths/valid')
+    #
+    # (GAUwSTFPs, GAUwTTFPs, GAUwLOFPs, GAUwLOLPs, GAUwLOnPs, GAUwLOtPs, GAUFails,
+    #  all_true_path_lens, all_optimal_path_lens) = extract_ose_summary(
+    #     dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv',
+    #     planning_folder='planned_paths/valid', predictor='none')
+    #
     # plot_ose_and_yips_and_gau_comparison_length(
     #     YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSwLOtPs, YIPSFails,
     #     OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEwLOtPs, OSEFails,
     #     GAUwSTFPs, GAUwTTFPs, GAUwLOFPs, GAUwLOLPs, GAUwLOnPs, GAUwLOtPs, GAUFails,
     #     all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs)
-    #
+
     # plot_ose_and_yips_and_gau_comparison_times(
     #     YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSwLOtPs, YIPSFails,
     #     OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEwLOtPs, OSEFails,
     #     GAUwSTFPs, GAUwTTFPs, GAUwLOFPs, GAUwLOLPs, GAUwLOnPs, GAUwLOtPs, GAUFails,
-    #     all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs)
+    #     all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs,
+    #     yips_inference_time, ose_inference_time)
 
     Debugger.breaker('')
 
@@ -721,14 +726,14 @@ if __name__ == '__main__':
     #     folder='predictions/valid')
     # print('Evaluate Predictor: {}'.format(target))
 
-    for planner in [predictors[1]]:
+    for planner in [predictors[-1]]:
         calculate_performance(predictor=planner, dataset_folder='../../DataMaker/dataset',
                               inputs_filename='valid.csv', prediction_folder='predictions/valid',
                               planning_folder='planned_paths/valid')
-        # extract_yips_summary(predictor=planner, dataset_folder='../../DataMaker/dataset',
-        #                      inputs_filename='valid.csv', prediction_folder='predictions/valid',
-        #                      planning_folder='planned_paths/valid')
-        # extract_ose_summary(dataset_folder='../../DataMaker/dataset',
-        #                     inputs_filename='valid.csv', planning_folder='planned_paths/valid')
+        extract_yips_summary(predictor=planner, dataset_folder='../../DataMaker/dataset',
+                             inputs_filename='valid.csv', prediction_folder='predictions/valid',
+                             planning_folder='planned_paths/valid')
+        extract_ose_summary(dataset_folder='../../DataMaker/dataset',
+                            inputs_filename='valid.csv', planning_folder='planned_paths/valid')
 
     # compare_inference_time(predictor=planner, prediction_folder='predictions/valid')

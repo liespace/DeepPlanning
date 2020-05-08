@@ -192,7 +192,7 @@ def main(dataset_folder, inputs_filename, heuristic_name, folder):
     # iov == 0: [6823, 2384, 10902, 11210, 13500, 164]
     # iov <= 0.125: [13269, 1120, 2724, 9485]
     # iov > 0.125: [1000, 8157, 6025]
-    for i, seq in enumerate([10930, 10938, 13299, 13305, 5949, 5957]):  # enumerate(seqs)
+    for i, seq in enumerate([12320]):  # enumerate(seqs)
         print('Processing Scene: {} ({} of {})'.format(seq, i+1, len(seqs)))
         heuristic = read_heuristic(folder, seq, heuristic_name)
         source, target = read_task(dataset_folder+os.sep+'scenes', seq)
@@ -208,7 +208,7 @@ def main(dataset_folder, inputs_filename, heuristic_name, folder):
         predicted_path.append(list(path[-1]))
         predicted_path.insert(0, list(path[0]))
         print('Predicted Samples: {}'.format([list(p) for p in predicted_path[1:-1]]))
-        planned_path = np.loadtxt('./sorrt_evaluation/valid/{}/optimal/{}_path.txt'.format(heuristic_name, seq), delimiter=',')
+        planned_path = np.loadtxt('./sorrt_evaluation/task_fusion/{}/optimal/{}_path.txt'.format(heuristic_name, seq), delimiter=',')
         print('Planned Samples: {}'.format([list(p) for p in path[1:-1]]))
 
         set_plot()
@@ -236,8 +236,8 @@ if __name__ == '__main__':
 
     main(dataset_folder='../../DataMaker/dataset',  # ./Dataset
          inputs_filename='valid.csv',  # test.csv
-         heuristic_name=predictors[1],  # vgg19_comp_free200_check300, ose, none
-         folder='predictions/valid')  # test
+         heuristic_name=predictors[-3],  # vgg19_comp_free200_check300, ose, none
+         folder='predictions/task_fusion')  # test
 
     # 'rgous-vgg19v1C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr75_cosine150[]_wp0o0e+00)',
     # 'rgous-vgg16C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr70_steps10[70, 95, 110]_wp0o0e+00)',

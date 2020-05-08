@@ -190,7 +190,7 @@ def calculate_pdf_and_cdf(predictor):
     fontsize = 70
     error_number = 2
     x_e = errors[:, error_number]
-    error_labels = ['$X_e$', '$Y_e$', '$\\Phi_e$']
+    error_labels = ['$X_e$[m]', '$Y_e$[m]', '$\\Phi_e$[rad]']
     x_es = np.linspace(errors[:, error_number].min(), errors[:, error_number].max(), 300)
     bins = 40
     print('Skewness: {}, kurtosis: {}, K2&P-value: {}'.format(
@@ -206,6 +206,7 @@ def calculate_pdf_and_cdf(predictor):
              alpha=1.0, cumulative=False, rwidth=0.8, linewidth=12, color='C1', label='Data')
     ax1.plot(x_es, st.gaussian_kde(x_e).pdf(x_es), linewidth=12, color='C0', label='PDF')
     ax1.plot(x_es, st.rv_histogram(np.histogram(x_e, bins=bins)).cdf(x_es), linewidth=12, color='C3', label='CDF')
+    ax1.set_xticks([-3, -1.5, 0, 1.5, 3])
     ax1.legend(prop={'size': fontsize}, loc=2, frameon=False)
     plt.show()
 
@@ -260,9 +261,10 @@ def calculate_pp_plot(predictor):
     errors = np.array(errors)
 
     fontsize = 70
-    error_number = 2
+    error_number = 0
     x_e = errors[:, error_number]
-    error_labels = ['$X_e$', '$Y_e$', '$\\Phi_e$']
+    print 'Mean: {}, Var: {}'.format(np.mean(x_e), np.var(x_e))
+    error_labels = ['$X_e$[m]', '$Y_e$[m]', '$\\Phi_e$[rad]']
     ax = new_figure(fontsize=fontsize, y_label='', x_label='')
     res = st.probplot(x_e, plot=None)
     ax.set_title('')
@@ -273,6 +275,16 @@ def calculate_pp_plot(predictor):
     ax.plot([-3.6, 3.6], [-3.6 * k + b, k * 3.6 + b], linewidth=12, zorder=1000, color='r', label='Best-fit')
     ax.legend(prop={'size': fontsize}, loc=2)
     # ax.set_xticklabels([abs(x) for x in ax.get_xticks()])
+    ax1 = new_figure(fontsize=88, y_label='', x_label=error_labels[error_number])
+    ax1.set_xticks([-15, -10, -5, 0, 5, 10])
+    boxprops = dict(linewidth=14)
+    capprops = dict(linewidth=14)
+    medianprops = dict(linewidth=14)
+    meanpointprops = dict(marker='D', markeredgecolor='black', markerfacecolor='firebrick', markersize=40)
+    flierprops = dict(marker='o', markerfacecolor='green', markersize=30, linestyle='none')
+    ax1.boxplot(x_e, labels=[''], showmeans=True, meanline=False, vert=0,
+                boxprops=boxprops, medianprops=medianprops, meanprops=meanpointprops,
+                flierprops=flierprops, capprops=capprops, widths=0.6)
     plt.show()
 
 

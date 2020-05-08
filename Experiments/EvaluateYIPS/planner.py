@@ -303,19 +303,23 @@ class RRTStar(object):
 
         segments = []  # type: List[(float, float)]
         path = [tuple(node.state) for node in self.path()]
+        print path
         reduce(extract_segments, path)
         segments = zip(segments[:-1], segments[1:])  # type: List[(Tuple[float], Tuple[float])]
+        print segments
 
         discontinuities = []  # type: List[(Tuple[float], float)]
         segments.insert(0, tuple(self.root.state))
         reduce(extract_discontinuities, segments)
+        print discontinuities
         discontinuities.append(self.Configuration().from_state_node(self.gain))
-        discontinuities.insert(0, discontinuities.append(self.Configuration().from_state_node(self.root)))
+        discontinuities.insert(0, self.Configuration().from_state_node(self.root))
+        print discontinuities
 
         motions = []
         sectors = zip(discontinuities[:-1], discontinuities[1:])
         map(plan_motions, sectors)
-        motions.append(self.Configuration().from_state_node(self.gain))
+        motions.append(self.Configuration(state=self.gain.state, v=self.gain.v, k=motions[-1].k))
         return motions
 
     class Configuration(object):
@@ -327,6 +331,19 @@ class RRTStar(object):
             # type: (RRTStar.StateNode) -> RRTStar.Configuration
             self.state = state_node.state
             self.v, self.k = state_node.v, state_node.k
+            return self
+
+        def lcs2gcs(self, origin):
+            # type: (RRTStar.StateNode) -> RRTStar.StateNode
+            """
+            transform self's coordinate from local coordinate system (LCS) to global coordinate system (GCS)
+            :param origin: the tuple the coordinate (in GCS) of the origin of LCS.
+            """
+            xo, yo, ao = origin[0], origin[1], origin[2]
+            x = self.state[0] * np.cos(ao) - self.state[1] * np.sin(ao) + xo
+            y = self.state[0] * np.sin(ao) + self.state[1] * np.cos(ao) + yo
+            a = self.state[2] + ao
+            self.state = np.array((x, y, a))
             return self
 
     class StateNode(object):

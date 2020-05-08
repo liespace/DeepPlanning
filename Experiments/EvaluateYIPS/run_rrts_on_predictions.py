@@ -71,7 +71,7 @@ def read_yips(filepath, seq, folder='vgg19_comp_free200_check300', discriminatio
     yips = np.loadtxt('{}/{}/{}_inference.txt'.format(filepath, folder, seq), delimiter=',')
     yips = filter(lambda x: x[-1] > discrimination, yips)
     # yips = map(center2rear, yips)
-    yips = [((yip[0], yip[1], yip[2]), ((0.209, 2.606), (0.132, 1.907), (-0.022, 0.539))) for yip in yips]
+    yips = [((yip[0], yip[1], yip[2]), ((0.131, 2.442), (0.071, 1.780), (-0.029, 0.507))) for yip in yips]
     return yips
 
 
@@ -125,16 +125,26 @@ def main(dataset_folder, inputs_filename, heuristic_name, outputs_folder, output
     outputs_folder = outputs_folder + os.sep + outputs_tag + os.sep + heuristic_name
     rrt_star = BiRRTStar().set_vehicle(contour(), 0.3, 0.2)
     seqs = read_seqs(dataset_folder, inputs_filename)
-    for i, seq in enumerate(seqs):  # read_seqs(dataset_folder, inputs_filename)
+    for i, seq in enumerate([2384]):  # read_seqs(dataset_folder, inputs_filename)
         print('Processing Scene: {} ({} of {})'.format(seq, i+1, len(seqs)))
+        set_plot(True)
         heuristic = read_heuristic('./predictions'+os.sep+outputs_tag, seq, heuristic_name)
         source, target = read_task(dataset_folder+os.sep+'scenes', seq)
         start = center2rear(deepcopy(source)).gcs2lcs(source.state)
         goal = center2rear(deepcopy(target)).gcs2lcs(source.state)
         grid_ori = deepcopy(source).gcs2lcs(source.state)
         grid_map, grid_res = read_grid(dataset_folder+os.sep+'scenes', seq), 0.1
+        print heuristic[0][0]
+        Debugger.plot_grid(grid_map, grid_res)
+        Debugger.plot_heuristic(heuristic, alpha=1.0, r=5.0)
+        Debugger.plot_heuristic([(heuristic[0][0], ((0.0, 2.), (0.0, 2.0), (0.0, 0.524)))], color='C0', r=4.0, alpha=1.0)
+        Debugger.plot_heuristic([(heuristic[0][0], ((0.0, 4.), (0.0, 4.0), (0.0, 1.047)))], color='C1', r=3.0,
+                                alpha=1.0)
+        Debugger.plot_heuristic([(heuristic[0][0], ((0.0, 1.), (0.0, 1.0), (0.0, 0.262)))], color='C3', r=6.0,
+                                alpha=1.0)
         rrt_star.debug = debug
         Debugger.plan_hist = []
+        Debugger.breaker(' ')
 
         past = time.time()
         for r in range(rounds):
@@ -147,9 +157,9 @@ def main(dataset_folder, inputs_filename, heuristic_name, outputs_folder, output
 
 
 if __name__ == '__main__':
-    # yips = 'rgous-vgg16C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr70_steps10[70, 95, 110]_wp0o0e+00)-checkpoint-200'
+    yips = 'rgous-vgg16C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr70_steps10[70, 95, 110]_wp0o0e+00)-checkpoint-200'
     # yips = 'rgous-vgg19v2C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr75_steps10[75, 105, 135]_wp0o0e+00)-checkpoint-200'
-    yips = 'rgous-res50PC-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr30_steps10[30, 140, 170]_wp0o0e+00)-checkpoint-200'
+    # yips = 'rgous-res50PC-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr30_steps10[30, 140, 170]_wp0o0e+00)-checkpoint-200'
     # yips = 'rgous-svg16C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr1000_steps10[70, 95, 110]_wp0o0e+00)-checkpoint-150'
     main(dataset_folder='../../DataMaker/dataset',  # ./Dataset
          inputs_filename='valid.csv',  # test.csv

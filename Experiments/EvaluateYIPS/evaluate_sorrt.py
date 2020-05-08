@@ -144,7 +144,12 @@ def main(seqs, dataset_folder, inputs_filename, heuristic_name, version,
             rrt_star.planning(times, repeat=100, optimize=optimize, debug=debug)
             if rrt_star.x_best.fu < np.inf:
                 path = rrt_star.path()
+                taj = rrt_star.trajectory(a_cc=3, v_max=10, res=0.2)
                 np.savetxt('{}/{}_path.txt'.format(outputs_folder, seq), [p.state for p in path], delimiter=',')
+                taj = [t.lcs2gcs(source.state) for t in taj]
+                motion = [(t.state[0], t.state[1], t.state[2], t.k, t.v) for t in taj]
+                print motion
+                np.savetxt('{}/{}_trajectory.txt'.format(outputs_folder, seq), motion, delimiter=',')
         print ('    Runtime: {}'.format(time.time() - past))
 
         Debugger().save_hist(outputs_folder + os.sep + str(seq) + '_summary.txt')
@@ -233,7 +238,7 @@ def calculate_performance(seqs, predictor, dataset_folder, inputs_filename, pred
         optimal_length = calculate_path_length([start, goal], rho=rho)
 
         fontsize = 70
-        ax1 = new_figure(y_label='mLOP/LOGP', x_label='time[s]', fontsize=fontsize)
+        ax1 = new_figure(y_label='$\widehat{\mathrm{mLOP}}$', x_label='time[s]', fontsize=fontsize)
 
         labels = ['Optimal', 'Greedy', 'Normal']
         colors = ['r', 'b', 'g']
@@ -249,12 +254,12 @@ def calculate_performance(seqs, predictor, dataset_folder, inputs_filename, pred
             ax1.plot(times, normalized_lens, lw=12, c=colors[j], zorder=100 - j, label=labels[j])
             print true_length, optimal_length
 
-        # ax1.set_ylim([0., 1.1])
-        # ax1.set_yticks([0.5, 1.0])
-        ax1.set_xlim([0, .53])
-        # ax1.set_xticks([0, .4, 0.8])
-        ax1.hlines(true_length/optimal_length, 0, 2, lw=12, color='b', zorder=20, linestyles='dashed', label='Label')
-        ax1.hlines(optimal_length / optimal_length, 0, 2, lw=12, color='r', zorder=15, linestyles='dashed', label='Geodesic')
+        ax1.set_ylim([0.0, 1.7])
+        ax1.set_yticks([0.5, 1.0, 1.5])
+        ax1.set_xlim([0, .5])
+        ax1.set_xticks([0, .2, 0.4])
+        ax1.hlines(true_length/optimal_length, 0, 2, lw=12, color='b', zorder=20, linestyles='dotted', label='Label')
+        ax1.hlines(optimal_length / optimal_length, 0, 2, lw=12, color='C1', zorder=15, linestyles='-', label='Geodesic')
         ax1.legend(prop={'size': fontsize-12}, loc=4, frameon=True, ncol=2, handlelength=1.5)
         plt.draw()
         plt.show()
@@ -263,19 +268,21 @@ def calculate_performance(seqs, predictor, dataset_folder, inputs_filename, pred
 
 if __name__ == '__main__':
     yips = 'rgous-vgg16C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr70_steps10[70, 95, 110]_wp0o0e+00)-checkpoint-200'
+    # yips = 'rgous-svg16C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr1000_steps10[70, 95, 110]_wp0o0e+00)-checkpoint-150'
 
     # seqs = [2384, 13269, 11036, 13590, 1095, 7412, 10930, 10955, 6045], 6025
     # [2384, 13269, 11036, 10955, 6045, 1000]
     # [2384, 13269, 6025, 10955, 6045, 1000]
-    sequences = [11036]
+    # [4960, 3520, 8320, 12320]
+    sequences = [6025]
     # main(seqs=sequences,
     #      dataset_folder='../../DataMaker/dataset',  # ./Dataset
     #      inputs_filename='valid.csv',  # test.csv
     #      heuristic_name=yips,  # ose, none, yips
     #      outputs_folder='./sorrt_evaluation',
-    #      outputs_tag='valid',
-    #      version='normal',
-    #      times=500, rounds=100, debug=False, optimize=True)  # test
+    #      outputs_tag='task_fusion',
+    #      version='optimal',
+    #      times=500, rounds=1, debug=False, optimize=True)  # test
 
     calculate_performance(seqs=sequences,
                           predictor=yips, dataset_folder='../../DataMaker/dataset',

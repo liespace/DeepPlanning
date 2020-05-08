@@ -143,15 +143,16 @@ class Debugger(object):
         return actors
 
     @staticmethod
-    def plot_heuristic(heuristic, color=(0.5, 0.8, 0.5)):
+    def plot_heuristic(heuristic, color=(0.5, 0.8, 0.5), r=1.0, alpha=0.6):
         actors = []
         for item in heuristic:
             state, biasing = item
-            cir = Ellipse(xy=(state[0], state[1]), width=biasing[0][1]*2*2,
-                          height=biasing[1][1]*2*2, color=color, alpha=0.6, fill=False)
-            arr = Wedge(center=(state[0], state[1]), r=1.0, theta1=np.degrees(state[2] - biasing[2][1]*2),
-                        theta2=np.degrees(state[2] + biasing[2][1]*2), fill=False, color=color)
-            actors.append([plt.gca().add_patch(cir), plt.gca().add_patch(arr)])
+            # cir = Ellipse(xy=(state[0], state[1]), width=biasing[0][1]*2*2,
+            #               height=biasing[1][1]*2*2, color=color, alpha=alpha, fill=False, linewidth=8)
+            arr = Wedge(center=(state[0], state[1]), r=r, theta1=np.degrees(state[2] - biasing[2][1]*2),
+                        theta2=np.degrees(state[2] + biasing[2][1]*2), fill=False, color=color, linewidth=8)
+            # actors.append([plt.gca().add_patch(cir), plt.gca().add_patch(arr)])
+            actors.append([plt.gca().add_patch(arr)])
         plt.draw()
         return actors
 
