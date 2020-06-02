@@ -388,6 +388,9 @@ def compare_inference_time(predictor, prediction_folder):
 
 
 def extract_yips_summary(predictor, dataset_folder, inputs_filename, prediction_folder, planning_folder, max_samples=500):
+    summary = read_summary(prediction_folder, predictor)
+    infer_times = [(row[0].split('_')[0], float(row[1])) for row in summary]
+    infer_times.sort()
     seqs = read_seqs(dataset_folder, inputs_filename)
     seqs.sort()
     threshold, rho = 0.5, 5.0
@@ -428,7 +431,7 @@ def extract_yips_summary(predictor, dataset_folder, inputs_filename, prediction_
             Fails.append(seq)
 
         if ft.shape[0] > 0:
-            if times[ft.min()] < .1:
+            if times[ft.min()] + infer_times[i][1] < .1:
                 SPIT += 1.
 
         wSTFPs.append(ft.min() if ft.shape[0] else 500)
@@ -468,6 +471,9 @@ def extract_yips_summary(predictor, dataset_folder, inputs_filename, prediction_
 
 
 def extract_ose_summary(dataset_folder, inputs_filename, planning_folder, predictor='ose', max_samples=500):
+    if predictor == 'ose':
+        summary = read_ose_summary('predictions/valid')
+        inference_times = summary[:, 0]
     seqs = read_seqs(dataset_folder, inputs_filename)
     seqs.sort()
     threshold, rho = 0.5, 5.0
@@ -504,8 +510,12 @@ def extract_ose_summary(dataset_folder, inputs_filename, planning_folder, predic
             Fails.append(seq)
 
         if ft.shape[0] > 0:
-            if times[ft.min()] < .1:
-                SPIT += 1.
+            if predictor == 'ose':
+                if times[ft.min()] + inference_times[i] < .1:
+                    SPIT += 1.
+            else:
+                if times[ft.min()] < .1:
+                    SPIT += 1.
 
         wSTFPs.append(ft.min() if ft.shape[0] else 500)
         wTTFPs.append(times[ft.min()] if ft.shape[0] else 10)
@@ -587,7 +597,7 @@ def plot_sorrt_optimization_on_yips(
     ax2.barh(range(5), 1. * h[0] / len(seqs), tick_label=xlab, height=0.6, color='g')
     print 1. * h[0] / len(seqs)
     for i, v in enumerate(1. * h[0] / len(seqs)):
-        ax2.text(v + 0.01, i, '{:.2f}'.format(v), color='k', fontdict={'size': fontsize})
+        ax2.text(v + 0.01, i, '{:.5f}'.format(v), color='k', fontdict={'size': fontsize})
 
     plt.draw()
     plt.show()
@@ -680,15 +690,15 @@ def calculate_performance(predictor, dataset_folder, inputs_filename, prediction
         YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSwLOtPs, YIPSFails,
         all_pred_path_lens, all_true_path_lens, all_optimal_path_lens, seqs)
 
-    # (OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEwLOtPs, OSEFails,
-    #  all_true_path_lens, all_optimal_path_lens) = extract_ose_summary(
-    #     dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv',
-    #     planning_folder='planned_paths/valid')
-    #
-    # (GAUwSTFPs, GAUwTTFPs, GAUwLOFPs, GAUwLOLPs, GAUwLOnPs, GAUwLOtPs, GAUFails,
-    #  all_true_path_lens, all_optimal_path_lens) = extract_ose_summary(
-    #     dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv',
-    #     planning_folder='planned_paths/valid', predictor='none')
+    (OSEwSTFPs, OSEwTTFPs, OSEwLOFPs, OSEwLOLPs, OSEwLOnPs, OSEwLOtPs, OSEFails,
+     all_true_path_lens, all_optimal_path_lens) = extract_ose_summary(
+        dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv',
+        planning_folder='planned_paths/valid')
+
+    (GAUwSTFPs, GAUwTTFPs, GAUwLOFPs, GAUwLOLPs, GAUwLOnPs, GAUwLOtPs, GAUFails,
+     all_true_path_lens, all_optimal_path_lens) = extract_ose_summary(
+        dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv',
+        planning_folder='planned_paths/valid', predictor='none')
     #
     # plot_ose_and_yips_and_gau_comparison_length(
     #     YIPSwSTFPs, YIPSwTTFPs, YIPSwLOFPs, YIPSwLOLPs, YIPSwLOnPs, YIPSwLOtPs, YIPSFails,
@@ -717,7 +727,7 @@ if __name__ == '__main__':
         'rgous-svg16v1PC-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr1000_steps10[75, 95, 135]_wp0o0e+00)-checkpoint-200',
         'rgous-vgg19v2C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr75_steps10[75, 105, 135]_wp0o0e+00)-checkpoint-200']
 
-    planner = predictors[3]
+    # planner = predictors[3]
     # print "Evaluate {}".format(planner)
     # extract_prediction_and_ground_truth(
     #     dataset_folder='../../DataMaker/dataset',
@@ -730,10 +740,10 @@ if __name__ == '__main__':
         calculate_performance(predictor=planner, dataset_folder='../../DataMaker/dataset',
                               inputs_filename='valid.csv', prediction_folder='predictions/valid',
                               planning_folder='planned_paths/valid')
-        extract_yips_summary(predictor=planner, dataset_folder='../../DataMaker/dataset',
-                             inputs_filename='valid.csv', prediction_folder='predictions/valid',
-                             planning_folder='planned_paths/valid')
-        extract_ose_summary(dataset_folder='../../DataMaker/dataset',
-                            inputs_filename='valid.csv', planning_folder='planned_paths/valid')
+        # extract_yips_summary(predictor=planner, dataset_folder='../../DataMaker/dataset',
+        #                      inputs_filename='valid.csv', prediction_folder='predictions/valid',
+        #                      planning_folder='planned_paths/valid')
+        # extract_ose_summary(dataset_folder='../../DataMaker/dataset',
+        #                     inputs_filename='valid.csv', planning_folder='planned_paths/valid')
 
     # compare_inference_time(predictor=planner, prediction_folder='predictions/valid')
