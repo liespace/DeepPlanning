@@ -7,11 +7,8 @@ import cv2
 import os
 import re
 import reeds_shepp
-from matplotlib.patches import Polygon
-from planner import RRTStar, BiRRTStar
-from debugger import Debugger
-import logging
-
+from RRTs.planner import RRTStar, BiRRTStar
+from RRTs.debugger import Debugger
 
 vehicle_wheelbase = 2.850
 vehicle_length = 4.925 + 0.2
@@ -268,19 +265,14 @@ def calculate_performance(seqs, predictor, dataset_folder, inputs_filename, pred
 
 if __name__ == '__main__':
     yips = 'rgous-vgg16C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr70_steps10[70, 95, 110]_wp0o0e+00)-checkpoint-200'
-    # yips = 'rgous-svg16C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr1000_steps10[70, 95, 110]_wp0o0e+00)-checkpoint-150'
+    sequences = [2384, 13269, 6025, 10955, 6045, 1000]
 
-    # seqs = [2384, 13269, 11036, 13590, 1095, 7412, 10930, 10955, 6045], 6025
-    # [2384, 13269, 11036, 10955, 6045, 1000]
-    # [2384, 13269, 6025, 10955, 6045, 1000]
-    # [4960, 3520, 8320, 12320]
-    sequences = [6025]
     # main(seqs=sequences,
-    #      dataset_folder='../../DataMaker/dataset',  # ./Dataset
-    #      inputs_filename='valid.csv',  # test.csv
+    #      dataset_folder='../../DataMaker/dataset',
+    #      inputs_filename='valid.csv',
     #      heuristic_name=yips,  # ose, none, yips
     #      outputs_folder='./sorrt_evaluation',
-    #      outputs_tag='task_fusion',
+    #      outputs_tag='valid',
     #      version='optimal',
     #      times=500, rounds=1, debug=False, optimize=True)  # test
 

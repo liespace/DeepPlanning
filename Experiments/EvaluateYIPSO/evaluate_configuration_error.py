@@ -1,20 +1,9 @@
 #!/usr/bin/env python
-import time
-from copy import deepcopy
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 import os
 import re
-from matplotlib.patches import Polygon
-from rrts.planner import RRTStar, BiRRTStar
-from rrts.debugger import Debugger
-import reeds_shepp
-import logging
-from sklearn.metrics import average_precision_score
-from sklearn.metrics import precision_recall_curve
-from sklearn.metrics import precision_score, recall_score
-from matplotlib.ticker import FormatStrFormatter
 import scipy.stats as st
 
 
@@ -152,16 +141,9 @@ def extract_prediction_and_ground_truth(dataset_folder, inputs_filename, predict
         ground_truth.extend(list(label[:, -1]))
         inferences.extend([list(p) for p in inference])
         labels.extend([list(p) for p in label])
-        # print('Inference:\n {}'.format(inference))
-        # print('Label:\n {}'.format(label))
-        # break
-    # print('Prediction:\n {}'.format(prediction))
-    # print('GroundTruth:\n {}'.format(ground_truth))
     print('NumberOfSamples: {}/{}'.format(sum(ground_truth), len(ground_truth)))
-    # np.savetxt('necessity_prediction.txt', prediction, delimiter=',')
-    # np.savetxt('necessity_ground_truth.txt', ground_truth, delimiter=',')
-    np.savetxt('inferences-{}.txt'.format(predictor), inferences, delimiter=',')
-    np.savetxt('labels.txt', labels, delimiter=',')
+    np.savetxt('yips_evaluation/inferences-{}.txt'.format(predictor), inferences, delimiter=',')
+    np.savetxt('yips_evaluation/labels.txt', labels, delimiter=',')
 
 
 def new_figure(y_label='Precision[-]', x_label='Recall[-]', fontsize=55):
@@ -174,8 +156,8 @@ def new_figure(y_label='Precision[-]', x_label='Recall[-]', fontsize=55):
 
 
 def calculate_pdf_and_cdf(predictor):
-    inferences = np.loadtxt('inferences-{}.txt'.format(predictor), delimiter=',')
-    labels = np.loadtxt('labels.txt', delimiter=',')
+    inferences = np.loadtxt('yips_evaluation/inferences-{}.txt'.format(predictor), delimiter=',')
+    labels = np.loadtxt('yips_evaluation/labels.txt', delimiter=',')
     errors = []
     print(inferences.shape)
     for i in range(inferences.shape[0]):
@@ -223,8 +205,8 @@ def calculate_pdf_and_cdf2(targets):
     targets.reverse()
     print targets
     for j, tar in enumerate(targets):
-        inferences = np.loadtxt('inferences-{}.txt'.format(tar), delimiter=',')
-        labels = np.loadtxt('labels.txt', delimiter=',')
+        inferences = np.loadtxt('yips_evaluation/inferences-{}.txt'.format(tar), delimiter=',')
+        labels = np.loadtxt('yips_evaluation/labels.txt', delimiter=',')
         errors = []
         for i in range(inferences.shape[0]):
             infer, label = inferences[i], labels[i]
@@ -249,8 +231,8 @@ def calculate_pdf_and_cdf2(targets):
 
 
 def calculate_pp_plot(predictor):
-    inferences = np.loadtxt('inferences-{}.txt'.format(predictor), delimiter=',')
-    labels = np.loadtxt('labels.txt', delimiter=',')
+    inferences = np.loadtxt('yips_evaluation/inferences-{}.txt'.format(predictor), delimiter=',')
+    labels = np.loadtxt('yips_evaluation/labels.txt', delimiter=',')
     errors = []
     for i in range(inferences.shape[0]):
         infer, label = inferences[i], labels[i]
@@ -288,75 +270,21 @@ def calculate_pp_plot(predictor):
     plt.show()
 
 
-def calculate_pp_plot_without_free_large_error(predictor, dataset_folder, inputs_filename):
-    inferences = np.loadtxt('inferences-{}.txt'.format(predictor), delimiter=',')
-    labels = np.loadtxt('labels.txt', delimiter=',')
-    ious = calculate_iou_with_obstacle(inferences, dataset_folder, inputs_filename)
-    ious = np.array(ious)
-    ious = (ious <= 0.125 * 0)
-    errors = []
-    for i in range(inferences.shape[0]):
-        if ious[i]:
-            continue
-        infer, label = inferences[i], labels[i]
-        if label[-1] == 1:
-            error = label[:-1] - infer[:-1]
-            error[-1] = (error[-1] + np.pi) % (2 * np.pi) - np.pi
-            errors.append(list(error))
-    errors = np.array(errors)
-
-    fontsize = 70
-    error_number = 0
-    x_e = errors[:, error_number]
-    error_labels = ['$X_e$', '$Y_e$', '$\\Phi_e$']
-    ax = new_figure(fontsize=fontsize, y_label=error_labels[error_number], x_label='')
-    res = st.probplot(x_e, plot=None)
-    ax.set_title('')
-    ax.set_xlabel('', fontsize=fontsize)
-    ax.set_ylabel(error_labels[error_number], fontsize=fontsize)
-    ax.set_xticks([-2, 0, 2])
-    k, b = res[-1][0], res[-1][1]
-    print 'Sigma: {}, Mu: {}'.format(k, b)
-
-    # errors_t = []
-    # for i in range(inferences.shape[0]):
-    #     infer, label = inferences[i], labels[i]
-    #     if label[-1] == 1:
-    #         error_t = label[:-1] - infer[:-1]
-    #         if error_t[error_number] > 2*k and ious[i]:
-    #             continue
-    #         error_t[-1] = (error_t[-1] + np.pi) % (2 * np.pi) - np.pi
-    #         errors_t.append(list(error_t))
-    # errors_t = np.array(errors_t)
-
-    ax.scatter(res[0][0], res[0][1], s=500, c='b', zorder=100, label='Data')
-    ax.plot([-3.6, 3.6], [-3.6 * k + b, k * 3.6 + b], linewidth=12, zorder=1000, color='r', label='Best-fit')
-    ax.legend(prop={'size': fontsize}, loc=2)
-    # ax.set_xticklabels([abs(x) for x in ax.get_xticks()])
-    plt.show()
-
-
 if __name__ == '__main__':
     plt.rcParams["font.family"] = "Times New Roman"
     predictors = [
-        #'rgous-vgg19v1C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr75_cosine150[]_wp0o0e+00)-checkpoint-150',
-        #'rgous-vgg19C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr75_cosine200[])-checkpoint-200',
-        #'rgous-svg16v1PC-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr1000_steps10[75, 95, 135]_wp0o0e+00)-checkpoint-200',
         'rgous-vgg16C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr70_steps10[70, 95, 110]_wp0o0e+00)-checkpoint-200',
         'rgous-res50PC-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr30_steps10[30, 140, 170]_wp0o0e+00)-checkpoint-200',
         'rgous-svg16C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr1000_steps10[70, 95, 110]_wp0o0e+00)-checkpoint-150',
-        'rgous-vgg19v2C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr75_steps10[75, 105, 135]_wp0o0e+00)-checkpoint-200'
-    ]
+        'rgous-vgg19v2C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr75_steps10[75, 105, 135]_wp0o0e+00)-checkpoint-200']
+    yips = predictors[-1]
 
-    target = predictors[-1]
-    print "Evaluate {}".format(target)
-    # extract_prediction_and_ground_truth(
-    #     dataset_folder='../../DataMaker/dataset',
-    #     inputs_filename='valid.csv',
-    #     predictor=target,
-    #     folder='predictions/valid')
-    # print('Evaluate Predictor: {}'.format(target))
-    # calculate_pdf_and_cdf(predictor=target)
-    # calculate_pdf_and_cdf2(targets=predictors)
-    calculate_pp_plot(target)
-    # calculate_pp_plot_without_free_large_error(target, dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv')
+    for predictor in predictors:
+        extract_prediction_and_ground_truth(
+            dataset_folder='../../DataMaker/dataset',
+            inputs_filename='valid.csv',
+            predictor=predictor,
+            folder='predictions/valid')
+    calculate_pdf_and_cdf(predictor=yips)
+    calculate_pdf_and_cdf2(targets=predictors)
+    calculate_pp_plot(yips)

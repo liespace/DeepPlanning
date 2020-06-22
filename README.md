@@ -108,17 +108,19 @@ $ export CUDA_VISIBLE_DEVICES=0
 $ cd /home/trouble/DeepPlanning/YIPS && python predict.py
 ```
 
+### YIPS调参和设计验证
 
+代码包含在***DeepPlanning/Experiments/EvaluateYIPS***文件夹下，部分需要使用matplotlib库进行可视化，所以不适合在Docker容器中运行，建议在本地运行。
 
-### YIPS性能评估
-
-评估代码包含在***DeepPlanning/Experiments/EvaluateYIPS***文件夹下，部分需要使用matplotlib库进行可视化，所以不适合在Docker容器中运行，建议在本地运行。
-
-
-
-## SO-RRT*路径优化算法
-
-算法代码包含在文件夹 ***DeepPlanning/YIPS/pyRRT*** 下，详见文件夹下的Readme文档。
+- 不同 $\lambda_r$ 超参数：***compare_lambda/databorad.py***
+- 不同学习率：***compare_lr/databorad.py***
+- 主干网络比较：***compare_backbone/databorad.py***
+- Fine-tuning方法验证：***compare_fine_tuning/databorad.py***
+- 不同输入编码形式：***compare_inputs/databorad.py***
+- 不同学习率调整方法：***compare_learning_method/databorad.py***
+- 不同主干网络解冻策略： ***compare_saddle/databorad.py***
+- 不同损失函数对比： ***compare_loss_function/databorad.py***
+- 任务融合验证： ***compare_task_fusion/databorad.py***
 
 
 
@@ -128,7 +130,9 @@ $ cd /home/trouble/DeepPlanning/YIPS && python predict.py
 
 ### 和OSE启发的Bi-RRT\*和GBS启发的Bi-RRT\*进行对比
 
-> OSE启发式的代码包含在文件夹***DeepPlanning/YIPS/pySEA*** 下，详见文件夹下的Readme文档。
+> OSE启发式的代码包含在文件夹 ***DeepPlanning/Experiments/EvaluateYIPSO/OSE*** 下
+>
+> RRT\*相关算法的代码包含在文件夹 ***DeepPlanning/Experiments/EvaluateYIPSO/RRTs*** 下。
 
 进入上述生成的**deep-planning**容器:
 
@@ -149,3 +153,27 @@ $ cd /home/trouble/DeepPlanning/Experiments/EvaluateYIPSO && python evaluate_pla
 ```
 
 更多的评估代码包含在***DeepPlanning/Experiments/EvaluateYIPSO***文件夹下，部分需要使用matplotlib库进行可视化，所以不适合在Docker容器中运行，建议在本地运行。
+
+- 在验证集上运行OSE启发的Bi-RRT*：*
+  1. 运行OSE启发：***run_ose_on_dataset.py***
+  2. 运行Bi-RRT：***run_birrts_on_ose.py***
+- 在验证集上运行GBS启发的Bi-RRT：***run_gbs_plus_birrt_on_dataset.py***
+- 在验证集上运行SO-RRT\*：***run_sorrt_on_yips.py***
+- 评估YIPS网络的规划性能：***evaluate_yips_planning.py***
+- 评估SO-RRT\*的不同父节点搜素方式：***evaluate_sorrt.py***
+- 评估YIPS网络的采样点分类性能：***evaluate_samples_classification.py***
+- YIPS网络配置预测泛化误差建模：***evaluate_configuration_error.py***
+- 将YIPS网络的预测与便签路径可视化对比：***compare_predictions_and_labels.py***
+- 将SO-RRT\*优化后的路径与便签路径可视化对比：***compare_sorrrt_and_labels.py***
+
+
+
+## 数据集生成
+
+代码包含在文件夹 ***DataMaker*** 中，详见其中的Readme文档。
+
+
+
+## 在CARLA模拟器中运行
+
+代码包含在文件夹 ***Parking_in_CARLA_Simulator*** 中，详见其中的Readme文档。

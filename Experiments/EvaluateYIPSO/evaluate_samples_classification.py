@@ -83,8 +83,8 @@ def calculate_iou_with_obstacle(inferences, dataset_folder, inputs_filename):
 
 
 def calculate_iou_pr_and_ap():
-    inferences = np.loadtxt('inferences.txt', delimiter=',')
-    labels = np.loadtxt('labels.txt', delimiter=',')
+    inferences = np.loadtxt('yips_evaluation/inferences.txt', delimiter=',')
+    labels = np.loadtxt('yips_evaluation/labels.txt', delimiter=',')
     ground_truth = list(labels[:, -1])
     prediction = inferences[:, -1]
     threshold = np.unique(prediction.round(8))
@@ -159,8 +159,8 @@ def extract_prediction_and_ground_truth(dataset_folder, inputs_filename, predict
     print('NumberOfSamples: {}/{}'.format(sum(ground_truth), len(ground_truth)))
     # np.savetxt('necessity_prediction.txt', prediction, delimiter=',')
     # np.savetxt('necessity_ground_truth.txt', ground_truth, delimiter=',')
-    np.savetxt('inferences-{}.txt'.format(predictor), inferences, delimiter=',')
-    np.savetxt('labels.txt', labels, delimiter=',')
+    np.savetxt('yips_evaluation/inferences-{}.txt'.format(predictor), inferences, delimiter=',')
+    np.savetxt('yips_evaluation/labels.txt', labels, delimiter=',')
 
 
 def new_figure(y_label='Precision[-]', x_label='Recall[-]', fontsize=55):
@@ -173,8 +173,8 @@ def new_figure(y_label='Precision[-]', x_label='Recall[-]', fontsize=55):
 
 
 def calculate_pr_and_ap(predictor):
-    inferences = np.loadtxt('inferences-{}.txt'.format(predictor), delimiter=',')
-    labels = np.loadtxt('labels.txt', delimiter=',')
+    inferences = np.loadtxt('yips_evaluation/inferences-{}.txt'.format(predictor), delimiter=',')
+    labels = np.loadtxt('yips_evaluation/labels.txt', delimiter=',')
     ground_truth = list(labels[:, -1])
     prediction = list(inferences[:, -1])
     print sum(ground_truth), len(ground_truth)
@@ -234,8 +234,8 @@ def calculate_pr_and_ap(predictor):
 
 
 def calculate_length_pr_and_ap(predictor, dataset_folder, inputs_filename):
-    inferences = np.loadtxt('inferences-{}.txt'.format(predictor), delimiter=',')
-    labels = np.loadtxt('labels.txt', delimiter=',')
+    inferences = np.loadtxt('yips_evaluation/inferences-{}.txt'.format(predictor), delimiter=',')
+    labels = np.loadtxt('yips_evaluation/labels.txt', delimiter=',')
     ground_truth = labels[:, -1]
     prediction = inferences[:, -1]
     ious = calculate_iou_with_obstacle(inferences, dataset_folder, inputs_filename)
@@ -305,8 +305,8 @@ def calculate_length_pr_and_ap(predictor, dataset_folder, inputs_filename):
 
 
 def calculate_free_pr_and_ap(predictor, dataset_folder, inputs_filename):
-    inferences = np.loadtxt('inferences-{}.txt'.format(predictor), delimiter=',')
-    labels = np.loadtxt('labels.txt', delimiter=',')
+    inferences = np.loadtxt('yips_evaluation/inferences-{}.txt'.format(predictor), delimiter=',')
+    labels = np.loadtxt('yips_evaluation/labels.txt', delimiter=',')
     ground_truth = list(labels[:, -1])
     prediction = list(inferences[:, -1])
     ious = calculate_iou_with_obstacle(inferences, dataset_folder, inputs_filename)
@@ -376,22 +376,18 @@ def calculate_free_pr_and_ap(predictor, dataset_folder, inputs_filename):
 if __name__ == '__main__':
     plt.rcParams["font.family"] = "Times New Roman"
     predictors = [
-        'rgous-vgg19v1C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr75_cosine150[]_wp0o0e+00)-checkpoint-150',
         'rgous-vgg16C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr70_steps10[70, 95, 110]_wp0o0e+00)-checkpoint-200',
-        'rgous-vgg19C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr75_cosine200[])-checkpoint-200',
         'rgous-res50PC-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr30_steps10[30, 140, 170]_wp0o0e+00)-checkpoint-200',
         'rgous-svg16C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr1000_steps10[70, 95, 110]_wp0o0e+00)-checkpoint-150',
-        'rgous-svg16v1PC-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr1000_steps10[75, 95, 135]_wp0o0e+00)-checkpoint-200',
         'rgous-vgg19v2C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr75_steps10[75, 105, 135]_wp0o0e+00)-checkpoint-200']
 
-    target = predictors[2]
-    print "Evaluate {}".format(target)
+    yips = predictors[-1]
+    print "Evaluate {}".format(yips)
     # extract_prediction_and_ground_truth(
     #     dataset_folder='../../DataMaker/dataset',
     #     inputs_filename='valid.csv',
-    #     predictor=target,
+    #     predictor=yips,
     #     folder='predictions/valid')
-    # print('Evaluate Predictor: {}'.format(target))
-    # calculate_pr_and_ap(predictor=target)
-    # calculate_free_pr_and_ap(predictor=target, dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv')
-    calculate_length_pr_and_ap(predictor=target, dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv')
+    calculate_pr_and_ap(predictor=yips)
+    calculate_free_pr_and_ap(predictor=yips, dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv')
+    calculate_length_pr_and_ap(predictor=yips, dataset_folder='../../DataMaker/dataset', inputs_filename='valid.csv')
