@@ -45,7 +45,7 @@
 
    
 
-5. 将代码复制到Volume中：
+5. 从[此处](https://github.com/liespace/DeepPlanning/releases/download/v0.1/AdditionalWeightFiles.zip)下载YIPS的权重文件，解压后将其中名为 *weights_of_pretrained_backbone* 和 *weights_of_trained_yips* 的文件夹放至文件夹 *DeepPlanning/YIPS* 下。然后将代码复制到Volume中，以在容器中运行代码：
 
    ```sh
    (DeepPlanning)$ ./copy_to_docker.sh
