@@ -1,6 +1,3 @@
-[submodule "pyRRTs"]
-	path = pyRRTs
-	url = https://github.com/liespace/pyRRTs.git
 [submodule "YIPS"]
 	path = YIPS
 	url = https://github.com/liespace/YIPS.git
