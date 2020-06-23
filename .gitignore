@@ -132,3 +132,6 @@ logs/
 
 # pycharm
 .idea/
+
+# weight files
+weights_of*
