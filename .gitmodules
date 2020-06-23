@@ -4,6 +4,3 @@
 [submodule "DataMaker"]
 	path = DataMaker
 	url = https://github.com/liespace/DataMaker.git
-[submodule "myDockers"]
-	path = myDockers
-	url = https://github.com/liespace/myDockers.git
