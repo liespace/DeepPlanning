@@ -1,0 +1,20 @@
+{
+    "CARLA":
+    {
+        "Description": "CARLA Manual Control Client",
+        "Debug": false,
+        "Host": "127.0.0.1",
+        "Port": 2000,
+        "Window": [1610, 1010],
+        "RoleName": "LieSpace",
+        "GammaCorrection": 2.2
+    },
+    "Script": {
+        "Filepath": "script.json"
+    },
+    "YIPS": {
+        "WeightFolder": "weights_of_neural_networks/weights_of_trained_yips",
+        "WeightName": "rgous-vgg19v2C-(b16)-(bce_1e+04_1e-04)-(adam_3e-05)-(fr75_steps10[75, 105, 135]_wp0o0e+00)",
+        "CheckPoint": 200
+    }
+}
