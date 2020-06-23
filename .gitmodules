@@ -1,9 +1,6 @@
 [submodule "pyRRTs"]
 	path = pyRRTs
 	url = https://github.com/liespace/pyRRTs.git
-[submodule "pySEA"]
-	path = pySEA
-	url = https://github.com/liespace/pySEA.git
 [submodule "YIPS"]
 	path = YIPS
 	url = https://github.com/liespace/YIPS.git
